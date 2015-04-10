@@ -34,6 +34,69 @@ ReadBatteryVoltage:
 
 
 
+	;--- Read sensors and adjust sensor values ---
+
+ReadSensors:
+
+	rcall AdcRead
+
+	b16sub GyroRoll, GyroRoll, GyroRollZero
+	b16sub GyroPitch, GyroPitch, GyroPitchZero
+	b16sub GyroYaw, GyroYaw, GyroYawZero
+
+	b16sub AccX, AccX, AccXZero			;remove offset from Acc
+	b16sub AccY, AccY, AccYZero
+	b16sub AccZ, AccZ, AccZZero
+
+
+	;--- Board orientation ---
+
+	lds t, BoardOrientation
+	cpi t, 1
+	breq bo1
+
+	rjmp bo2
+
+bo1:	b16mov Temp, GyroRoll				;90 degrees
+	b16neg GyroPitch
+	b16mov GyroRoll, GyroPitch
+	b16mov GyroPitch, Temp
+
+	b16mov Temp, AccX
+	b16neg AccY
+	b16mov AccX, AccY
+	b16mov AccY, Temp
+	ret
+
+bo2:	cpi t, 2
+	breq bo3
+
+	rjmp bo4
+
+bo3:	b16neg GyroPitch				;180 degrees
+	b16neg GyroRoll
+	b16neg AccX
+	b16neg AccY
+	ret
+
+bo4:	cpi t, 3
+	breq bo5
+
+	ret
+
+bo5:	b16mov Temp, GyroPitch				;270 degrees
+	b16neg GyroRoll
+	b16mov GyroPitch, GyroRoll
+	b16mov GyroRoll, Temp
+
+	b16mov Temp, AccY
+	b16neg AccX
+	b16mov AccY, AccX
+	b16mov AccX, Temp
+	ret
+
+
+
 // i2c_start command==========================
 
 i2c_start:
@@ -291,9 +354,6 @@ data2_1:
 	load	xl,twdr				; data2 save
 	b16store AccY
 	b16fdiv AccY,6				; shift 6 bits
-	ldx		512
-	b16store	Temp2			; Used to offset values (this is half way between 0 and 1023)
-	b16add	AccY,AccY,Temp2		; Offset by 512 (0g when steady)
 	rjmp	check_last
 
 data3:
@@ -313,7 +373,6 @@ data4_1:
 	b16store AccX
 	b16neg	AccX		
 	b16fdiv AccX,6				; shift 6 bits
-	b16add	AccX,AccX,Temp2		; Offset by 512 (0g when steady)
 	rjmp	check_last
 
 data5:
@@ -328,7 +387,6 @@ data6:
 	load	xl,twdr				; data6 save
 	b16store AccZ
 	b16fdiv AccZ,6				; shift 6 bits
-	b16add	AccZ,AccZ,Temp2		; Offset by 512 (1g when steady)
 	rjmp	check_last
 
 data7:
@@ -356,7 +414,6 @@ data10:
 	load	xl,twdr				; data10 save
 	b16store GyroPitch
 	b16fdiv GyroPitch,6			; shift 6 bits
-	b16add	GyroPitch,GyroPitch,Temp2 ; Offset by 512
 	rjmp	check_last
 
 data11:
@@ -371,7 +428,6 @@ data12:
 	load	xl,twdr				; data12 save
 	b16store GyroRoll
 	b16fdiv GyroRoll,6			; shift 6 bits
-	b16add	GyroRoll,GyroRoll,Temp2 ; Offset by 512
 	rjmp	check_last
 
 data13:
@@ -384,7 +440,6 @@ data14:							; Must be ; GyroYaw_L
 	load	xl,twdr				; data14 save
 	b16store GyroYaw
 	b16fdiv GyroYaw,6			; shift 6 bits
-	b16add	GyroYaw,GyroYaw,Temp2 ; Offset by 512
 
 check_last:
 	cpi		twidata,0

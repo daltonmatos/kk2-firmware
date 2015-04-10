@@ -175,13 +175,15 @@ SaveBatteryVoltageOffset:
 	ldz eeBatteryVoltageOffset	;store in EEPROM for profile #1 only
 	call StoreEeVariable16
 
-	call LcdClear12x16		;show confirmation dialogue
+	call LcdClear12x16
 
-	lrv X1, 34			;header
+	;header
+	lrv X1, 34
 	ldz saved*2
 	call PrintHeader
 
-	ldi t, 4			;print information
+	;text
+	ldi t, 4
 	ldz svo8*2
 	call PrintStringArray
 
@@ -190,11 +192,7 @@ SaveBatteryVoltageOffset:
 
 	call LcdUpdate
 
-svo12:	call GetButtonsBlocking
-	cpi t, 0x01			;OK?
-	brne svo12
-
-	call ReleaseButtons
+	call WaitForOkButton
 	ret
 
 

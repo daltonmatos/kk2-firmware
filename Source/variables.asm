@@ -269,6 +269,8 @@ RamVariableEnumerate8 MainMenuListYposSave
 RamVariableEnumerate8 LoadMenuCursorYposSave
 RamVariableEnumerate8 LoadMenuListYposSave
 
+RamVariableEnumerate8 BoardOrientation
+
 RamVariableEnumerate8 TrigTimerL	;used in trigonometry.asm for calculationg the magic number
 RamVariableEnumerate8 TrigTimerH
 
@@ -354,6 +356,7 @@ RamVariableEnumerate8 AuxPos5Function
 RamVariableEnumerate8 Aux4SwitchPosition
 
 RamVariableEnumerate8 ButtonDelay
+RamVariableEnumerate8 BtnReversed		;false = normal button order, true = reversed (4 - 3 - 2 - 1)
 
 RamVariableEnumerate8 flagSensorsOk
 
@@ -395,7 +398,7 @@ RamVariableEnumerate8 TuningRate		;0=invalid, 1=Low, 2=Medium, 3=High
 
 RamVariableEnumerate8 TimeoutCounter
 
-RamVariableEnumerate8 CppmDetectionCounter
+RamVariableEnumerate8 CppmChannelCount
 
 RamVariableEnumerate8 CppmPulseStartL
 RamVariableEnumerate8 CppmPulseStartH
@@ -514,6 +517,7 @@ EEVariableEnumerate8 eeEscCalibration
 EEVariableEnumerate16 eeBatteryVoltageOffset
 EEVariableEnumerate8 eeGimbalMode
 EEVariableEnumerate8 eeErrorLogState
+EEVariableEnumerate8 eeButtonsReversed
 
 EEVariableEnumerate16 eeStickScaleRoll
 EEVariableEnumerate16 eeStickScalePitch
@@ -585,6 +589,8 @@ EEVariableEnumerate8 eeSatChannelAux4
 EEVariableEnumerate8 eeErrorCode
 EEVariableEnumerate8 eeErrorTimeSec
 EEVariableEnumerate8 eeErrorTimeMin
+
+EEVariableEnumerate8 eeBoardOrientation		;0=normal, 1=90 degrees, 2=180 degrees and 3=270 degrees
 
 
 

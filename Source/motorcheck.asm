@@ -7,7 +7,15 @@
 
 MotorCheck:
 
-	rcall DisplayPropWarning
+	ldz eeMotorLayoutOK			;refuse access if no motor layout is loaded
+	call ReadEeprom				;read from user profile #1
+	brflagtrue t, mch10
+
+	ldz nadtxt1*2
+	call ShowNoAccessDlg
+	ret
+
+mch10:	rcall DisplayPropWarning
 	brcc mch11
 
 	ret					;the BACK button was pushed
@@ -38,7 +46,6 @@ mch11:	call LoadEscLowLimit			;initialize variables that might have been modifie
 	store tifr1, t
 
 mch12:	;M1 - M8 sequence loop
-	rcall ClearAllOutputValues
 	b16ldi Temp2, 400
 
 mch13:	mov t, OutputType			;servo or ESC?
@@ -47,9 +54,9 @@ mch13:	mov t, OutputType			;servo or ESC?
 
 	inc Output				;servo will be skipped
 	lsl Motor
-	brcs mch16
+	brcc mch13
 
-	rjmp mch13				;try next output
+	rjmp mch16				;no more motors. Exit
 
 mch14:	;update LCD
 	call LcdClear12x16
@@ -74,6 +81,7 @@ mch14:	;update LCD
 mch15:	;PWM loop
 	push Output
 	call PwmStart
+	b16mov Temp, EscLowLimit
 	rcall SetMotorOutput
 	call PwmEnd
 	pop Output
@@ -81,14 +89,17 @@ mch15:	;PWM loop
 	b16dec Temp2
 	brne mch15
 
+	;stop motor and select next
+	b16clr Temp
+	rcall SetMotorOutput
+
 	pop OutputType
 	pop Motor
 
-	cpi Output, 8
-	brge mch16
+	lsl Motor				;select next output or leave
+	brcs mch16
 
-	lsl Motor				;select next output
-	rjmp mch12
+	rjmp mch12				;next 
 
 mch16:	;done
 	rvsetflagfalse flagArmed
@@ -103,27 +114,6 @@ mch16:	;done
 
 
 
-	;--- Clear or set all output values ---
-
-ClearAllOutputValues:
-
-	b16clr Temp				;set all outputs to zero
-
-
-SetAllOutputValues:
-
-	b16mov Out1, Temp			;set all outputs to the same value (used in throttlecal.asm)
-	b16mov Out2, Temp
-	b16mov Out3, Temp
-	b16mov Out4, Temp
-	b16mov Out5, Temp
-	b16mov Out6, Temp
-	b16mov Out7, Temp
-	b16mov Out8, Temp
-	ret
-
-
-
 	;--- Set motor output ---
 
 SetMotorOutput:
@@ -131,46 +121,46 @@ SetMotorOutput:
 	cpi Output, 1
 	brne smo10
 
-	b16mov Out1, EscLowLimit
+	b16mov Out1, Temp
 	ret
 
 smo10:	cpi Output, 2
 	brne smo11
 
-	b16mov Out2, EscLowLimit
+	b16mov Out2, Temp
 	ret
 
 smo11:	cpi Output, 3
 	brne smo12
 
-	b16mov Out3, EscLowLimit
+	b16mov Out3, Temp
 	ret
 
 smo12:	cpi Output, 4
 	brne smo13
 
-	b16mov Out4, EscLowLimit
+	b16mov Out4, Temp
 	ret
 
 smo13:	cpi Output, 5
 	brne smo14
 
-	b16mov Out5, EscLowLimit
+	b16mov Out5, Temp
 	ret
 
 smo14:	cpi Output, 6
 	brne smo15
 
-	b16mov Out6, EscLowLimit
+	b16mov Out6, Temp
 	ret
 
 smo15:	cpi Output, 7
 	brne smo16
 
-	b16mov Out7, EscLowLimit
+	b16mov Out7, Temp
 	ret
 
-smo16:	b16mov Out8, EscLowLimit
+smo16:	b16mov Out8, Temp
 	ret
 
 

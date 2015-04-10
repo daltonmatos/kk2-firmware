@@ -47,3 +47,16 @@ Revision 2:
 * Bug fixed: Gimbal mixing type wasn't loaded from EEPROM on the Gimbal Settings screen.
 * Bug fixed: Satellite protocol detection prevented DSMX mode from working. Thanks to Helinor for helping out with debugging and testing.
 * Bug fixed: Re-mapping the throttle channel in S.Bus mode resulted in bad input values.
+
+
+Revision 3:
+-----------
+
+* Board orientation can be set to 0 (default), 90, 180 or 270 degrees. This setting is found on the 'Advanced' sub-menu.
+* The Sensor Test screen has been improved and can also be used to check for correct orientation by tilting the controller board. Sensor value offset of 512 was removed.
+* Added support for boards with reversed button order.
+* The Reminder/Disclaimer message is now displayed when user profile #1 is reset since this dialogue is used for detection of reversed button order.
+* Access to the 'Check Motor Outputs' feature is now refused when no motor layout has been loaded.
+* The Quiet ESC feature is now affected by running the 'Import' and 'Reset' functions on the User Profile screen.
+* Disabled pull-up resistor on the CPPM input pin. This might improve CPPM signal detection.
+* Bug fixed: Servos no longer go to the endpoint when running the Check Motor Outputs feature.

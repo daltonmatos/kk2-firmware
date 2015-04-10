@@ -40,7 +40,21 @@ GetButtons:
 	load t, pinb	;read buttons again
 	com t
 	swap t
-	andi t, 0x0F
+	lds xl, BtnReversed
+	tst xl
+	breq get2
+
+	ror t		;swapping button order (for unoriginal KK2 mini)
+	rol xl
+	ror t
+	rol xl
+	ror t
+	rol xl
+	ror t
+	rol xl
+	mov t, xl
+
+get2:	andi t, 0x0F
 
 get1:	pop yl		;no, exit
 	pop xl
@@ -48,7 +62,7 @@ get1:	pop yl		;no, exit
 
 
 ReleaseButtons:
-	rcall GetButtons	;wait until button released
+	rcall GetButtons		;wait for button to be released
 	cpi t, 0x00
 	brne ReleaseButtons
 	ret
@@ -66,6 +80,15 @@ WaitForKeypress:
 
 	ret
 
+
+
+WaitForOkButton:
+	rcall GetButtonsBlocking
+	cpi t, 0x01			;OK?
+	brne WaitForOkButton
+
+	rcall ReleaseButtons
+	ret
 
 
 GetEePVariable16:

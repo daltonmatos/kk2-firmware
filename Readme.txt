@@ -7,6 +7,8 @@ This custom firmware is based on the original KK2.0 1V6 firmware by Rolf Bakke. 
 - Supports traditional receivers, CPPM (aka. PPM), Futaba S.Bus and Spektrum Satellite (DSM2/DSMX) units.
 - SL Stick Mixing mode with adjustable rate setting. This will give a soft transition from Self-level to ACRO mode based on aileron/elevator stick deflection. It will be displayed on the SAFE screen as "SL Mix" when active. Read the instructions below.
 - ESC calibration is done without a transmitter and it is sufficient to hold down a single button. This will help users with slow binding receivers do ESC calibration in a simple and safe way. This feature is now a lot safer since ESC calibration must be enabled through the menu before it can be accessed. Read the instructions below to learn the new ESC calibration routine.
+- Board orientation can be set to 0 (default), 90, 180 or 270 degrees. This setting is found on the 'Advanced' sub-menu.
+- Supports boards with reversed button order.
 - Multiple user profiles selectable from the SAFE screen allow separate settings for aerobatics, aerial photo, battery types and more. Read the instructions below.
 - Customizable AUX switch functions with support for 5 switch positions. Read the instructions below.
 - Remote tuning of PI gains, ACC trims and gimbal gains using AUX2 and AUX3. PS: This feature is available for CPPM, S.Bus and Satellite only.

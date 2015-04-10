@@ -13,7 +13,7 @@ adv11:	call LcdClear12x16
 	call PrintHeader
 
 	;menu items
-	ldi t, 3
+	ldi t, 4
 	ldz adv10*2
 	call PrintStringArray
 
@@ -37,20 +37,15 @@ adv15:	cpi t, 0x04			;PREV?
 	brne adv20
 
 	dec Item
-	brpl adv11
 
-	clr Item
+adv16:	andi Item, 0x03
 	rjmp adv11
 
 adv20:	cpi t, 0x02			;NEXT?
 	brne adv25
 
 	inc Item
-	cpi Item, 3
-	brlt adv11
-
-	ldi Item, 2
-	rjmp adv11
+	rjmp adv16
 
 adv25:	cpi t, 0x01			;SELECT?
 	brne adv11
@@ -75,12 +70,10 @@ adv27:	cpi Item, 2
 	call MixerEditor		;mixer editor
 	rjmp adv40
 
-adv28:	call GimbalMode			;gimbal controller mode
+adv28:	call BoardRotation		;board rotation
 
 adv40:	pop Item
 	rjmp adv11
-
-	ret
 
 
 
@@ -88,8 +81,9 @@ adv1:	.db "ADVANCED", 0, 0
 adv2:	.db "Channel Mapping", 0
 adv3:	.db "Sensor Settings", 0
 adv4:	.db "Mixer Editor", 0, 0
+adv5:	.db "Board Orientation", 0
 
-adv10:	.dw adv2*2, adv3*2, adv4*2
+adv10:	.dw adv2*2, adv3*2, adv4*2, adv5*2
 
 
 .undef Item

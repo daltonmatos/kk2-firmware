@@ -324,11 +324,7 @@ ps3:	ldi t, 2
 
 	call LcdUpdate
 
-ps1:	call GetButtonsBlocking
-	cpi t, 0x01				;OK?
-	brne ps1
-
-	call ReleaseButtons
+	call WaitForOkButton
 	ret
 
 

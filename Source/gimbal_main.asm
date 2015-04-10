@@ -58,7 +58,7 @@ gm3:	rvbrflagfalse flagArmed, gm7	;skip buttonreading if armed
 gm7:	load t, pinb			;read buttons
 	com t
 	swap t
-	andi t, 0x07			;PROFILE or MENU?
+	andi t, 0x0F			;any button pushed?
 	brne gm4
 
 	rvsetflagfalse Mode		;no, reset Mode and ButtonDelay, and then go to start of the loop

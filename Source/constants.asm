@@ -26,11 +26,12 @@
 .equ	fHigh			= 1
 .equ	fLow			= 0
 
-.equ	GyroLowLimit 		= 400	;limits for sensor testing
-.equ	GyroHighLimit	 	= 730
+.equ	GyroLowLimit 		= -120	;limits for sensor testing
+.equ	GyroHighLimit	 	= 120
 
-.equ	AccLowLimit 		= 450
-.equ	AccHighLimit	 	= 850
+.equ	AccLowLimit 		= -120
+.equ	AccHighLimit	 	= 120
+.equ	AccZHighLimit	 	= 330
 
 .equ	MpuAcc16g		= 0x18
 .equ	MpuAcc8g		= 0x10
@@ -43,8 +44,6 @@
 .equ	MpuGyro250		= 0x00
 
 .equ	AuxCounterInit		= 175
-
-.equ	CppmDetectionCount	= 3	;number of CPPM frames required for approval
 
 .equ	AccNotCalibrated	= 0x01
 .equ	SanityCheckFailed	= 0x02

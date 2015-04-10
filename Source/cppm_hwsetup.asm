@@ -29,11 +29,11 @@ SetupHardwareForCppm:
 	out portb,t
 
 	;       76543210
-	ldi t,0b00000011	;turn on pull ups SPI pin
+	ldi t,0b00000011	;turn on pull-ups TWI pins
 	out portc,t
 
 	;       76543210
-	ldi t,0b00001101	;turn on pull ups on thr, ele and ail
+	ldi t,0b00000101	;turn on pull ups on thr and ele. No pull-up on the aileron/CPPM input pin
 	out portd ,t
 
 	;       76543210
@@ -58,10 +58,10 @@ SetupHardwareForCppm:
 
 
 
-	;--- Init_TWI ---
+	;--- Init TWI ---
 
 	lds t, TWSR
-	andi t, 0b11111100	;initialize twi prescaler set to 4^0 = 1
+	andi t, 0b11111100	;initialize TWI prescaler set to 4^0 = 1
 	sts TWSR, t
 
 	ldi t, 17 

@@ -47,6 +47,7 @@ caa1:	call AdcRead
 
 	dec zl
 	breq caa2
+
 	rjmp caa1
 
 caa2:	b16fdiv AccXZero, 4
@@ -54,6 +55,7 @@ caa2:	b16fdiv AccXZero, 4
 	b16fdiv AccZZero, 4
 
 	ldi yh, 40
+
 cel22:	ldi yl, 0
 	call wms
 	dec yh
@@ -66,6 +68,7 @@ cel22:	ldi yl, 0
 	ldi t, 3
 	ldz accxyz*2
 	call PrintStringArray
+	clt				;clear the T flag to indicate that sensors are being calibrated
 
 	lrv Y1, 10			;acc X
 	b16load AccXZero
@@ -84,8 +87,7 @@ cel22:	ldi yl, 0
 
 	rvbrflagfalse flagSensorsOk, cel35
 
-	ldz EeSensorCalData		;save calibration data if passed.
-		
+	ldz EeSensorCalData		;save calibration data if passed.		
 	b16load AccXZero
 	call StoreEePVariable168
 	b16load AccYZero

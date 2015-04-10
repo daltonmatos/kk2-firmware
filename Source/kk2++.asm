@@ -125,6 +125,7 @@ init3:	jmp SatelliteMain	;Spektrum Satellite (DSM2 and DSMX)
 .include "advanced.asm"
 .include "extra.asm"
 .include "motorcheck.asm"
+.include "boardrotation.asm"
 .include "channelmapping.asm"
 .include "errorlog.asm"
 .include "main.asm"

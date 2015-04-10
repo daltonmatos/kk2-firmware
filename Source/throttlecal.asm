@@ -54,7 +54,7 @@ esc6:	ldi t, 2			;step 1
 	rvsetflagfalse flagThrottleZero
 
 esc2:	call PwmStart
-	call SetAllOutputValues
+	rcall SetAllOutputValues
 	call PwmEnd
 
 	load t, pinb			;read buttons. Cannot use 'GetButtons' here because of delay
@@ -62,17 +62,24 @@ esc2:	call PwmStart
 	swap t
 	andi t, 0x0F
 
-	push t				;must save register T since it is used in 'rvbrflagfalse'
-	rvbrflagfalse Mode, esc3
+	lds xl, Mode			;check output mode
+	tst xl
+	breq esc3
 
-	pop t
 	tst t				;button released?
 	breq esc5
+
 	b16ldi Temp, 5000.0		;no, keep full throttle
 	rjmp esc2
 
-esc3:	pop t
-	cpi t, 0x08			;EXIT?
+esc3:	ldi xl, 0x08
+	lds xh, BtnReversed
+	tst xh
+	breq esc7
+
+	ldi xl, 0x01			;swapping button order (for unoriginal KK2 mini)
+
+esc7:	cp t, xl			;EXIT?
 	breq esc4
 
 	b16ldi Temp, 100.0		;no, set minimum throttle level
@@ -84,6 +91,22 @@ esc5:	b16ldi Temp, 100.0		;mode is changing, set minimum throttle level
 
 esc4:	LedOff				;done
 	call Beep
+	ret
+
+
+
+	;--- Set all output values to the same value ---
+
+SetAllOutputValues:
+
+	b16mov Out1, Temp
+	b16mov Out2, Temp
+	b16mov Out3, Temp
+	b16mov Out4, Temp
+	b16mov Out5, Temp
+	b16mov Out6, Temp
+	b16mov Out7, Temp
+	b16mov Out8, Temp
 	ret
 
 

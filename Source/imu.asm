@@ -1,5 +1,5 @@
 
-Imu:	;--- SL Stick Mixing ---
+Imu:	;--- SL mixing ---
 
 	rvbrflagtrue flagSlStickMixing, im50		;skip this section if SL Stick Mixing is off
 	rjmp im55
@@ -32,16 +32,12 @@ im54:	b16mul Temp, Temper, SelflevelPgainRate
 im55:
 
 
-	;--- Get Sensor Data ---
+	;--- Get sensor data ---
 
-	call AdcRead					;Calculate gyro output
-	b16sub GyroRoll, GyroRoll, GyroRollZero
-	b16sub GyroPitch, GyroPitch, GyroPitchZero
-	b16sub GyroYaw, GyroYaw, GyroYawZero
+	call ReadSensors
 
-	b16sub AccX, AccX, AccXZero			;remove offset from Acc
-	b16sub AccY, AccY, AccYZero
-	b16sub AccZ, AccZ, AccZZero
+
+	;--- ACC trim ---
 
 	b16add AccX, AccX, AccTrimPitch			;add trim
 	b16add AccY, AccY, AccTrimRoll

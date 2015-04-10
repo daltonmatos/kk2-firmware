@@ -15,6 +15,11 @@ fli8:	b16store_array FilteredOut1, Temp
 	brne fli8
 
 
+	ldz eeBoardOrientation			;eeBoardOrientation
+	call ReadEeprom
+	sts BoardOrientation, t
+
+
 	rcall LoadSelfLevelSettings
 
 
@@ -281,18 +286,18 @@ SanityCheck:
 
 	CheckLimit AccXZero, AccLowLimit, AccHighLimit, san2
 	CheckLimit AccYZero, AccLowLimit, AccHighLimit, san2
-	CheckLimit AccZZero, AccLowLimit, AccHighLimit, san2
+	CheckLimit AccZZero, AccLowLimit, AccZHighLimit, san2
 
 	call AdcRead
 	call AdcRead
 
-	CheckLimit GyroRoll, 100, 900, san3
-	CheckLimit GyroPitch, 100, 900, san3
-	CheckLimit GyroYaw, 100, 900, san3
+	CheckLimit GyroRoll, -400, 400, san3
+	CheckLimit GyroPitch, -400, 400, san3
+	CheckLimit GyroYaw, -400, 400, san3
 
-	CheckLimit AccX, 100, 900, san3
-	CheckLimit AccY, 100, 900, san3
-	CheckLimit AccZ, 100, 900, san3
+	CheckLimit AccX, -400, 400, san3
+	CheckLimit AccY, -400, 400, san3
+	CheckLimit AccZ, -400, 400, san3
 
 	ret 				;no errors, return
 

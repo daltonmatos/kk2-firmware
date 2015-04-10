@@ -235,11 +235,7 @@ ShowEscWarning:
 
 	call LcdUpdate
 
-sew11:	call GetButtonsBlocking
-	cpi t, 0x01			;OK?
-	brne sew11
-
-	call ReleaseButtons
+	call WaitForOkButton
 	ret
 
 

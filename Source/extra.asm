@@ -68,8 +68,6 @@ ef26:	call GimbalMode			;gimbal controller mode
 ef40:	pop Item
 	rjmp ef11
 
-	ret
-
 
 
 ef1:	.db "EXTRA", 0

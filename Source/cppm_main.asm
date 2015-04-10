@@ -71,7 +71,7 @@ CppmMain:
 
 	sts RxFrameValid, t
 	sts TimeoutCounter, t
-	lrv CppmDetectionCounter, CppmDetectionCount
+	sts CppmChannelCount, t
 
 	ldz Channel1L
 	sts CppmPulseArrayAddressL, zl

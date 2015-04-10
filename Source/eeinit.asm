@@ -28,7 +28,7 @@ EeInit:
 	call setup_mpu6050
 	rcall ShowDisclaimer
 	rcall InitialSetup		;display initial setup menu
-	ret
+	rjmp eei3
 
 eei1:	ldz eeUserAccepted		;show the disclaimer if not yet accepted
 	call ReadEeprom
@@ -47,7 +47,10 @@ eei2:	lds zh, UserProfile		;check EEPROM signature for the current user profile 
 
 	rcall InitUserProfile		;initialize current user profile
 
-eei3:	ret
+eei3:	ldz eeButtonsReversed		;normal or reversed buttons
+	call ReadEeprom
+	sts BtnReversed, t
+	ret
 
 
 
@@ -68,7 +71,7 @@ CheckEeSignature:
 	brne ces1
 
 	call GetEeVariable8
-	cpi xl, 0x02
+	cpi xl, 0x03
 	brne ces1
 
 	clr xl				;signature is OK
@@ -83,14 +86,20 @@ ces1:	ser xl				;bad signature
 
 InitUserProfile:
 
-	ldz EeMixerTable		;Mixertable
+	ldz EeMixerTable		;mixer table
 	ldx 0
 	ldi Counter, 64
 iup3:	call StoreEePVariable8
 	dec Counter
 	brne iup3
 
-	ldx EeParameterTable		;ParameterTable
+	ldz EeSensorCalData		;sensor calibration data
+	ldi Counter, 18
+iup4:	call StoreEePVariable8
+	dec Counter
+	brne iup4
+
+	ldx EeParameterTable		;parameter table
 	ldy eei4*2
 	ldi Counter, 24
 iup5:	movw z, y
@@ -102,7 +111,7 @@ iup5:	movw z, y
 	dec Counter
 	brne iup5
 
-	ldx eeStickScaleRoll		;Stick Scaling
+	ldx eeStickScaleRoll		;stick scaling
 	ldy eei7*2
 	ldi Counter, 10
 iup8:	movw z, y
@@ -228,7 +237,7 @@ iup8:	movw z, y
 	call StoreEePVariable8
 	ldi xl, 0xAA
 	call StoreEePVariable8
-	ldi xl, 0x02
+	ldi xl, 0x03
 	call StoreEePVariable8
 
 
@@ -241,6 +250,10 @@ iup8:	movw z, y
 	ldz eeUserProfile		;set user profile #1 to be used as default
 	call WriteEeprom
 
+	clr t				;set board rotation to normal (0 degrees)
+	ldz eeBoardOrientation
+	call WriteEeprom
+
 	call SetDefaultLcdContrast
 	call ResetGimbalControllerMode
 	call ResetRxMode
@@ -249,6 +262,7 @@ iup8:	movw z, y
 	tst t
 	brne iup9
 
+	rcall ShowDisclaimer
 	rcall InitialSetup
 	rjmp EnforceRestart
 
@@ -270,7 +284,7 @@ iup6:	call Beep
 
 
 
-	;--- Disclaimer ---
+	;--- Disclaimer ---		Will also detect reversed buttons
 
 ShowDisclaimer:
 
@@ -289,11 +303,26 @@ ShowDisclaimer:
 
 	call LcdUpdate
 
+	clr t				;reset button mode (normal button order)
+	sts BtnReversed, t
+
 eew11:	call GetButtonsBlocking
 	cpi t, 0x01			;OK?
+	brne eew12
+
+	clr t				;normal button order
+	rjmp eew14
+
+eew12:	cpi t, 0x08			;OK (reversed buttons)?
 	brne eew11
 
-	ser t				;set flag to indicate that the user has accepted the disclaimer
+	ser t				;reversed
+
+eew14:	sts BtnReversed, t
+	ldz eeButtonsReversed
+	call WriteEeprom
+
+eew13:	ser t				;set flag to indicate that the user has accepted the disclaimer
 	ldz eeUserAccepted
 	call WriteEeprom
 
@@ -373,24 +402,18 @@ isp15:	cpi t, 0x04			;PREV?
 	brne isp20
 
 	dec Counter
-	brpl isp11
 
-	clr Counter
+isp16:	andi Counter, 0x03
 	rjmp isp11
 
 isp20:	cpi t, 0x02			;NEXT?
 	brne isp25
 
 	inc Counter
-	cpi Counter, 4
-	brlt isp21
-
-	ldi Counter, 3
-
-isp21:	rjmp isp11
+	rjmp isp16
 
 isp25:	cpi t, 0x01			;SELECT?
-	brne isp21
+	brne isp11
 
 	call ReleaseButtons
 	push Counter

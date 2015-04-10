@@ -30,20 +30,27 @@ IsrCppm:
 cppm8:	ldz 6250			;pulse longer than 2.5ms?
 	cp  xl, zl
 	cpc xh, zh
-	brlo cppm11
+	brlo cppm9
 
 	ldz Channel1L			;yes, reset cppm sequence
 
-	lds tt, CppmDetectionCounter	;detect CPPM pulse train after start-up or after a timeout
-	dec tt
-	brmi cppm6
+	lds tt, CppmChannelCount	;CPPM pulse train is considered valid when minimum 4 channels have been detected
+	clr treg
+	sts CppmChannelCount, treg
+	cpi tt, 4
+	brge cppm6
 
-	sts CppmDetectionCounter, tt
-	rjmp cppm10
+	rjmp cppm10			;invalid CPPM frame
 
 cppm6:	ser tt				;set flag to indicate that a valid CPPM pulse train has been received
 	sts RxFrameValid, tt
+
+	sts TimeoutCounter, treg	;reset timeout counter
 	rjmp cppm10
+
+cppm9:	lds tt, CppmChannelCount	;count channels
+	inc tt
+	sts CppmChannelCount, tt
 
 cppm11:	lds zl, CppmPulseArrayAddressL	;store channel in channel array.
 	lds zh, CppmPulseArrayAddressH
@@ -61,9 +68,6 @@ cppm11:	lds zl, CppmPulseArrayAddressL	;store channel in channel array.
 
 cppm10:	sts CppmPulseArrayAddressL, zl	;store array pointer
 	sts CppmPulseArrayAddressH, zh
-
-	clr tt				;reset timeout counter
-	sts TimeoutCounter, tt
 
 	pop zh
 	pop zl
@@ -239,11 +243,11 @@ gcc23:	sts TimeoutCounter, t
 
 gcc22:	lds t, TimeoutCounter		;timeout?
 	inc t
-	cpi t, TimeoutLimit
+	lds xl, RxTimeoutLimit
+	cp t, xl
 	brlo gcc23
 
-	lrv CppmDetectionCounter, CppmDetectionCount	;yes
-	rvbrflagfalse flagArmed, gcc24
+	rvbrflagfalse flagArmed, gcc24	;yes
 
 	setstatusbit RxSignalLost	;set status bit for "Signal Lost" and activate the Lost Model alarm only when armed
 	rvsetflagtrue flagAlarmOverride
