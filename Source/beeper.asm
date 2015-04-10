@@ -29,15 +29,14 @@ bee2:	;--- Turn off buzzer previously activated by an AUX switch position change
 	sts AuxCounter, xl
 
 
-bee11:	;--- Make a short beep regulary when armed and throttle at idle ----
+bee11:	;--- Make a short beep regulary when armed and throttle at idle ---
 
 	rvflagand flagA, flagArmed, flagThrottleZero
 	rvbrflagfalse FlagA, bee4
 
-	b16dec ArmedBeepDds
+	rvbrflagtrue flagAlarmOverride, bee4			;skip this section if failsafe was trigged
 
-	b16clr Temp
-	b16cmp ArmedBeepDds, Temp
+	b16dec ArmedBeepDds
 	brge bee4
 
 	b16ldi ArmedBeepDds, 400*2
@@ -52,7 +51,7 @@ bee4:	;--- No activity alarm ---
 
 	rvbrflagfalse flagA, bee5				;activity?
 
-	b16clr NoActivityTimer					;Yes, reset timer
+	b16clr NoActivityTimer					;yes, reset timer
 
 bee5:	b16ldi Temp, 0.004					;add 3.90625ms to timer
 	b16add NoActivityTimer, NoActivityTimer, Temp
@@ -79,8 +78,6 @@ bee9:	b16ldi Temp, 937.5 * 3					;30 minutes without activity? (arming or disarm
 	brlt bee6
 
 bee7:	b16dec NoActivityDds					;yes, beep once every 5s
-	b16clr Temp
-	b16cmp NoActivityDds, Temp
 	brge bee6
 
 	b16ldi NoActivityDds, 400*5
@@ -88,7 +85,7 @@ bee7:	b16dec NoActivityDds					;yes, beep once every 5s
 	b16ldi BeeperDelay, 400
 
 
-bee6:	;--- turn buzzer on/off depending on flags ---
+bee6:	;--- Turn buzzer on/off depending on flags ---
 
 	rvflagor flagA, flagGeneralBuzzerOn, flagLvaBuzzerOn
 	rvflagor flagA, flagA, flagDebugBuzzerOn

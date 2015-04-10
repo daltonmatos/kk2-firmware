@@ -185,6 +185,29 @@ convt:	.dw 10000
 .undef Digit
 
 
+PrintNumberLF:
+	rcall Print16Signed
+
+LineFeed:			;OBSERVE: This subroutine must follow immediately after 'PrintNumberLF'!
+	rvadd Y1, 9
+	ret
+
+
+PrintHeader:
+	rcall PrintString
+	lrv FontSelector, f6x8
+	lrv Y1, 17
+	ret
+
+
+PrintWarningHeader:
+
+	lrv X1, 16
+	ldz warning*2
+	rcall PrintHeader
+	ret
+
+
 PrintMotto:
 	lrv X1, 0
 	ldz motto*2
@@ -223,7 +246,9 @@ PrintMenuFooter:
 PrintSelectFooter:
 	lrv X1, 0
 	lrv Y1, 57
-	ldz select*2
+	ldz bckprev*2
+	rcall PrintString
+	ldz nxtsel*2
 	rcall PrintString
 	ret
 
@@ -232,7 +257,9 @@ PrintStdFooter:
 	lrv X1, 0
 	lrv Y1, 57
 	pushz
-	ldz footer*2
+	ldz bckprev*2
+	rcall PrintString
+	ldz nxtchng*2
 	rcall PrintString
 	popz
 	ret
@@ -245,6 +272,15 @@ PrintBackFooter:
 	ldz back*2
 	rcall PrintString
 	popz
+	ret
+
+
+PrintChangeFooter:
+
+	lrv X1, 90
+	lrv Y1, 57
+	ldz change*2
+	rcall PrintString
 	ret
 
 
@@ -277,6 +313,27 @@ PrintFromStringArray:
 	lpm xh, z
 	movw z, x
 	rcall PrintString
+	ret
+
+
+PrintStringArray:
+	pushy
+	mov yl, t			;register T = Array size (i.e. Number of strings)
+	clr t
+
+psa1:	push t
+	pushz				;register Z = Array pointer (16 bit)
+	clr yh
+	sts X1, yh
+	call PrintFromStringArray
+	rcall LineFeed
+	popz
+	pop t
+	inc t
+	cp t, yl
+	brlt psa1
+
+	popy
 	ret
 
 
@@ -826,11 +883,10 @@ ShowConfirmationDlg:
 
 	lrv X1, 22		;header
 	ldz confirm*2
-	rcall PrintString
+	rcall PrintHeader
 
 	lrv X1, 0		;print input text
 	lrv Y1, 26
-	lrv FontSelector, f6x8
 	popz
 	rcall PrintString
 
@@ -861,22 +917,30 @@ scd3:	ret
 	;headers
 confirm:.db "CONFIRM", 0
 warning:.db "WARNING!", 0, 0
+cerror:	.db "ERROR", 0
 saved:	.db "SAVED", 0
 
 	;footers
-footer:	.db "BACK PREV NEXT CHANGE", 0
-tunrate:.db "BACK RATE SAVE CHANGE", 0
+tunefn:	.db "BACK RATE SAVE CHANGE", 0
+qtunefn:.db "BACK RATE NEXT CHANGE", 0
 updown:	.db "BACK  UP  DOWN  ENTER", 0
-select:	.db "BACK PREV NEXT SELECT", 0
 conf:	.db "CANCEL            YES", 0
 cont:	.db "CONTINUE", 0, 0
+clear:	.db "CLEAR", 0
+yn:	.db "YES  NO", 0
 back:	.db "BACK", 0, 0
-ok:	.db "OK", 0, 0		;also used as status text (in sensortest.asm and flightdisplay.asm)
+bckprev:.db "BACK PREV", 0		;used in combination with other footers (e.g. "NEXT CHANGE")
+bckmore:.db "BACK MORE", 0		;also used in combination with other footers (e.g. "NEXT CHANGE")
+nxtchng:.db " NEXT CHANGE", 0, 0
+nxtsel:	.db " NEXT SELECT", 0, 0
+change:	.db "CHANGE", 0, 0
+ok:	.db "OK", 0, 0			;also used as status text (in sensortest.asm and flightdisplay.asm)
 
 	;other texts
 motto:	.db "Fly safe!       RC911", 0
 rusure:	.db "Are you sure?", 0
 off:	.db "Off", 0
+on:	.db "On", 0, 0
 no:	.db "No", 0, 0
 yes:	.db "Yes", 0
 acro:	.db "Acro", 0, 0
@@ -895,7 +959,7 @@ thr:	.db "Throttle", 0, 0
 aux:	.db "Aux", 0
 ofs:	.db "Offset", 0, 0
 pgain:	.db "P Gain", 0, 0
-plimit:	.db "P limit", 0
+plimit:	.db "P Limit", 0
 igain:	.db "I Gain", 0, 0
 ilimit:	.db "I Limit", 0
 locked:	.db "Locked", 0, 0
@@ -905,10 +969,15 @@ pos2:	.db "Pos 2", 0
 pos3:	.db "Pos 3", 0
 pos4:	.db "Pos 4", 0
 pos5:	.db "Pos 5", 0
+rate1:	.db "LOW", 0
+rate2:	.db "MEDIUM", 0, 0
+rate3:	.db "HIGH", 0, 0
 
 	;arrays
 yesno:	.dw no*2, yes*2
 tunmode:.dw off*2, ail*2, ele*2, rudd*2, slgain*2, sltrim*2, gimbal*2
+lmh:	.dw null*2, rate1*2, rate2*2, rate3*2
 auxtxt:	.dw pos1*2, pos2*2, pos3*2, pos4*2, pos5*2
 auxfn:	.dw acro*2, slmix*2, normsl*2, alarm*2
-aux4txt:.dw locked*2, null*2, home*2
+aux4txt:.dw locked*2, off*2, home*2
+rxch:	.dw ail*2, ele*2, thr*2, rudd*2, aux*2

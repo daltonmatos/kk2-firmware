@@ -2,56 +2,26 @@
 CalibrateSensors:
 
 	call LcdClear6x8
-	clr t
 
-cel20:	push t
+	ldi t, 6
 	ldz cel10*2
-	call PrintFromStringArray
-	lrv X1,0
-	rvadd Y1, 9
-	pop t
-	inc t
-	cpi t, 6
-	brne cel20
+	call PrintStringArray
 
 	;footer
 	call PrintContinueFooter
 
 	call LcdUpdate
-	
+
 cel5:	call GetButtonsBlocking
-	cpi t, 0x01		;CONTINUE?
+	cpi t, 0x01			;CONTINUE?
 	brne cel5
 
-	ldi xl, '5'
+	rcall Countdown
 
-	;countdown
-cel15:	call LcdClear12x16
+	call LcdClear6x8
 
-	lrv X1, 58
-	lrv Y1, 22
-	mov t, xl
-	call PrintChar
-
-	call LcdUpdate
-
-	;one second delay
-	ldi yh, 100
-cel17:	ldi yl, 100
-	call wms
-	dec yh
-	brne cel17
-
-	;next character
-	dec xl
-	cpi xl, '/'
-	breq cel21
-	rjmp cel15
-
-cel21:	call LcdClear6x8
-
-	lrv X1,25		;calibrating...
-	lrv Y1,25
+	lrv X1, 25			;calibrating...
+	lrv Y1, 25
 	ldz cel19*2
 	call PrintString
 
@@ -60,7 +30,7 @@ cel21:	call LcdClear6x8
 	ldi yl, 0
 	call wms
 
-	ldi zl, 16					;calibrate accerellometers, average of 16 readings
+	ldi zl, 16			;calibrate accerellometers, average of 16 readings
 
 	b16clr AccXZero
 	b16set AccYZero
@@ -89,27 +59,22 @@ cel22:	ldi yl, 0
 	dec yh
 	brne cel22
 
-	call LcdClear		;show and check result 
-
 	rvsetflagtrue flagSensorsOk
 
-	lrv X1, 0		;acc X
+	call LcdClear6x8		;show and check result
 	lrv Y1, 10
-	ldz sen5*2
-	call PrintString
+	ldi t, 3
+	ldz accxyz*2
+	call PrintStringArray
+
+	lrv Y1, 10			;acc X
 	b16load AccXZero
 	call PrintAccValue
 
-	lrv X1, 0		;acc Y
-	ldz sen6*2
-	call PrintString
-	b16load AccYZero
+	b16load AccYZero		;acc Y
 	call PrintAccValue
 
-	lrv X1, 0		;acc Z
-	ldz sen7*2
-	call PrintString
-	b16load AccZZero
+	b16load AccZZero		;acc Z
 	call PrintAccValue
 
 	;footer
@@ -119,7 +84,7 @@ cel22:	ldi yl, 0
 
 	rvbrflagfalse flagSensorsOk, cel35
 
-	ldz EeSensorCalData	;save calibration data if passed.
+	ldz EeSensorCalData		;save calibration data if passed.
 		
 	b16load AccXZero
 	call StoreEePVariable168
@@ -128,23 +93,22 @@ cel22:	ldi yl, 0
 	b16load AccZZero
 	call StoreEePVariable168
 
-	ldz eeSensorsCalibrated	;OK
+	ldz eeSensorsCalibrated		;OK
 	setflagtrue t
 	call WriteEepromP
 	rjmp cel23
 
-cel35:	ldz eeSensorsCalibrated	;Failed
+cel35:	ldz eeSensorsCalibrated		;Failed
 	setflagfalse t
 	call WriteEepromP
 	setstatusbit AccNotCalibrated
 
 cel23:	call GetButtonsBlocking
-	cpi t, 0x01		;CONTINUE?
+	cpi t, 0x01			;CONTINUE?
 	brne cel23
 
-	call LcdClear		;print result (failed or succeeded)
-	lrv X1,0
-	lrv Y1,25
+	call LcdClear6x8		;print result (failed or succeeded)
+	lrv Y1, 25
 
 	lds t, flagSensorsOk
 	andi t, 0x01
@@ -157,7 +121,7 @@ cel30:	;footer
 	call LcdUpdate
 
 cel32:	call GetButtonsBlocking
-	cpi t, 0x01		;CONTINUE?
+	cpi t, 0x01			;CONTINUE?
 	brne cel32
 
 	ret
@@ -183,14 +147,12 @@ cna1:	call AdcRead
 
 	dec zl
 	breq cna2
+
 	rjmp cna1
 
 cna2:	b16fdiv GyroRollZero, 4
 	b16fdiv GyroPitchZero, 4
 	b16fdiv GyroYawZero, 4
-
-	rvsetflagtrue flagGyrosCalibrated
-
 	ret
 
 
@@ -210,4 +172,40 @@ cel24:	.db "Calibration failed.", 0
 cel31:	.db "Calibration succeeded", 0
 
 cal:	.dw cel24*2, cel31*2				;failed, succeeded
+
+accxyz:	.dw sen5*2, sen6*2, sen7*2			;ACC X, Y and Z
+
+
+
+	;--- 5 second countdown ---
+
+Countdown:
+
+	ldi xl, '5'
+
+cdn11:	call LcdClear12x16
+
+	;countdown
+	lrv X1, 58
+	lrv Y1, 22
+	mov t, xl
+	call PrintChar
+
+	call LcdUpdate
+
+	;one second delay
+	ldi yh, 100
+
+cdn12:	ldi yl, 100
+	call wms
+	dec yh
+	brne cdn12
+
+	;next character
+	dec xl
+	cpi xl, '/'
+	brne cdn11
+
+	ret
+
 

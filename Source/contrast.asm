@@ -7,7 +7,7 @@ Contrast:
 	tst t
 	breq con11
 
-	ldi t, 2
+	ldz nadtxt2*2
 	call ShowNoAccessDlg
 	ret
 
@@ -15,11 +15,10 @@ con11:	call LcdClear12x16
 
 	lrv X1, 46			;header
 	ldz con1*2
-	call PrintString
+	call PrintHeader
 
 	lrv X1, 0			;LCD contrast
 	lrv Y1, 26
-	lrv FontSelector, f6x8
 	ldz con2*2
 	call PrintString
 	clr xh
@@ -40,9 +39,7 @@ con11:	call LcdClear12x16
 	cpi t, 0x08			;BACK?
 	brne con16
 
-	ldz eeLcdContrast		;reload the LCD contrast setting
-	call GetEeVariable8
-	sts LcdContrast, xl
+	rcall LoadLcdContrast		;reload the LCD contrast setting
 	ret
 
 con16:	cpi t, 0x04			;UP?
@@ -72,7 +69,7 @@ con18:	cpi t, 0x01			;SAVE?
 
 	lds xl, LcdContrast
 	ldz eeLcdContrast
-	call StoreEeVariable8
+	call StoreEeVariable8		;save in profile #1 only
 	ret
 
 con20:	rjmp con11
@@ -83,8 +80,19 @@ con20:	rjmp con11
 
 
 con1:	.db "LCD", 0
-con2:	.db "LCD contrast: ", 0, 0
+con2:	.db "LCD Contrast: ", 0, 0
 con6:	.db "BACK  UP   DOWN  SAVE", 0
+
+
+
+	;--- Load LCD contrast ---
+
+LoadLcdContrast:
+
+	ldz eeLcdContrast
+	call ReadEeprom			;read from profile #1 only
+	sts LcdContrast, t
+	ret
 
 
 
@@ -95,7 +103,7 @@ SetDefaultLcdContrast:
 	ldi t, 0x24
 	sts LcdContrast, t
 	ldz eeLcdContrast
-	call WriteEeprom
+	call WriteEeprom		;save in profile #1 only
 	ret
 
 

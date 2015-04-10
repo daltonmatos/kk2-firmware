@@ -159,13 +159,16 @@ pwm50:	b16load_array PwmOutput, Out1
 	lsr t
 	sts OutputTypeBitmaskCopy, t
 	brcc pwm51fix
+
 	rjmp pwm51
 pwm51fix:
 
 	;---
 
-	rvbrflagfalse flagInactive, pwm52fix	;SERVO, active or inactive?
+	rvbrflagtrue flagGimbalMode, pwm52fix	;SERVO, run servo filter when gimbal mode is active
+	rvbrflagfalse flagInactive, pwm52fix	;active or inactive?
 	rjmp pwm52
+
 pwm52fix:
 	b16load_array Temp, FilteredOut1 	;servo active, apply low pass filter
 	b16sub Error, PwmOutput, Temp

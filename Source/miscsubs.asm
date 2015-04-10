@@ -6,7 +6,7 @@ WaitXms:ldi yl, 10
 	ret
 		
 
-wms:	ldi t,250		;wait yl *0.1 ms at 20MHz
+wms:	ldi t, 250		;wait yl *0.1 ms at 20MHz
 wm1:	dec t
 	nop
 	nop
@@ -31,7 +31,7 @@ GetButtons:
 	load t, pinb	;read buttons
 	com t
 	swap t
-	andi t, 0x0f
+	andi t, 0x0F
 	breq get1	;any buttons pressed?
 	
 	ldi yl, 100	;yes, wait 10ms
@@ -40,7 +40,7 @@ GetButtons:
 	load t, pinb	;read buttons again
 	com t
 	swap t
-	andi t, 0x0f
+	andi t, 0x0F
 
 get1:	pop yl		;no, exit
 	pop xl
@@ -76,7 +76,7 @@ GetEeVariable16:
 	adiw z, 1
 	mov xl, t
 	rcall ReadEeprom
-	adiw z,1
+	adiw z, 1
 	mov xh, t
 	ret
 

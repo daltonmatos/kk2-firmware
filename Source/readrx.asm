@@ -34,12 +34,12 @@ IsrRoll:
 rx1:	lds tt, tcnt1l			;falling, calculate the pulse length
 	lds treg, RollStartL
 	sub tt, treg
-	sts RollL, tt
+	sts Channel1L, tt
 
 	lds tt, tcnt1h
 	lds treg, RollStartH
 	sbc tt, treg
-	sts RollH, tt
+	sts Channel1H, tt
 
 	out sreg, SregSaver		;exit	
 	reti
@@ -67,12 +67,12 @@ IsrPitch:
 rx2:	lds tt, tcnt1l			;falling, calculate the pulse length
 	lds treg, PitchStartL
 	sub tt, treg
-	sts PitchL, tt
+	sts Channel2L, tt
 
 	lds tt, tcnt1h
 	lds treg, PitchStartH
 	sbc tt, treg
-	sts PitchH, tt
+	sts Channel2H, tt
 
 	out sreg, SregSaver		;exit	
 	reti
@@ -100,12 +100,12 @@ IsrThrottle:
 rx3:	lds tt, tcnt1l			;falling, calculate the pulse length
 	lds treg, ThrottleStartL
 	sub tt, treg
-	sts ThrottleL, tt
+	sts Channel3L, tt
 
 	lds tt, tcnt1h
 	lds treg, ThrottleStartH
 	sbc tt, treg
-	sts ThrottleH, tt
+	sts Channel3H, tt
 
 	out sreg, SregSaver		;exit	
 	reti
@@ -154,21 +154,17 @@ iyaw1:	sbis pinb, 2			;rising or falling?
 
 	clr tt				;clear timeout counter
 	sts YawDcnt, tt
-
-	lds tt, StatusBits		;clear status flag
-	cbr tt, NoRudderInput
-	sts StatusBits, tt
 	ret
 
 iyaw2:	mov tt, xl			;falling, calculate the pulse length
 	lds treg, YawStartL
 	sub tt, treg
-	sts YawL, tt
+	sts Channel4L, tt
 
 	mov tt, xh
 	lds treg, YawStartH
 	sbc tt, treg
-	sts YawH, tt
+	sts Channel4H, tt
 	ret
 
 
@@ -199,12 +195,12 @@ iaux1:	sbis pinb, 0			;rising or falling?
 iaux2:	mov tt, xl			;falling, calculate the pulse length
 	lds treg, AuxStartL
 	sub tt, treg
-	sts AuxL, tt
+	sts Channel5L, tt
 
 	mov tt, xh
 	lds treg, AuxStartH
 	sbc tt, treg
-	sts AuxH, tt
+	sts Channel5H, tt
 	ret
 
 
@@ -235,39 +231,34 @@ grx3:	jmp GetSatChannels
 
 	;--- Retrieve channel values for standard RX ---
 
-
 GetStdRxChannels:
 
 	;--- Roll ---
 
-	cli				;get roll channel value
-	lds xl, RollL
-	lds xh, RollH
-	sei
+	lds r0, MappedChannel1		;get aileron channel value
+	rcall GetSafeChannelValue
+	rcall Sanitize
+	rcall DeadZone
 
-	rcall Sanitize			;sanitize
 	clr yh				;store in register
 	b16store RxRoll
 
 	
-	;--- Pitch
+	;--- Pitch ---
 
-	cli				;get Pitch channel value
-	lds xl, PitchL
-	lds xh, PitchH
-	sei
+	lds r0, MappedChannel2		;get elevator channel value
+	rcall GetSafeChannelValue
+	rcall Sanitize
+	rcall DeadZone
 
-	rcall Sanitize			;sanitize
 	clr yh				;store in register
 	b16store RxPitch
 
 
 	;--- Throttle ---
 
-	cli				;get Throttle channel value
-	lds xl, ThrottleL
-	lds xh, ThrottleH
-	sei
+	lds r0, MappedChannel3		;get throttle channel value
+	rcall GetSafeChannelValue
 
 	rvsetflagfalse flagThrottleZero
 
@@ -278,71 +269,66 @@ GetStdRxChannels:
 	sbc xh, zh
 
 	ldz 0				;X < 0 ?
-	cp  xl, zl
+	cp xl, zl
 	cpc xh, zh
-	brge gt8m8
+	brge rx32
 
 	rjmp rx30			;yes, set to zero
 
-gt8m8:	ldz 3125			;X > 3125? (1.25ms)
-	cp  xl, zl
+rx32:	ldz 3125			;X > 3125? (1.25ms)
+	cp xl, zl
 	cpc xh, zh
-	brlt gt7m2
+	brlt rx33
 
-rx30:	ldx 0				;Yes, set to zero
+rx30:	ldx 0				;yes, set to zero
 	rvsetflagtrue flagThrottleZero
 
-gt7m2:	clr yh				;store in register
+rx33:	clr yh				;store in register
 	b16store RxThrottle
 
 
 	;--- Yaw ---
 
-	cli				;get Yaw channel value
-	lds xl, YawL
-	lds xh, YawH
-	sei
-
-	rcall Sanitize			;sanitize
+	lds r0, MappedChannel4		;get rudder channel value
+	rcall GetSafeChannelValue
+	rcall Sanitize
+	rcall DeadZone
 
 	clr yh				;store in register
 	b16store RxYaw
 
-	
+
 	;--- AUX ---
 
-	cli				;get Aux channel value
-	lds xl, AuxL
-	lds xh, AuxH
-	sei
+	lds r0, MappedChannel5		;get aux channel value
+	rcall GetSafeChannelValue
+	rcall Sanitize
 
-	rcall Sanitize			;sanitize
-
-	clr yl				;detect AUX switch position
+	clr yl				;position #1
 	ldz -600
-	cp  xl, zl
+	cp xl, zl
 	cpc xh, zh
-	brlt rx35			;AUX switch is in position #1
+	brlt rx35
 
-	inc yl
+	inc yl				;position #2
 	ldz -200
-	cp  xl, zl
+	cp xl, zl
 	cpc xh, zh
-	brlt rx35			;AUX switch is in position #2
+	brlt rx35
 
-	inc yl
+	inc yl				;position #3
 	ldz 200
-	cp  xl, zl
+	cp xl, zl
 	cpc xh, zh
-	brlt rx35			;AUX switch is in position #3
+	brlt rx35
 
-	inc yl
+	inc yl				;position #4
 	ldz 600
-	cp  xl, zl
+	cp xl, zl
 	cpc xh, zh
-	brlt rx35			;AUX switch is in position #4
+	brlt rx35
 
-	inc yl				;AUX switch is in position #5
+	inc yl				;position #5
 
 rx35:	rvbrflagfalse flagAuxValid, rx24;won't update aux switch position while the input is invalid
 
@@ -351,63 +337,103 @@ rx35:	rvbrflagfalse flagAuxValid, rx24;won't update aux switch position while th
 	b16store RxAux
 
 
+rx24:	;--- AUX2 ---
 
-rx24:	;--- Check RX ---
+	lds r0, MappedChannel6		;get aux2 channel value
+	rcall GetSafeChannelValue
+	rcall Sanitize
 
-	ser t
-	sts flagRollValid, t
-	sts flagPitchValid, t
-	sts flagThrottleValid, t
-	sts flagYawValid, t
-	sts flagAuxValid, t
+	clr yh				;store in register
+	b16store RxAux2
 
-	rvinc RollDcnt				;aileron signal timed out?
-	rvcp RollDcnt, RxTimeoutLimit
-	brlo rx25
 
-	rvdec RollDcnt				;yes, cut throttle
-	rvsetflagfalse flagRollValid
-	b16clr RxThrottle
-	rvsetflagtrue flagThrottleZero
+	;--- AUX3 ---
 
-rx25:	rvinc PitchDcnt				;elevator signal timed out?
-	rvcp PitchDcnt, RxTimeoutLimit
-	brlo rx26
+	lds r0, MappedChannel7		;get aux3 channel value
+	rcall GetSafeChannelValue
+	rcall Sanitize
 
-	rvdec PitchDcnt				;yes, cut throttle
-	rvsetflagfalse flagPitchValid
-	b16clr RxThrottle
-	rvsetflagtrue flagThrottleZero
+	clr yh				;store in register
+	b16store RxAux3
 
-rx26:	rvinc ThrottleDcnt			;throttle signal timed out?
-	rvcp ThrottleDcnt, RxTimeoutLimit
-	brlo rx27
 
-	rvdec ThrottleDcnt			;yes, cut throttle
-	rvsetflagfalse flagThrottleValid
-	b16clr RxThrottle
-	rvsetflagtrue flagThrottleZero
+	;--- AUX4 ---
 
-rx27:	rvinc YawDcnt				;rudder signal timed out?
-	rvcp YawDcnt, RxTimeoutLimit
-	brlo rx28
+	lds r0, MappedChannel8		;get aux4 channel value
+	call GetSafeChannelValue
+	call Sanitize
 
-	rvdec YawDcnt				;yes, set flag to false and set value to 0
-	rvsetflagfalse flagYawValid
+	clr yl				;position #1
+	ldz -400
+	cp  xl, zl
+	cpc xh, zh
+	brlt rx38
+
+	inc yl				;position #2
+	ldz 400
+	cp  xl, zl
+	cpc xh, zh
+	brlt rx38
+
+	inc yl				;position #3
+
+rx38:	sts Aux4SwitchPosition, yl
+
+	clr yh				;store in register
+	b16store RxAux4
+
+
+	;--- Check RX ---
+
+	lds t, StatusBits			;clear the upper status bits to tag the aileron, elevator, throttle and rudder inputs as OK
+	andi t, 0x0F
+	sts StatusBits, t
+
+	lds xl, MappedChannel1			;aileron signal timed out?
+	rcall CheckRxTimeout
+	sts flagRollValid, xh
+	brcc rx25
+
+	rcall CutThrottle			;yes, cut throttle
+	setstatusbit NoAileronInput
+
+rx25:	lds xl, MappedChannel2			;elevator signal timed out?
+	rcall CheckRxTimeout
+	sts flagPitchValid, xh
+	brcc rx26
+
+	rcall CutThrottle			;yes, cut throttle
+	setstatusbit NoElevatorInput
+
+rx26:	lds xl, MappedChannel3			;throttle signal timed out?
+	rcall CheckRxTimeout
+	sts flagThrottleValid, xh
+	brcc rx27
+
+	rcall CutThrottle			;yes, cut throttle
+	setstatusbit NoThrottleInput
+
+rx27:	lds xl, MappedChannel4			;rudder signal timed out?
+	rcall CheckRxTimeout
+	sts flagYawValid, xh
+	brcc rx28
+
+	setstatusbit NoRudderInput		;yes, set rudder value to zero
 	b16clr RxYaw
+	rvbrflagfalse flagArmed, rx28
 
-rx28:	rvinc AuxDcnt				;aux signal timed out?
-	rvcp AuxDcnt, RxTimeoutLimit
-	brlo rx29
+	rcall LostSignal
 
-	rvdec AuxDcnt				;yes, set flag to false and set value to 0
-	rvsetflagfalse flagAuxValid
+rx28:	lds xl, MappedChannel5			;aux signal timed out?
+	rcall CheckRxTimeout
+	sts flagAuxValid, xh
+	brcc rx29
 
-	lds t, AuxSwitchPosition		;select AUX function #1. PS! Setting this value multiple times will cause Alarm problems (AuxBeepDelay)
-	tst t
+	lds t, AuxSwitchPosition		;yes, select AUX function #3 (if not already selected)
+	cpi t, 2
 	breq rx29
 
-	clr t
+	ldi t, 2
 	sts AuxSwitchPosition, t
 	ser t					;make sure the AUX switch function will be updated
 	sts AuxSwitchPositionOld, t
@@ -416,7 +442,67 @@ rx29:	ret
 
 
 
-	;---
+	;--- Cut throttle and set the RxSignalLost status bit ---
+
+CutThrottle:
+
+	b16clr RxThrottle
+	rvsetflagtrue flagThrottleZero
+	rvbrflagfalse flagArmed, cth1
+
+LostSignal:
+
+	setstatusbit RxSignalLost		;set status bit for "Signal Lost" and activate the Lost Model alarm only when armed
+	rvsetflagtrue flagAlarmOverride
+
+	ldi xl, ErrorSignalLost
+	call LogError
+
+cth1:	ret
+
+
+
+	;--- Check for RX timeout ---
+
+CheckRxTimeout:
+
+	ldy RollDcnt				;find the mapped timeout counter
+	clr xh					;register XH (output value) will return the "valid" flag (0 = timeout)
+	add yl, xl				;register XL (input parameter) holds the mapped channel ID
+	adc yh, xh
+
+	ld zl, y				;load and increment counter
+	inc zl
+
+	lds t, RxTimeoutLimit			;timeout?
+	cp zl, t
+	brlo rto2
+
+	sec					;yes, timer won't be updated (to prevent wrap-around)
+	ret
+
+rto2:	ser xh					;no timeout. Set the "valid" flag (output value) and save timer value before leaving
+	st y, zl
+	clc
+	ret
+
+
+
+	;--- Get channel value (blocking interrupts) ---
+
+GetSafeChannelValue:
+
+	ldzarray Channel1L, 2, r0		;register R0 (input parameter) holds the mapped channel ID
+	cli
+	ld xl, z+
+	ld xh, z
+	sei
+
+	ret
+
+
+
+	;--- Sanitize RX input ---
 
 Sanitize:
 
@@ -427,23 +513,23 @@ Sanitize:
 	sbc xh, zh
 
 	ldz -1750	;X < -1750?  (0.7ms)
-	cp  xl, zl
+	cp xl, zl
 	cpc xh, zh
-	brlt gt1m2
+	brlt sa2
 
 	ldz 1750	;X > 1750?
-	cp  xl, zl
+	cp xl, zl
 	cpc xh, zh
-	brge gt1m2
+	brge sa2
 
-	ret		;No, exit
+	ret		;no, exit
 
-gt1m2:	ldx 0		;Yes, set to zero
+sa2:	ldx 0		;yes, set to zero
 	ret
 
 
 
-
+	;--- Abs(X) ---
 
 Xabs:
 
@@ -453,13 +539,38 @@ Xabs:
 	com xl
 	com xh
 	
-	ldi t,1
-	add xl,t
+	ldi t, 1
+	add xl, t
 	clr t
-	adc xh,t
+	adc xh, t
 
 xa1:	ret
 
 
 
+	;--- Dead zone adjustment ---
+
+DeadZone:
+
+	b16loadz StickDeadZone
+
+	tst xh
+	brpl dz1
+
+	add xl, zl		;stick input is negative
+	adc xh, zh
+	brpl dz2
+
+	ret
+
+dz1:	sub xl, zl		;stick input is positive
+	sbc xh, zh
+	brmi dz2
+
+	ret
+
+dz2:	clr xl			;set stick input to zero
+	clr xh
+	clr yh
+	ret
 

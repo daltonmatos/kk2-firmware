@@ -7,8 +7,8 @@ SetupHardwareForCppm:
 	out ddra,t
 
 	;       76543210
-//	ldi t,0b00001010
-	ldi t,0b00001011	// DEBUGGING
+	ldi t,0b00001010
+//	ldi t,0b00001011	// DEBUGGING
 	out ddrb,t
 
 	;       76543210

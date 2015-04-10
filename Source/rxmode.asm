@@ -8,7 +8,7 @@ SelectRxMode:
 	tst t
 	breq srm10
 
-	ldi t, 2
+	ldz nadtxt2*2
 	call ShowNoAccessDlg
 	ret
 
@@ -55,12 +55,11 @@ srm16:	call LcdUpdate
 	call WaitXms
 
 	inc Lock
-	breq srm17
+	brne srm17
 
-	rjmp srm11
+	ldi Lock, 2			;avoid zero as this would abort "Lock" mode
 
-srm17:	ldi Lock, 2			;avoid zero as this would abort "Lock" mode
-	rjmp srm11
+srm17:	rjmp srm11
 
 srm18:	call GetButtonsBlocking
 
@@ -75,14 +74,14 @@ srm12:	cpi t, 0x04			;PREV?
 	dec Item
 	brpl srm20
 
-	ldi Item, 3
+	ldi Item, 4
 	rjmp srm11
 
 srm13:	cpi t, 0x02			;NEXT?
 	brne srm14
 
 	inc Item
-	cpi Item, 4
+	cpi Item, 5
 	brlt srm20
 
 	clr Item
@@ -103,12 +102,26 @@ srm4:	.db "Restart is required!", 0, 0
 
 stdrx:	.db "Standard RX", 0
 cppm:	.db "CPPM (aka. PPM)", 0
-sbus:	.db "Futaba S.Bus", 0, 0
-sat:	.db "Satellite DSM2", 0, 0
+sbus:	.db "S.Bus", 0
+dsm2:	.db "Satellite DSM2", 0, 0
+dsmx:	.db "Satellite DSMX", 0, 0
 
-modes:	.dw stdrx*2, cppm*2, sbus*2, sat*2
+modes:	.dw stdrx*2, cppm*2, sbus*2, dsm2*2, dsmx*2
 
 
 .undef Item
 .undef Lock
+
+
+
+	;--- Reset RX mode ---
+
+ResetRxMode:
+
+	ldi t, RxModeStandard		;set RX mode to 'Standard Receiver'
+	sts RxMode, t
+	ldz eeRxMode
+	call WriteEeprom
+	ret
+
 

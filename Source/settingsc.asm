@@ -1,43 +1,44 @@
 
 .def Item = r17
+.def OldLinkFlag = r18
 
 
 ModeSettings:
 
+	clr Item
+	lds OldLinkFlag, flagRollPitchLink
+
 sux11:	call LcdClear6x8
 
-	clr t					;print all text labels first
+	rvbrflagfalse flagGimbalMode, sux22
 
-sux21:	push t
-	ldz sux20*2
-	call PrintFromStringArray
-	lrv X1, 0
-	rvadd Y1, 9
-	pop t
-	inc t
-	cpi t, 5
-	brne sux21
-
-	lrv Y1, 1				;print values
-	ldz eeLinkRollPitch
-	rcall PrintYesNoValue
-
-	ldz eeAutoDisarm
-	rcall PrintYesNoValue
-
+	ldz sux3*2				;will only be able to edit button beep setting in gimbal controller mode
+	call PrintString
 	ldz eeButtonBeep
-	call PrintYesNoValue
+	rcall PrintYesNoValue
+	call PrintBackFooter
+	call PrintChangeFooter
+	clr Item
+	rjmp sux23
 
-	ldz eeArmingBeeps
-	call PrintYesNoValue
+sux22:	;labels
+	ldi t, 5
+	ldz sux20*2
+	call PrintStringArray
 
-	ldz eeQuietESCs
-	call PrintYesNoValue
+	;values
+	lrv Y1, 1
+	ldz eeLinkRollPitch
+	rcall PrintYesNoValue			;eeLinkRollPitch
+	rcall PrintYesNoValue			;eeAutoDisarm
+	rcall PrintYesNoValue			;eeButtonBeep
+	rcall PrintYesNoValue			;eeArmingBeeps
+	rcall PrintYesNoValue			;eeQuietESCs
 
 	;footer
 	call PrintStdFooter
 
-	;print selector
+sux23:	;print selector
 	ldzarray sux7*2, 4, Item
 	call PrintSelector
 
@@ -49,9 +50,30 @@ sux21:	push t
 	brne sux8
 
 	call ReadLinkRollPitchFlag		;read the "Link Roll Pitch" flag in case it was changed (this fixes a bug in the original firmware)
-	ret
 
-sux8:	cpi t, 0x04				;PREV?
+	cp OldLinkFlag, t			;changed from linked to unlinked?
+	brge sux15
+
+	ldz EeParameterTable			;yes, make elevator parameter values similar to aileron
+	ldy 0x004C
+	ldi Item, 4				;copy 4 words
+
+sux18:	call GetEePVariable16
+	pushz
+	movw z, y
+	call StoreEePVariable16
+	movw y, z
+	popz
+	dec Item
+	brne sux18
+
+sux15:	ret
+
+sux8:	lds xl, flagGimbalMode			;skip navigation buttons in gimbal mode
+	tst xl
+	brne sux24
+
+	cpi t, 0x04				;PREV?
 	brne sux9
 		
 	dec Item
@@ -74,16 +96,18 @@ sux13:	rjmp sux11
 sux16:	clr Item
 	rjmp sux11
 
+sux24:	ldi Item, 2				;for gimbal mode only
+
 sux12:	cpi t, 0x01				;CHANGE?
 	brne sux14
 
 	call StopPwmQuiet			;stop PWM output while settings are changing
+
 	ldzarray eeLinkRollPitch, 1, Item	;toggle flag
-	call GetEePVariable8
-	ser t
-	eor xl, t
-	ldzarray eeLinkRollPitch, 1, Item
-	call StoreEePVariable8
+	call ReadEepromP
+	com t
+	call WriteEepromP
+
 	call StartPwmQuiet			;enable PWM output again
 
 sux14:	rjmp sux11
@@ -99,9 +123,11 @@ PrintYesNoValue:
 	call GetEePVariable8			;Z is used as input variable
 	mov t, xl
 	andi t, 0x01
+	pushz
 	ldz yesno*2
 	call PrintFromStringArray
-	rvadd Y1, 9
+	popz
+	call LineFeed
 	ret
 
 
@@ -122,4 +148,4 @@ sux7:	.db 100, 0, 122, 9
 
 
 .undef Item
-
+.undef OldLinkFlag

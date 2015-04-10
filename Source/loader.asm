@@ -10,7 +10,7 @@ LoadMixer:
 	tst t
 	breq loa13
 
-	ldi t, 2
+	ldz nadtxt2*2
 	call ShowNoAccessDlg
 	ret
 
@@ -29,7 +29,6 @@ loa13:	ldy loa10*2
 	brcs loa22			;BACK pressed?
 	ret				;Yes, return
 
-
 loa22:	ldz loa1*2
 	call ShowConfirmationDlg
 
@@ -37,7 +36,6 @@ loa22:	ldz loa1*2
 	breq loa18
 
 	rjmp loa13			;CANCEL was pressed
-
 
 loa18:	call StopPwmQuiet		;stop PWM output while loading motor layout
 	BuzzerOn

@@ -1,3 +1,5 @@
+
+
 ;--- RAM ---
 
 .equ	LcdBuffer	=0x0100 ;to 0x04ff  Screen buffer, 1024 bytes
@@ -36,7 +38,10 @@
 
 FixedPointVariableEnumerate168 Temp
 FixedPointVariableEnumerate168 Temp2
-FixedPointVariableEnumerate168 RxChannel
+FixedPointVariableEnumerate168 Temper
+
+FixedPointVariableEnumerate168 RxOffset
+
 FixedPointVariableEnumerate168 RxRoll
 FixedPointVariableEnumerate168 RxPitch
 FixedPointVariableEnumerate168 RxThrottle
@@ -108,6 +113,11 @@ FixedPointVariableEnumerate168 StickScaleYaw
 FixedPointVariableEnumerate168 StickScaleThrottle
 FixedPointVariableEnumerate168 MixFactor
 
+FixedPointVariableEnumerate168 StickScaleRollOrg	;variables used for stick scaling adjustments in S.Bus mode
+FixedPointVariableEnumerate168 StickScalePitchOrg
+
+FixedPointVariableEnumerate168 StickDeadZone
+
 FixedPointVariableEnumerate168 MixValue
 FixedPointVariableEnumerate168 MixValueFactor
 
@@ -138,15 +148,10 @@ FixedPointVariableEnumerate168 Offset6
 FixedPointVariableEnumerate168 Offset7
 FixedPointVariableEnumerate168 Offset8
 
-FixedPointVariableEnumerate168 Temper
-
 FixedPointVariableEnumerate168 SelflevelPgain
 FixedPointVariableEnumerate168 SelflevelPgainOrg
 FixedPointVariableEnumerate168 SelflevelPgainRate
 FixedPointVariableEnumerate168 SelflevelPlimit
-
-FixedPointVariableEnumerate168 HeightDampeningGain
-FixedPointVariableEnumerate168 HeightDampeningLimit
 
 FixedPointVariableEnumerate168 BattAlarmVoltage
 
@@ -176,12 +181,11 @@ FixedPointVariableEnumerate168 AccTrimPitchOrg
 
 FixedPointVariableEnumerate168 AutoDisarmDelay
 
-FixedPointVariableEnumerate168 CheckRxDelay
-
 FixedPointVariableEnumerate168 NoActivityTimer
 FixedPointVariableEnumerate168 NoActivityDds
 
 FixedPointVariableEnumerate168 LiveUpdateTimer
+FixedPointVariableEnumerate168 FlightTimer
 
 FixedPointVariableEnumerate168 EulerAngleRoll
 FixedPointVariableEnumerate168 EulerAnglePitch
@@ -268,6 +272,8 @@ RamVariableEnumerate8 LoadMenuListYposSave
 RamVariableEnumerate8 TrigTimerL	;used in trigonometry.asm for calculationg the magic number
 RamVariableEnumerate8 TrigTimerH
 
+RamVariableEnumerate8 Init
+
 RamVariableEnumerate8 RxMode
 
 RamVariableEnumerate8 RollStartL	;used in readrx.asm
@@ -288,26 +294,14 @@ RamVariableEnumerate8 AuxStartH
 RamVariableEnumerate8 RudderRxPinState
 RamVariableEnumerate8 AuxRxPinState
 
-RamVariableEnumerate8 RollL		;output from readrx.asm
-RamVariableEnumerate8 RollH
-
-RamVariableEnumerate8 PitchL
-RamVariableEnumerate8 PitchH
-
-RamVariableEnumerate8 ThrottleL
-RamVariableEnumerate8 ThrottleH
-
-RamVariableEnumerate8 YawL
-RamVariableEnumerate8 YawH
-
-RamVariableEnumerate8 AuxL
-RamVariableEnumerate8 AuxH
-
 RamVariableEnumerate8 RollDcnt
 RamVariableEnumerate8 PitchDcnt
 RamVariableEnumerate8 ThrottleDcnt
 RamVariableEnumerate8 YawDcnt
 RamVariableEnumerate8 AuxDcnt
+RamVariableEnumerate8 Aux2Dcnt
+RamVariableEnumerate8 Aux3Dcnt
+RamVariableEnumerate8 Aux4Dcnt
 
 RamVariableEnumerate8 flagRollValid
 RamVariableEnumerate8 flagPitchValid
@@ -337,6 +331,9 @@ RamVariableEnumerate8 FlashingLEDCounter
 RamVariableEnumerate8 FlashingLEDCount
 
 RamVariableEnumerate8 flagLcdUpdate
+RamVariableEnumerate8 flagErrorLogSetup
+
+RamVariableEnumerate8 flagGimbalMode
 
 RamVariableEnumerate8 flagSlOn
 RamVariableEnumerate8 flagSlStickMixing
@@ -348,6 +345,7 @@ RamVariableEnumerate8 AuxBeepDelay
 RamVariableEnumerate8 AuxCounter
 RamVariableEnumerate8 AuxSwitchPosition
 RamVariableEnumerate8 AuxSwitchPositionOld
+RamVariableEnumerate8 AuxFunctionOld
 RamVariableEnumerate8 AuxPos1Function
 RamVariableEnumerate8 AuxPos2Function
 RamVariableEnumerate8 AuxPos3Function
@@ -366,7 +364,6 @@ RamVariableEnumerate8 Index
 RamVariableEnumerate8 Mode
 
 RamVariableEnumerate8 QTuningIndex
-RamVariableEnumerate8 flagTuningAilEle
 
 RamVariableEnumerate8 OutputTypeBitmaskCopy
 
@@ -386,14 +383,19 @@ RamVariableEnumerate8 flagMutePwm
 
 RamVariableEnumerate8 flagDebugBuzzerOn
 
-RamVariableEnumerate8 flagGyrosCalibrated
-
 RamVariableEnumerate8 CamServoMixing
 
 RamVariableEnumerate8 LcdContrast
 
-RamVariableEnumerate8 TuningMode		;0=Off, 1=Aileron, 2=Elevator, 3=Rudder, 4=SL gain, 5=ACC trim, 6=Gimbal
+RamVariableEnumerate8 Timer1sec
+RamVariableEnumerate8 Timer1min
+
+RamVariableEnumerate8 TuningMode		;0=Off, 1=Aileron, 2=Elevator, 3=Rudder, 4=SL gain, 5=ACC trim, 6=Gimbal, 255=Quick Tuning
 RamVariableEnumerate8 TuningRate		;0=invalid, 1=Low, 2=Medium, 3=High
+
+RamVariableEnumerate8 TimeoutCounter
+
+RamVariableEnumerate8 CppmDetectionCounter
 
 RamVariableEnumerate8 CppmPulseStartL
 RamVariableEnumerate8 CppmPulseStartH
@@ -401,28 +403,33 @@ RamVariableEnumerate8 CppmPulseStartH
 RamVariableEnumerate8 CppmPulseArrayAddressL
 RamVariableEnumerate8 CppmPulseArrayAddressH
 
-RamVariableEnumerate8 CppmChannel1L
-RamVariableEnumerate8 CppmChannel1H
-RamVariableEnumerate8 CppmChannel2L
-RamVariableEnumerate8 CppmChannel2H
-RamVariableEnumerate8 CppmChannel3L
-RamVariableEnumerate8 CppmChannel3H
-RamVariableEnumerate8 CppmChannel4L
-RamVariableEnumerate8 CppmChannel4H
-RamVariableEnumerate8 CppmChannel5L
-RamVariableEnumerate8 CppmChannel5H
-RamVariableEnumerate8 CppmChannel6L
-RamVariableEnumerate8 CppmChannel6H
-RamVariableEnumerate8 CppmChannel7L
-RamVariableEnumerate8 CppmChannel7H
-RamVariableEnumerate8 CppmChannel8L
-RamVariableEnumerate8 CppmChannel8H
-RamVariableEnumerate8 CppmChannel9L
-RamVariableEnumerate8 CppmChannel9H
+RamVariableEnumerate8 Channel1L
+RamVariableEnumerate8 Channel1H
+RamVariableEnumerate8 Channel2L
+RamVariableEnumerate8 Channel2H
+RamVariableEnumerate8 Channel3L
+RamVariableEnumerate8 Channel3H
+RamVariableEnumerate8 Channel4L
+RamVariableEnumerate8 Channel4H
+RamVariableEnumerate8 Channel5L
+RamVariableEnumerate8 Channel5H
+RamVariableEnumerate8 Channel6L
+RamVariableEnumerate8 Channel6H
+RamVariableEnumerate8 Channel7L
+RamVariableEnumerate8 Channel7H
+RamVariableEnumerate8 Channel8L
+RamVariableEnumerate8 Channel8H
+RamVariableEnumerate8 Channel9L
+RamVariableEnumerate8 Channel9H
 
-RamVariableEnumerate8 CppmTimeoutCounter
-RamVariableEnumerate8 CppmTimeoutLimit
-RamVariableEnumerate8 CppmDetectionCounter
+RamVariableEnumerate8 MappedChannel1
+RamVariableEnumerate8 MappedChannel2
+RamVariableEnumerate8 MappedChannel3
+RamVariableEnumerate8 MappedChannel4
+RamVariableEnumerate8 MappedChannel5
+RamVariableEnumerate8 MappedChannel6
+RamVariableEnumerate8 MappedChannel7
+RamVariableEnumerate8 MappedChannel8
 
 RamVariableEnumerate8 SBusByte0			;the following byte values work as an array and the order must not be modified!
 RamVariableEnumerate8 SBusByte1
@@ -437,33 +444,15 @@ RamVariableEnumerate8 SBusByte9
 RamVariableEnumerate8 SBusByte10
 
 RamVariableEnumerate8 SBusFlags
-
 RamVariableEnumerate8 Channel17
 RamVariableEnumerate8 Channel18
-RamVariableEnumerate8 FrameLossMax
 RamVariableEnumerate8 Failsafe
-RamVariableEnumerate8 FrameCounter
-RamVariableEnumerate8 FrameLossCounter
+RamVariableEnumerate8 DG2Functions
 
-RamVariableEnumerate8 SatChannel1L
-RamVariableEnumerate8 SatChannel1H
-RamVariableEnumerate8 SatChannel2L
-RamVariableEnumerate8 SatChannel2H
-RamVariableEnumerate8 SatChannel3L
-RamVariableEnumerate8 SatChannel3H
-RamVariableEnumerate8 SatChannel4L
-RamVariableEnumerate8 SatChannel4H
-RamVariableEnumerate8 SatChannel5L
-RamVariableEnumerate8 SatChannel5H
-RamVariableEnumerate8 SatChannel6L
-RamVariableEnumerate8 SatChannel6H
-RamVariableEnumerate8 SatChannel7L
-RamVariableEnumerate8 SatChannel7H
-
-RamVariableEnumerate8 SatByteArrayAddressL
-RamVariableEnumerate8 SatByteArrayAddressH
+RamVariableEnumerate8 SatDataMask
 
 RamVariableEnumerate8 RxFrameValid
+RamVariableEnumerate8 RxFrameLength
 
 RamVariableEnumerate8 RxBuffer0
 RamVariableEnumerate8 RxBuffer1
@@ -523,7 +512,8 @@ EEVariableEnumerate8 eeUserAccepted
 EEVariableEnumerate8 eeUserProfile
 EEVariableEnumerate8 eeEscCalibration
 EEVariableEnumerate16 eeBatteryVoltageOffset
-EEVariableEnumerate16 eeTemperatureOffset
+EEVariableEnumerate8 eeGimbalMode
+EEVariableEnumerate8 eeErrorLogState
 
 EEVariableEnumerate16 eeStickScaleRoll
 EEVariableEnumerate16 eeStickScalePitch
@@ -538,16 +528,19 @@ EEVariableEnumerate16 eeAccTrimPitch
 EEVariableEnumerate16 eeSlMixRate
 
 EEVariableEnumerate16 eeEscLowLimit
-EEVariableEnumerate16 eeHeightDampeningGain
-EEVariableEnumerate16 eeHeightDampeningLimit
+EEVariableEnumerate16 eeStickDeadZone
 EEVariableEnumerate16 eeBattAlarmVoltage
 EEVariableEnumerate16 eeServoFilter
+EEVariableEnumerate16 eeUnused
 
-EEVariableEnumerate8 eeCppmRoll
-EEVariableEnumerate8 eeCppmPitch
-EEVariableEnumerate8 eeCppmThrottle
-EEVariableEnumerate8 eeCppmYaw
-EEVariableEnumerate8 eeCppmAux
+EEVariableEnumerate8 eeChannelRoll		;channel mapping (not for Satellite mode)
+EEVariableEnumerate8 eeChannelPitch
+EEVariableEnumerate8 eeChannelThrottle
+EEVariableEnumerate8 eeChannelYaw
+EEVariableEnumerate8 eeChannelAux
+EEVariableEnumerate8 eeChannelAux2
+EEVariableEnumerate8 eeChannelAux3
+EEVariableEnumerate8 eeChannelAux4
 
 EEVariableEnumerate8 eeLinkRollPitch		;true=on  false=off
 EEVariableEnumerate8 eeAutoDisarm		;true=on  false=off
@@ -577,6 +570,21 @@ EEVariableEnumerate8 eeMpuGyroCfg
 EEVariableEnumerate8 eeMpuAccCfg
 
 EEVariableEnumerate8 eeTuningRate
+
+EEVariableEnumerate8 eeDG2Functions
+
+EEVariableEnumerate8 eeSatChannelRoll		;channel mapping for Satellite mode
+EEVariableEnumerate8 eeSatChannelPitch
+EEVariableEnumerate8 eeSatChannelThrottle
+EEVariableEnumerate8 eeSatChannelYaw
+EEVariableEnumerate8 eeSatChannelAux
+EEVariableEnumerate8 eeSatChannelAux2
+EEVariableEnumerate8 eeSatChannelAux3
+EEVariableEnumerate8 eeSatChannelAux4
+
+EEVariableEnumerate8 eeErrorCode
+EEVariableEnumerate8 eeErrorTimeSec
+EEVariableEnumerate8 eeErrorTimeMin
 
 
 

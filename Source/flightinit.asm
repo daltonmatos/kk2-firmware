@@ -1,112 +1,29 @@
 
 FlightInit:
 
-	rcall LoadMixerTable		;copy Mixertable from EE to RAM
-
-	ldz EeParameterTable		;copy and scale PI gain and limits from EE to 16.8 variables
-	rcall fli2
-	b16mov PgainRoll, Temp
-	b16mov PgainRollOrg, Temp
-
-	rcall fli2
-	rcall fli5
-	b16mov PlimitRoll, Temp
-
-	rcall fli2
-	b16mov IgainRollOrg, Temp
-	rcall TempDiv16
-	b16mov IgainRoll, Temp
-
-	rcall fli2
-	rcall fli5
-	b16mov IlimitRoll, Temp
-
-	rcall fli2
-	b16mov PgainPitch, Temp
-	b16mov PgainPitchOrg, Temp
-
-	rcall fli2
-	rcall fli5
-	b16mov PlimitPitch, Temp
-
-	rcall fli2
-	b16mov IgainPitchOrg, Temp
-	rcall TempDiv16
-	b16mov IgainPitch, Temp
-
-	rcall fli2
-	rcall fli5
-	b16mov IlimitPitch, Temp
-
-	rcall fli2
-	b16mov PgainYaw, Temp
-	b16mov PgainYawOrg, Temp
-
-	rcall fli2
-	rcall fli5
-	b16mov PlimitYaw, Temp
-
-	rcall fli2
-	b16mov IgainYawOrg, Temp
-	rcall TempDiv16
-	b16mov IgainYaw, Temp
-
-	rcall fli2
-	rcall fli5
-	b16mov IlimitYaw, Temp
-
-
+	rcall LoadMixerTable			;copy Mixertable from EE to RAM
+	rcall LoadParameterTable		;copy and scale PI gain and limits from EE to 16.8 variables
 	rcall UpdateOutputTypeAndRate
 
 
 	b16ldi Temp, 2500			;preload the servo filters
 	lrv Index, 0
+
 fli8:	b16store_array FilteredOut1, Temp
 	rvinc Index
 	rvcpi Index, 8
 	brne fli8
 
 
-	ldz eeSelflevelPgain
-	rcall fli2
-	b16mov SelflevelPgain, Temp
-	b16mov SelfLevelPgainOrg, Temp
-
-	rcall fli2				;eeSelflevelPlimit
-	b16ldi Temper, 10
-	b16mul SelflevelPlimit, Temp, Temper
-
-	rcall fli2				;eeAccTrimRoll
-	b16mov AccTrimRollOrg, Temp
-	b16fdiv Temp, 2
-	b16mov AccTrimRoll, Temp
-
-	rcall fli2				;eeAccTrimPitch
-	b16mov AccTrimPitchOrg, Temp
-	b16fdiv Temp, 2
-	b16mov AccTrimPitch, Temp
-
-	rcall fli2				;eeSlMixRate
-	rcall TempDiv100
-	b16mov SelflevelPgainRate, Temp
+	rcall LoadSelfLevelSettings
 
 
-	ldz eeEscLowLimit
-	rcall fli2
-	b16ldi Temper, 50.0
-	b16mul EscLowLimit, Temp, Temper
-
-	rcall fli2				;eeHeightDampeningGain
-	b16mov HeightDampeningGain, Temp
-
-	rcall fli2				;eeHeightDampeningLimit
-	rcall fli5
-	b16mov HeightDampeningLimit, Temp
+	rcall LoadEscLowLimit			;eeEscLowLimit
+	rcall LoadStickDeadZone			;eeStickDeadZone
 
 	rcall fli2				;eeBattAlarmVoltage
 	b16fmul Temp, 2
 	b16mov BattAlarmVoltage, Temp
-	b16ldi BatteryVoltageOffset, 0
 
 	rcall fli2				;eeServoFilter
 	b16ldi Temper, 100
@@ -118,10 +35,12 @@ fli8:	b16store_array FilteredOut1, Temp
 	rcall fli2
 	rcall TempDiv16
 	b16mov StickScaleRoll, Temp
+	b16mov StickScaleRollOrg, Temp
 
 	rcall fli2				;eeStickScalePitch
 	rcall TempDiv16
 	b16mov StickScalePitch, Temp
+	b16mov StickScalePitchOrg, Temp
 
 	rcall fli2				;eeStickScaleYaw
 	rcall TempDiv16
@@ -136,33 +55,24 @@ fli8:	b16store_array FilteredOut1, Temp
 	b16mov MixFactor, Temp
 
 
-	ldz eeCamRollGain
-	rcall fli2
-	b16mov CamRollGainOrg, Temp
-	rcall TempDiv16
-	b16mov CamRollGain, Temp
+	ldy MappedChannel1
+	rcall GetEeChannelMapping
+	rcall LoadMappedChannel			;eeChannelRoll		or eeSatChannelRoll
+	rcall LoadMappedChannel			;eeChannelPitch		or eeSatChannelPitch
+	rcall LoadMappedChannel			;eeChannelThrottle	or eeSatChannelThrottle
+	rcall LoadMappedChannel			;eeChannelYaw		or eeSatChannelYaw
+	rcall LoadMappedChannel			;eeChannelAux		or eeSatChannelAux
+	rcall LoadMappedChannel			;eeChannelAux2		or eeSatChannelAux2
+	rcall LoadMappedChannel			;eeChannelAux3		or eeSatChannelAux3
+	rcall LoadMappedChannel			;eeChannelAux4		or eeSatChannelAux4
+	call CheckChannelMapping
+	brcc fli3
 
-	rcall fli2				;eeCamRollOffset
-	rcall fli9
-	b16mov CamRollOffset, Temp
+	call ChannelMappingError		;invalid channel mapping must be resolved before we can continue
+	call ChannelMapping
 
-	rcall fli2				;eeCamPitchGain
-	b16mov CamPitchGainOrg, Temp
-	rcall TempDiv16
-	b16mov CamPitchGain, Temp
 
-	rcall fli2				;eeCamPitchOffset
-	rcall fli9
-	b16mov CamPitchOffset, Temp
-
-	call GetEePVariable8			;eeCamServoMixing
-	sts CamServoMixing, xl
-
-	rcall fli2				;eeCamRollHomePos
-	b16mov CamRollHomePos, Temp
-
-	rcall fli2				;eeCamPitchHomePos
-	b16mov CamPitchHomePos, Temp
+fli3:	rcall LoadGimbalSettings
 
 
 	ldz EeSensorCalData			;load ACC calibration data
@@ -178,6 +88,7 @@ fli8:	b16store_array FilteredOut1, Temp
 	call CheckTuningMode
 	call LoadAuxSwitchSetup
 	call LoadBatteryVoltageOffset
+	call LoadDG2Settings
 
 	ldz eeAutoDisarm
 	call ReadEepromP
@@ -187,13 +98,12 @@ fli8:	b16store_array FilteredOut1, Temp
 	ser t					;make sure the AUX switch function will be updated
 	sts AuxSwitchPositionOld, t
 
+	sts flagLcdUpdate, t
+
 	lrv OutputRateDividerCounter, 1
 	lrv OutputRateDivider, 5		;slow rate divider. f = 400 / OutputRateDivider
 
-	rvsetflagtrue flagLcdUpdate
-
-	lrv RxTimeoutLimit, 250
-	lrv CppmTimeoutLimit, 125
+	lrv RxTimeoutLimit, TimeoutLimit
 
 	clr t
 	sts flagMutePwm, t
@@ -203,16 +113,10 @@ fli8:	b16store_array FilteredOut1, Temp
 
 	sts ButtonDelay, t
 
-	sts flagSlOn, t
-
-	sts flagAlarmOn, t
 	sts flagAlarmOverride, t
-
 	sts flagGeneralBuzzerOn, t
 	sts flagLvaBuzzerOn, t
 	sts flagDebugBuzzerOn, t
-
-	sts flagGyrosCalibrated, t
 
 	b16set AutoDisarmDelay
 
@@ -274,7 +178,7 @@ fli30:	;--- Gyro ---
 	b832ldi MagicNumberMult, 1.830082440462336 ;1.830082440462336*(6250/4096)=2.7924841926 (all settings use this magic number as the GyroRate is scaled instead in imu.asm)
 
 
-fli40:	;--- Status ---
+	;--- Status ---
 
 	lds t, StatusBits			;clear the lower status bits
 	andi t, 0xF0
@@ -341,28 +245,35 @@ fli5:	b16ldi Temper, 128.0			;most limit values (0-100%) are scaled with 128.0 t
 	b16mul Temp, Temp, Temper
 	ret
 
-fli9:	b16ldi Temper, 50.0
-	b16mul Temp, Temp, Temper
-	ret
+
+
+mad1:	.db "One or more settings", 0, 0
+mad2:	.db "are out of limits!", 0, 0
+
+mad5:	.db "Sensor calibration", 0, 0
+mad6:	.db "data out of limits!", 0
+
+mad7:	.db "Sensor raw data", 0
+
+san10:	.dw mad1*2, mad2*2
+san11:	.dw mad5*2, mad6*2
+san12:	.dw mad7*2, mad2*2
 
 
 
-	;---
+	;--- Sanity check ---
 
 SanityCheck:
 
 	call LcdClear6x8
 
 	lrv X1, 0
-	lrv Y1, 15
+	lrv Y1, 17
 
 ;	CheckLimit SelflevelPgain, 0, 501, san1
 ;	CheckLimit SelflevelPlimit, 0, 3411, san1			;30%
 
 	CheckLimit EscLowLimit, 0, 1001, san1				;20%
-
-	CheckLimit HeightDampeningGain, 0, 501 ,san1
-	CheckLimit HeightDampeningLimit, 0, 3841 ,san1			;30%
 
 	CheckLimit GyroRollZero, GyroLowLimit, GyroHighLimit, san2
 	CheckLimit GyroPitchZero, GyroLowLimit, GyroHighLimit, san2
@@ -383,41 +294,42 @@ SanityCheck:
 	CheckLimit AccY, 100, 900, san3
 	CheckLimit AccZ, 100, 900, san3
 
-	ret 				;No errors, return
+	ret 				;no errors, return
 
-
-san1:	clr t				;print error message "One or more settings are out of limits."
-	ldi yh, 9
-	rcall PrintSanityMessage
+san1:	ldi t, 2			;print "One or more settings are out of limits."
+	ldz san10*2
+	call PrintStringArray
 	rjmp san4
 
-san2:	ldi t, 2			;print error message "Sensor calibration data out of limits."
-	ldi yh, 9
-	rcall PrintSanityMessage
+san2:	ldi t, 2			;print "Sensor calibration data out of limits."
+	ldz san11*2
+	call PrintStringArray
 	rjmp san4
 
-san3:	ldi t, 4			;print error message "Sensor raw data are out of limits."
-	ldi yh, 9
-	rcall PrintSanityMessage
+san3:	ldi t, 2			;print "Sensor raw data are out of limits."
+	ldz san12*2
+	call PrintStringArray
 
-san4:	setstatusbit SanityCheckFailed	;Error
+san4:	setstatusbit SanityCheckFailed
 
-	lrv X1, 40			;print "WARNING!" header and "Check your settings!!"
-	lrv Y1, 1
-	ldi t, 6
-	ldi yh, 39
-	rcall PrintSanityMessage
-
+	;footer
 	call PrintContinueFooter
+
+	;header
+	lrv Y1, 0
+	lrv FontSelector, f12x16
+	call PrintWarningHeader
 
 	call LcdUpdate
 
 	BuzzerOn
 	ldi yh, 39
+
 san5:	ldi yl, 0
 	call wms
 	dec yh
 	brne san5
+
 	BuzzerOff
 
 san6:	call GetButtonsBlocking
@@ -429,16 +341,18 @@ san6:	call GetButtonsBlocking
 
 
 
-	;---
+	;--- Check limits ---
 
-limit:
+Limit:
 
 	cp  xl, yl			;less?
 	cpc xh, yh
 	brlt lim1
+
 	cp  xl, zl			;greater?
 	cpc xh, zh
 	brge lim1
+
 	clc				;OK
 	ret
 
@@ -461,6 +375,156 @@ mt1:	call ReadEeprom
 	dec yl
 	brne mt1
 
+	ret
+
+
+
+	;--- Copy and scale PI gain and limits from EE to 16.8 variables ---
+
+LoadParameterTable:
+
+	ldz EeParameterTable
+	rcall fli2
+	b16mov PgainRoll, Temp
+	b16mov PgainRollOrg, Temp
+
+	rcall fli2
+	rcall fli5
+	b16mov PlimitRoll, Temp
+
+	rcall fli2
+	b16mov IgainRollOrg, Temp
+	rcall TempDiv16
+	b16mov IgainRoll, Temp
+
+	rcall fli2
+	rcall fli5
+	b16mov IlimitRoll, Temp
+
+	rvbrflagfalse flagRollPitchLink, lpt1
+
+	ldz EeParameterTable
+
+lpt1:	rcall fli2
+	b16mov PgainPitch, Temp
+	b16mov PgainPitchOrg, Temp
+
+	rcall fli2
+	rcall fli5
+	b16mov PlimitPitch, Temp
+
+	rcall fli2
+	b16mov IgainPitchOrg, Temp
+	rcall TempDiv16
+	b16mov IgainPitch, Temp
+
+	rcall fli2
+	rcall fli5
+	b16mov IlimitPitch, Temp
+
+	ldz 0x0054
+	rcall fli2
+	b16mov PgainYaw, Temp
+	b16mov PgainYawOrg, Temp
+
+	rcall fli2
+	rcall fli5
+	b16mov PlimitYaw, Temp
+
+	rcall fli2
+	b16mov IgainYawOrg, Temp
+	rcall TempDiv16
+	b16mov IgainYaw, Temp
+
+	rcall fli2
+	rcall fli5
+	b16mov IlimitYaw, Temp
+	ret
+
+
+
+	;--- Load SL parameters from EEPROM ---
+
+LoadSelfLevelSettings:
+
+	ldz eeSelflevelPgain
+	rcall fli2
+	b16mov SelflevelPgain, Temp
+	b16mov SelfLevelPgainOrg, Temp
+
+	rcall fli2				;eeSelflevelPlimit
+	b16ldi Temper, 10
+	b16mul SelflevelPlimit, Temp, Temper
+
+	rcall fli2				;eeAccTrimRoll
+	b16mov AccTrimRollOrg, Temp
+	b16fdiv Temp, 2
+	b16mov AccTrimRoll, Temp
+
+	rcall fli2				;eeAccTrimPitch
+	b16mov AccTrimPitchOrg, Temp
+	b16fdiv Temp, 2
+	b16mov AccTrimPitch, Temp
+
+	rcall fli2				;eeSlMixRate
+	rcall TempDiv100
+	b16mov SelflevelPgainRate, Temp
+	ret
+
+
+
+	;--- Load gimbal settings from EEPROM ---
+
+LoadGimbalSettings:
+
+	ldz eeCamRollGain
+	rcall fli2
+	b16mov CamRollGainOrg, Temp
+	rcall TempDiv16
+	b16mov CamRollGain, Temp
+
+	rcall fli2				;eeCamRollOffset
+	b16mov CamRollOffset, Temp
+
+	rcall fli2				;eeCamPitchGain
+	b16mov CamPitchGainOrg, Temp
+	rcall TempDiv16
+	b16mov CamPitchGain, Temp
+
+	rcall fli2				;eeCamPitchOffset
+	b16mov CamPitchOffset, Temp
+
+	call GetEePVariable8			;eeCamServoMixing
+	sts CamServoMixing, xl
+
+	rcall fli2				;eeCamRollHomePos
+	b16mov CamRollHomePos, Temp
+
+	rcall fli2				;eeCamPitchHomePos
+	b16mov CamPitchHomePos, Temp
+	ret
+
+
+
+	;--- Load ESC low limit setting from EEPROM ---
+
+LoadEscLowLimit:
+
+	ldz eeEscLowLimit
+	rcall fli2
+	b16ldi Temper, 50.0
+	b16mul EscLowLimit, Temp, Temper
+	ret
+
+
+
+	;--- Load stick dead zone setting from EEPROM ---
+
+LoadStickDeadZone:
+
+	ldz eeStickDeadZone
+	rcall fli2
+	b16mov StickDeadZone, Temp
 	ret
 
 
@@ -505,41 +569,41 @@ ReadLinkRollPitchFlag:
 
 
 
-	;--- Print "Sanity" message (two lines) ---
+	;--- Read the S.Bus DG2 settings from EEPROM ---
 
-PrintSanityMessage:
+LoadDG2Settings:
 
-	ldi yl, 2			;loop counter
-
-psm1:	push yl
-	push t				;register T is the input parameter that decides which messages to print (valid range: 0 - 6)
-	push yh				;register YH is the input parameter that decides the line offset increment
-	ldz mad10*2
-	call PrintFromStringArray
-	lrv X1, 0
-	lds t, Y1
-	pop yh
-	add t, yh
-	sts Y1, t
-	pop t
-	inc t
-	pop yl
-	dec yl
-	brne psm1
-
+	ldz eeDG2Functions
+	call ReadEepromP
+	sts DG2Functions, t
 	ret
 
 
 
-mad1:	.db "One or more settings", 0, 0
-mad2:	.db "are out of limits.", 0, 0
+	;--- Get EEPROM address of the first mapped channel ---
 
-mad3:	.db "Check your settings!!", 0
+GetEeChannelMapping:
 
-mad5:	.db "Sensor calibration", 0, 0
-mad6:	.db "data out of limits.", 0
+	lds t, RxMode
+	cpi t, RxModeSatDSM2
+	brlt ecm1
 
-mad7:	.db "Sensor raw data", 0
+	ldz eeSatChannelRoll		;channel mapping for Satellite mode
+	rjmp ecm2
 
-mad10:	.dw mad1*2, mad2*2, mad5*2, mad6*2, mad7*2, mad2*2, warning*2, mad3*2
+ecm1:	ldz eeChannelRoll		;normal channel mapping
+
+ecm2:	ret
+
+
+
+	;--- Read mapped channel value from EEPROM ---
+
+LoadMappedChannel:
+
+	call GetEePVariable8
+	dec xl
+	st y+, xl
+	ret
+
 

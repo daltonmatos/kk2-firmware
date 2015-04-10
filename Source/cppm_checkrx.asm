@@ -22,7 +22,7 @@ ncs8:	.dw ncs2*2, ncs3*2, ncs4*2
 
 
 
-	;---
+	;--- No CPPM input signal ---
 
 ShowNoCppmSignalDlg:
 
@@ -30,23 +30,11 @@ ShowNoCppmSignalDlg:
 
 	lrv X1, 10			;header
 	ldz ncs1*2
-	call PrintString
+	call PrintHeader
 
-	lrv FontSelector, f6x8
-
-	lrv X1, 0			;print "Please supply a CPPM signal to the aileron input connector."
-	lrv Y1, 17
-	clr t
-
-ncs11:	push t
+	ldi t, 3			;print "Please supply a CPPM signal to the aileron input connector."
 	ldz ncs8*2
-	call PrintFromStringArray
-	lrv X1, 0
-	rvadd Y1, 9
-	pop t
-	inc t
-	cpi t, 3
-	brne ncs11
+	call PrintStringArray
 
 	;footer
 	call PrintBackFooter

@@ -10,6 +10,7 @@ im50:	b16clr Temp					;is the roll stick value positive?
 	brge im51
 
 	b16neg Temper					;no, make it positive
+
 im51:	b16cmp RxPitch, Temp				;is the pitch stick value positive?
 	brlt im52
 
@@ -146,11 +147,11 @@ im41:
 	b16set IntegralPitch
 	b16set IntegralYaw
 
-im7:	b16fdiv RxRoll, 4			;Right align to the 16.4 multiply usable bit limit.
+im7:	b16fdiv RxRoll, 4			;right align to the 16.4 multiply usable bit limit
 	b16fdiv RxPitch, 4
 	b16fdiv RxYaw, 4
 
-	b16mul RxRoll, RxRoll, StickScaleRoll	;scale Stick input. 
+	b16mul RxRoll, RxRoll, StickScaleRoll	;scale stick inputs
 	b16mul RxPitch, RxPitch, StickScalePitch
 	b16mul RxYaw, RxYaw, StickScaleYaw
 	b16mul RxThrottle, RxThrottle, StickScaleThrottle

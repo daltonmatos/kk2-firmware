@@ -3,50 +3,35 @@
 
 
 AdcRead:
-
-	ldi		t,0x3B
-	sts		TWI_address,t		; Read MPU6050 from 0X3B
-	ldi		twidata,14			; Read 14 addresses
-	call 	i2c_read_adr_d
-
-
 ReadBatteryVoltage:
 
+	;--- ADC pt. 1 ---
+
 	ldi t, 3
-	rcall AdcReadChannel
-	b16store BatteryVoltage
-	b16add BatteryVoltage, BatteryVoltage, BatteryVoltageOffset
-	ret
-
-
-
-AdcReadChannel:
 	store admux, t		;channel to be read
 
 	;        76543210
 	ldi t, 0b11000111
 	store adcsra, t		;start ADC
 
-	ldx 2500		;timeout limit (X * 8 cycles)
-	
-	clr yh
 
-adc2:	sbiw x, 1		;wait until finished or timeout
-	brcs adc1
-	lds t, adcsra
-	sbrc t, adsc
-	rjmp adc2
+	;--- Read MPU6050 registers while waiting for ADC to complete ---
+
+	ldi t, 0x3B
+	sts TWI_address, t	;read MPU6050 from 0X3B
+	ldi twidata, 14		;read 14 addresses
+	call i2c_read_adr_d
+
+
+	;--- ADC pt. 2 ---
 	
-	cli
 	load xl, adcl		;X = ADC
 	load xh, adch
-	sei
+	clr yh
+	b16store BatteryVoltage
+	b16add BatteryVoltage, BatteryVoltage, BatteryVoltageOffset
 	ret
 
-adc1:	;log timeout error here
-
-
-	ret
 
 
 // i2c_start command==========================
@@ -306,7 +291,6 @@ data2_1:
 	load	xl,twdr				; data2 save
 	b16store AccY
 	b16fdiv AccY,6				; shift 6 bits
-	clr		yh
 	ldx		512
 	b16store	Temp2			; Used to offset values (this is half way between 0 and 1023)
 	b16add	AccY,AccY,Temp2		; Offset by 512 (0g when steady)
@@ -497,7 +481,7 @@ setup_mpu6050:
 	call i2c_send_adr
 
 	ldi t,0x1C
-	sts TWI_address,t		// write reg address ro sensor  ACCEL_CONFIG
+	sts TWI_address,t		// write reg address to sensor  ACCEL_CONFIG
 	ldz eeMpuAccCfg
 	call ReadEepromP
 	andi t, 0x18

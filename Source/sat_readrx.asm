@@ -38,58 +38,36 @@
 	//************************************************************
 	
 
-	// This code supports only DSM2 1024 (10 bit and all channels in a single frame, 16 bytes)
+	// This code supports DSM2 (10 bit, single frame) and DSMX (11 bit, single frame).
 	// CH0 = Throttle, CH1 = Aileron, CH2 = Elevator, CH3 = Rudder, CH4 = Gear, etc....
-
-IsrSatellite:
-
-	in SregSaver, sreg
-
-	push zh
-	push zl
-
-	;Read, check and store data
-	lds treg, udr0			;read from USART buffer
-
-	lds zl, RxBufferAddressL	;save the received data byte in the buffer
-	lds zh, RxBufferAddressH
-	st z+, treg
-
-	;Update buffer index
-	lds tt, RxBufferIndex
-	inc tt
-	cpi tt, 16
-	brlt isa20
-
-	ldz RxBuffer0
-	clr tt
-	sts RxBufferState, tt
-
-isa20:	sts RxBufferIndex, tt
-
-	;Save the buffer pointer
-	sts RxBufferAddressL, zl
-	sts RxBufferAddressH, zh
-
-	;Exit
-	pop zl
-	pop zh
-	out sreg, SregSaver
-	reti
-
 
 
 	;--- Read all input channel values ---
 
 GetSatChannels:
 
-	lds t, RxBufferState		;waiting for the very first data frame?
-	tst t
-	brpl sat10
+	clr r20				;used for protocol detection
 
-	rjmp sat24			;yes, clear all input channels before leaving
+	lds t, RxMode			;set registers and variables based on selected RX mode
+	cpi t, RxModeSatDSMX
+	breq sat8
 
-sat10:	lds xl, RxBufferIndex		;data received since last iteration?
+	ldi r18, 0x1C			;DSM2
+	ldi r19, 0x03			;mask for 10 bit data (DSM2)
+	b16ldi RxOffset, 512
+	b16ldi Temp, 2.93		;will convert range [-341, 341] to [-1000, 1000] (throttle = [0, 1880])
+	b16ldi Temp2, 205		;throttle value adjustment
+	rjmp sat9
+
+sat8:	ldi r18, 0x38			;DSMX
+	ldi r19, 0x07			;mask for 11 bit data (DSMX)
+	b16ldi RxOffset, 1024
+	b16ldi Temp, 1.466		;will convert range [-682, 682] to [-1000, 1000] (throttle = [0, 1880])
+	b16ldi Temp2, 410		;throttle value adjustment
+
+sat9:	sts SatDataMask, r19		;data mask (MSB)
+
+	lds xl, RxBufferIndex		;data received since last iteration?
 	lds xh, RxBufferIndexOld
 	cp xl, xh
 	breq sat12
@@ -103,11 +81,20 @@ sat10:	lds xl, RxBufferIndex		;data received since last iteration?
 
 sat11:	rjmp sat24			;clear all input channels before leaving
 
-sat12:	cpi t, 2			;frame sync?
+sat12:	lds t, RxBufferState		;no additional data received. Frame sync?
+	cpi t, 2
 	breq sat13
 
-	inc t				;no, use old input values, but only if valid
-	sts RxBufferState, t
+	tst t				;no, update status (if non-zero). 0 = No data received since start-up or re-sync
+	breq sat11
+
+	inc t
+	cpi t, 100
+	brlo sat15
+
+	dec t				;prevent wrap-around
+
+sat15:	sts RxBufferState, t
 	rvbrflagfalse RxFrameValid, sat11
 
 	rjmp sat31			;use old input values
@@ -127,35 +114,36 @@ sat13:	lds xl, RxBufferIndex		;is the communication synchronized?
 	sei
 	rjmp sat24			;clear all input channels before leaving
 
-sat14:	lds t, RxBuffer2		;check for protocol error (e.g. DSMX)
-	andi t, 0x80
-	breq sat1
-
-	setstatusbit SatProtocolError
-	rjmp sat31			;use old input values
-
-sat1:	ser t				;the data frame appears to be valid
+sat14:	ser t				;the data frame appears to be valid
 	sts RxFrameValid, t
 
 	ldx RxBuffer2			;skip first 2 bytes
 	ldi r17, 2			;using register R17 as Byte Index
 
-sat3:	ldz SatChannel1L		;set SatChannel Array to 1st location
+sat3:	ldz Channel1L			;set Channel Array to 1st location
 	ld yh, x+			;get MSB from the satelite array
 	ld yl, x+			;get LSB from the satelite array
 
-	mov t, yh			;the channel ID is used to store the channel value at the correct index in the Sat Channel array
+	or r20, yh			;protocol detection
+
+	mov t, yh			;the channel ID is used to store the channel value at the correct index in the Channel array
 	lsr t
-	andi t, 0x0E			;mask Channel ID (multiplied by two and limited to 7 channels)
-	inc t				;add one so we end up at SatChannelXH
+
+	cpi r18, 0x38			;11 data bits?
+	brne sat4
+
+	lsr t				;yes, shift the channel ID one more time
+
+sat4:	andi t, 0x0E			;mask Channel ID (multiplied by two and limited to 7 channels)
+	inc t				;add one so we end up at ChannelXH
 	
-	add zl, t			;adjust the Sat Channel array pointer to match the satelite channel ID
+	add zl, t			;adjust the Channel array pointer to match the satelite channel ID
 	brcc sat2
 
 	inc zh
 
-sat2:	andi yh, 0x03			;mask for D9 & D8
-	st z, yh			;store and decrement pointer to reach SatChannelXL
+sat2:	and yh, r19			;data mask for MSB
+	st z, yh			;store and decrement pointer to reach ChannelXL
 	sbiw z, 1
 	st z, yl			;store D0 to D7
 
@@ -164,38 +152,63 @@ sat2:	andi yh, 0x03			;mask for D9 & D8
 	cpi r17, 16
 	brlt sat3
 
-	;Set signal for "New frame"
+	;Protocol detection
+	mov t, r19			;register R19 holds the MSB data mask for the selected mode
+	com t
+	and r20, t
+	cp r20, r18
+	breq sat1
+
+	setstatusbit SatProtocolError	;protocol error detected, clear all input channels before leaving
+	rvbrflagfalse flagArmed, sat5
+
+	ldi xl, ErrorSatProtocolFail
+	call LogError
+
+sat5:	rjmp sat24
+
+
+sat1:	;Set signal for "New frame"
 	ldi t, 3
 	sts RxBufferState, t
 
+	clr t				;reset timeout counter
+	sts TimeoutCounter, t
 
 
-sat31:	;--- Roll ---
+sat31:	;--- Virtual channels ---
 
-	ldi t, 1			;aileron has satelite channel ID 1
+	clr t
+	sts Channel8L, t
+	sts Channel8H, t
+
+
+	;--- Roll ---
+
+	lds r0, MappedChannel1		;get aileron channel value
 	rcall GetSatChannelValue
 	rcall AdjustSatValue
-	clr yh				;store RX value
+	call DeadZone
 	b16store RxRoll
 
 	
-	;--- Pitch
+	;--- Pitch ---
 
-	ldi t, 2			;elevator has satelite channel ID 2
+	lds r0, MappedChannel2		;get elevator channel value
 	rcall GetSatChannelValue
 	rcall AdjustSatValue
-	clr yh				;store RX value
+	call DeadZone
 	b16store RxPitch
 
 
 	;--- Throttle ---
 
-	ldi t, 0			;throttle has satelite channel ID 0
+	lds r0, MappedChannel3		;get throttle channel value
 	rcall GetSatChannelValue
 
 	rvsetflagfalse flagThrottleZero
 
-	ldz 205				;X = X - 205
+	b16loadz Temp2			;throttle value adjustment
 	sub xl, zl
 	sbc xh, zh
 	rcall AdjustSatValue2
@@ -208,74 +221,92 @@ sat31:	;--- Roll ---
 	ldx 0				;yes, set to zero
 	rvsetflagtrue flagThrottleZero
 
-sat30:	clr yh				;store RX value
-	b16store RxThrottle
+sat30:	b16store RxThrottle
 
 
 	;--- Yaw ---
 
-	ldi t, 3			;rudder has satelite channel ID 3
+	lds r0, MappedChannel4		;get rudder channel value
 	rcall GetSatChannelValue
 	rcall AdjustSatValue
-	clr yh				;store in RX variable
+	call DeadZone
 	b16store RxYaw
 
 	
 	;--- AUX ---
 
-	ldi t, 4			;aux has satelite channel ID 4
+	lds r0, MappedChannel5		;get aux channel value
 	rcall GetSatChannelValue
 	rcall AdjustSatValue
+	b16store RxAux
 
-	clr yl				;detect AUX switch position
+	clr yl				;AUX switch position #1
 	ldz -600
 	cp  xl, zl
 	cpc xh, zh
-	brlt sat35			;AUX switch is in position #1
+	brlt sat35
 
-	inc yl
+	inc yl				;AUX switch position #2
 	ldz -200
 	cp  xl, zl
 	cpc xh, zh
-	brlt sat35			;AUX switch is in position #2
+	brlt sat35
 
-	inc yl
+	inc yl				;AUX switch position #3
 	ldz 200
 	cp  xl, zl
 	cpc xh, zh
-	brlt sat35			;AUX switch is in position #3
+	brlt sat35
 
-	inc yl
+	inc yl				;AUX switch position #4
 	ldz 600
 	cp  xl, zl
 	cpc xh, zh
-	brlt sat35			;AUX switch is in position #4
+	brlt sat35
 
-	inc yl				;AUX switch is in position #5
+	inc yl				;AUX switch position #5
 
 sat35:	sts AuxSwitchPosition, yl
-	clr yh				;store RX value
-	b16store RxAux
 
 
 	;--- AUX2 ---
 
-	ldi t, 5			;aux2 has satelite channel ID 5
+	lds r0, MappedChannel6		;get aux2 channel value
 	rcall GetSatChannelValue
 	rcall AdjustSatValue
-
-	clr yh				;store RX value
 	b16store RxAux2
 
 
 	;--- AUX3 ---
 
-	ldi t, 6			;aux3 has satelite channel ID 6
+	lds r0, MappedChannel7		;get aux3 channel value
 	rcall GetSatChannelValue
 	rcall AdjustSatValue
-	
-	clr yh				;store RX value
 	b16store RxAux3
+
+
+	;--- AUX4 ---
+
+	lds r0, MappedChannel8		;get aux4 channel value
+	rcall GetSatChannelValue
+	rcall AdjustSatValue
+	b16store RxAux4
+
+	clr yl				;AUX4 switch position #1
+	ldz -400
+	cp  xl, zl
+	cpc xh, zh
+	brlt sat38
+
+	inc yl				;AUX4 switch position #2
+	ldz 400
+	cp  xl, zl
+	cpc xh, zh
+	brlt sat38
+
+	inc yl				;AUX4 switch position #3
+
+sat38:	sts Aux4SwitchPosition, yl
 
 
 	;--- Check RX ---
@@ -283,60 +314,71 @@ sat35:	sts AuxSwitchPosition, yl
 	rvbrflagfalse RxFrameValid, sat24
 	rjmp sat22
 
-sat23:	ret
-
-sat22:	lds t, RxBufferState
-	cpi t, SatRxTimeoutLimit
-	brlo sat23
-
-	ldi t, SatRxTimeoutLimit
-	sts RxBufferState, t
-
-	clr t				;select AUX switch function #1
-	sts AuxSwitchPosition, t
-	ser t				;make sure the AUX switch function will be updated
-	sts AuxSwitchPositionOld, t
-
-sat24:	rvsetflagfalse RxFrameValid	;yes, set flag to false and values to zero
-	b16clr RxRoll
-	b16set RxPitch
-	b16set RxThrottle
-	b16set RxYaw
-	b16set RxAux
-	b16set RxAux2
-	b16set RxAux3
-	rvsetflagtrue flagThrottleZero
+sat23:	sts TimeoutCounter, t
 	ret
 
+sat22:	lds t, TimeoutCounter		;timeout?
+	inc t
+	cpi t, TimeoutLimit
+	brlo sat23
+
+	rvbrflagfalse flagArmed, sat24	;yes
+
+	setstatusbit RxSignalLost	;set status bit for "Signal Lost" and activate the Lost Model alarm only when armed
+	rvsetflagtrue flagAlarmOverride
+
+sat24:	jmp ClearInputChannels		;will tag the received frame as invalid and clear all input channels
 
 
-	;----
+
+	;--- Get channel value ---
 
 GetSatChannelValue:
 
-	mov r0, t
-	ldzarray SatChannel1L, 2, r0
+	ldzarray Channel1L, 2, r0	;register R0 (input parameter) holds the mapped channel ID
 	ld xl, z+
 	ld xh, z
-	andi xh, 0x03			;limit value to 1023
+	clr yh
+
+	lds t, SatDataMask		;limit value to 1023 or 2047
+	and xh, t
 	ret
 
 
 
-	;--- Adjust satelite value ---
+	;--- Adjust satellite value ---
 
-AdjustSatValue:				;subtract Spektrum Satelite channel value offset (512) and adjust the input range
+AdjustSatValue:				;subtract Spektrum Satelite channel value offset and adjust the input range
 
-	ldz 512				;X = X - 512
+	cp xl, yh			;unused channel (value == zero)?
+	cpc xh, yh
+	brne asv1
+
+	ret				;yes, return zero
+
+asv1:	b16loadz RxOffset
 	sub xl, zl
 	sbc xh, zh
 
 AdjustSatValue2:
 
 	b16store Temper
-	b16ldi Temp, 2.93		;convert range [-341, 341] to [-1000, 1000] (throttle = [0, 1880])
 	b16mul Temper, Temper, Temp
 	b16load Temper
 	ret
 
+
+
+	;--- Set or clear RX error ---
+
+CheckSatRx:
+
+	lds t, RxFrameValid
+	com t
+	andi t, NoSatelliteInput
+	lds xl, StatusBits
+	cbr xl, NoSatelliteInput
+	or t, xl
+	sts StatusBits, t
+	ret
 

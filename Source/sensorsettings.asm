@@ -168,8 +168,7 @@ PrintSensorValue:
 	lpm xh, z
 	clr yh
 
-	call Print16Signed		;print and update cursor position
-	rvadd Y1, 9
+	call PrintNumberLF		;print and update cursor position
 	lrv X1, 0
 	ret
 

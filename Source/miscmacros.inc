@@ -321,7 +321,7 @@
 	b16load @0
 	ldy @1
 	ldz @2
-	call limit
+	call Limit
 	brcc pc + 2
 	rjmp @3
 .endmacro

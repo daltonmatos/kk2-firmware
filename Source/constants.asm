@@ -8,7 +8,8 @@
 .equ	RxModeStandard		= 0
 .equ	RxModeCppm		= 1
 .equ	RxModeSBus		= 2
-.equ	RxModeSatellite		= 3
+.equ	RxModeSatDSM2		= 3
+.equ	RxModeSatDSMX		= 4
 
 .equ	MixValueThrottle	= 0
 .equ	MixValueRoll		= 1
@@ -43,14 +44,15 @@
 
 .equ	AuxCounterInit		= 175
 
-.equ	CppmDetectionCount	= 3
+.equ	CppmDetectionCount	= 3	;number of CPPM frames required for approval
 
 .equ	AccNotCalibrated	= 0x01
 .equ	SanityCheckFailed	= 0x02
+.equ	RxSignalLost		= 0x03	;this bit pattern has 1st priority
 .equ	NoMotorLayout		= 0x04
 .equ	LvaWarning		= 0x08	;this bit will not prevent arming
 
-.equ	NoAileronInput		= 0x10
+.equ	NoAileronInput		= 0x10	;status bit values for standard receiver mode
 .equ	NoElevatorInput		= 0x20
 .equ	NoThrottleInput		= 0x40
 .equ	NoRudderInput		= 0x80
@@ -63,6 +65,10 @@
 .equ	NoSatelliteInput	= 0x10	;status bit values for Satellite mode
 .equ	SatProtocolError	= 0x20
 
-.equ 	SBusTimeoutLimit	= 30	;timeout value for S.Bus data
+.equ	TimeoutLimit		= 250
 
-.equ 	SatRxTimeoutLimit	= 50	;timeout value for Satellite data
+.equ	NoError			= 0	;message codes for the error log
+.equ	ErrorSignalLost		= 1
+.equ	ErrorFailsafe		= 2
+.equ	ErrorSatProtocolFail	= 3
+

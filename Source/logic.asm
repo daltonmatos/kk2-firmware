@@ -3,18 +3,41 @@ Logic:
 
 	;--- Live update ---
 
-	rvbrflagtrue flagArmed, liv1		;skip this section if armed	
+	rvbrflagtrue flagArmed, liv1		;skip this section when armed
 
 	b16dec LiveUpdateTimer			;set flagLcdUpdate every second
-	b16clr Temp
-	b16cmp LiveUpdateTimer, Temp
-	brge lol10
+	brlt liv2
 
-	rvsetflagtrue flagLcdUpdate
+	rjmp lol10
+
+liv2:	rvsetflagtrue flagLcdUpdate
 	b16ldi LiveUpdateTimer, 400
 	rjmp lol10
 
 liv1:
+
+	;--- Flight timer update ---
+
+	rvbrflagtrue flagThrottleZero, tim1	;skip this section if throttle is zero
+
+	b16dec FlightTimer
+	brne tim1
+
+	b16ldi FlightTimer, 398			;tuned for better accuracy
+
+	lds xl, Timer1sec			;flight timer (running while motors are spinning)
+	inc xl
+	cpi xl, 60
+	brne tim2
+
+	lds xh, Timer1min
+	inc xh
+	sts Timer1min, xh
+	clr xl
+
+tim2:	sts Timer1sec, xl
+
+tim1:
 
 	;--- Flashing LED if status bits are set while armed ---
 
@@ -34,7 +57,6 @@ lol1:	ldi t, 40
 	lds zl, FlashingLEDCount		;update counter every time the LED is turned on
 	dec zl
 	sts FlashingLEDCount, zl
-	tst zl
 	brne lol5
 
 	lds zl, StatusBits			;clear the LVA Warning bit to end flashing
@@ -69,13 +91,7 @@ lol10:
 
 asp1:	sts AuxSwitchPositionOld, t
 
-	tst xl					;produce a short beep when the AUX switch changes position
-	brmi asp6
-
-	ser xl
-	sts flagDebugBuzzerOn, xl
-
-asp6:	ldx AuxPos1Function			;calculate the address of the variable holding the function ID
+	ldx AuxPos1Function			;calculate the address of the variable holding the function ID
 	add xl, t
 	brcc asp2
 
@@ -86,8 +102,17 @@ asp2:	clr t					;reset flags
 	sts flagSlStickMixing, t
 	sts flagAlarmOn, t
 
-	ld t, x					;check the function ID
-	tst t					;acro?
+	ld t, x					;get the function ID
+
+	lds xl, AuxFunctionOld			;produce a short beep when the AUX function changes
+	sts AuxFunctionOld, t
+	cp t, xl
+	breq asp5
+
+	ser xl
+	sts flagDebugBuzzerOn, xl
+
+asp5:	tst t					;acro?
 	breq asp20
 
 	cpi t, 3				;alarm?
@@ -109,7 +134,6 @@ asp3:	ser xl					;SL Stick Mixing is active
 	sts flagSlStickMixing, xl
 
 asp20:
-
 
 	;--- LED flashing in sync with the LVA beeps ---
 

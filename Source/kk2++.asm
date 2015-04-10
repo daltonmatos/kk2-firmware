@@ -36,7 +36,7 @@
 	jmp unused		; Timer/Counter0 Compare Match B
 	jmp IsrLed		; Timer/Counter0 Overflow
 	jmp unused		; SPI Serial Transfer Complete
-	jmp IsrSatellite	; USART0, Rx Complete
+	jmp IsrSerialRx		; USART0, Rx Complete
 	jmp unused		; USART0 Data register Empty
 	jmp unused		; USART0, Tx Complete
 	jmp unused		; Analog Comparator
@@ -44,24 +44,22 @@
 	jmp unused		; EEPROM Ready
 	jmp unused		; 2-wire Serial Interface
 	jmp unused		; Store Program Memory Read
-	jmp IsrSBus		; USART1 RX complete
+	jmp unused		; USART1 RX complete
 	jmp unused		; USART1 Data Register Empty
 	jmp unused		; USART1 TX complete
 
 unused:	reti
 
 
+
 	;--- Common initialization ---
 
 reset:
 
-	ldi t,low(ramend)	;initalize stack pointer
-	out spl,t
-	ldi t,high(ramend)
-	out sph,t
-
-	ldx 100
-	call WaitXms
+	ldi t, low(ramend)	;initalize stack pointer
+	out spl, t
+	ldi t, high(ramend)
+	out sph, t
 
 	ldz eeUserProfile	;user profile
 	call ReadEeprom
@@ -87,46 +85,53 @@ init1:	cpi t, RxModeCppm
 init2:	cpi t, RxModeSBus
 	brne init3
 
-	jmp SBusMain		;Futaba S.Bus
+	jmp SBusMain		;S.Bus
 
-init3:	jmp SatelliteMain	;Spektrum Satellite
+init3:	jmp SatelliteMain	;Spektrum Satellite (DSM2 and DSMX)
+
 
 
 .include "rxmode.asm"
-.include "quicktuning.asm"
 .include "batteryvoltage.asm"
+
+.include "serial_readrx.asm"
+.include "serial_rxtest.asm"
+.include "serial_checkrx.asm"
 
 .include "cppm_main.asm"
 .include "cppm_hwsetup.asm"
 .include "cppm_mainmenu.asm"
-.include "cppm_settings.asm"
 .include "cppm_readrx.asm"
 .include "cppm_checkrx.asm"
-.include "cppm_rxtest.asm"
 
 .include "sbus_main.asm"
 .include "sbus_hwsetup.asm"
 .include "sbus_mainmenu.asm"
 .include "sbus_status.asm"
 .include "sbus_readrx.asm"
-.include "sbus_rxtest.asm"
+.include "sbus_dg2settings.asm"
 
 .include "sat_main.asm"
 .include "sat_hwsetup.asm"
 .include "sat_mainmenu.asm"
 .include "sat_misc.asm"
 .include "sat_readrx.asm"
-.include "sat_checkrx.asm"
-.include "sat_rxtest.asm"
-.include "sat_gimbal.asm"
 
+.include "gimbal.asm"
+.include "gimbal_mode.asm"
+.include "gimbal_main.asm"
+.include "gimbal_mainmenu.asm"
+
+.include "advanced.asm"
+.include "extra.asm"
+.include "motorcheck.asm"
+.include "channelmapping.asm"
+.include "errorlog.asm"
 .include "main.asm"
 .include "tuning.asm"
-.include "camstab.asm"
-.include "gimbal.asm"
+.include "quicktuning.asm"
 .include "userprofile.asm"
 .include "trigonometry.asm"
-.include "checkrx.asm"
 .include "setuphw.asm"
 .include "version.asm"
 .include "beeper.asm"
@@ -135,7 +140,6 @@ init3:	jmp SatelliteMain	;Spektrum Satellite
 .include "logic.asm"
 .include "contrast.asm"
 .include "auxsettings.asm"
-.include "heightdamp.asm"
 .include "loader.asm"
 .include "selflevel.asm"
 .include "layout.asm"

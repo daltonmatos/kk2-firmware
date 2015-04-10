@@ -1,0 +1,49 @@
+
+Revision 1:
+-----------
+
+* Channel mapping is now configurable for 8 input channels (in all RX modes). This enables receivers with less than 8 channels to access AUX2, AUX3 and AUX4 features.
+* Flight timer (displayed on the SAFE screen) runs while armed and throttle is above idle.
+* Remote tuning is now available in Standard RX mode through the Quick Tuning feature. Mapping the AUX input to AUX2 is required for this to work.
+* Standard RX signal handling improved. For slow booting receivers status texts like "No aileron input" will be displayed until valid RX signals are detected.
+* In S.Bus mode a switch assigned to DG2 (aka. channel 18) can now control several functions (i.e. Stay armed/spin motors, set digital outputs and increase stick scaling).
+	- The Stay Armed/Spin Motors feature keeps the motors spinning and prevents the controller from being disarmed during flight.
+	- Digital outputs (i.e. Rudder and AUX) can be used to control LEDs or other devices, but using transistors/FETs is recommended even at low current loads.
+	- Stick scaling for aileron and elevator can be increased by either 20, 30 or 50.
+* Added the digital S.Bus channels (DG1 and DG2) to the second Receiver Test screen.
+* S.Bus input was moved from the elevator to the throttle pin since this simplifies the S.Bus signal cable wiring on a KK2 Mini.
+* On the Receiver Test screen the aileron, elevator, rudder, aux2 and aux3 texts now say "Center" when these channels are centred precisely.
+* Satellite DSMX mode added (with support for binding borrowed from Steveis).
+* Selected RX mode (Traditional RX, CPPM, S.Bus or Satellite) is now displayed on the Version Information screen instead of the SAFE screen.
+* New status message: "RX signal was lost" will be displayed on the SAFE screen if an RX output failure occurred during flight. This will also trigger the Lost Model Alarm.
+* Added a second screen to Gimbal Settings. The gimbal home position parameters are set from this new screen and they are now available even in Standard RX mode.
+* ESC calibration now has more on-screen (usage) information.
+* When roll and pitch are linked only one set of PI parameters are displayed for "Ail+Ele".
+* Battery voltage reading optimized (shaving off almost 0.1 ms) as suggested by Steveis (Thanks).
+* Code optimization (reduced code size).
+* Removed code for "hidden" button (PREV) on the Show Motor Layout screen.
+* Bug fixed: Button(s) held down during start-up will no longer trigger the menu or change user profile.
+* Bug fixed: Failsafe beep issue corrected in S.Bus mode.
+* Bug fixed: Start-up delay caused problems for satellite binding.
+* Bug fixed: Status message priority corrected for "Satellite protocol error" and "No Satellite input".
+* Bug fixed: Remote tuning parameters are now loaded from EEPROM when the Remote Tuning screen is accessed.
+
+
+Revision 2:
+-----------
+
+* Motors and ESCs can easily be checked for correct wiring by running the new 'Check Motor Outputs' feature where the motors will run for one second sequentially.
+* Stand-alone Gimbal Controller mode added. In this mode arming is disabled and the SAFE screen will be static (with less details) to avoid PWM output interruptions.
+* Sub-menu 'Extra Features' was added to contain the two new features above.
+* Sub-menu 'Advanced Settings' was added and a few menu items from the main menu were moved here (i.e. Channel Mapping, Sensor Settings and Mixer Editor).
+* Serious RX signal problems will be logged to EEPROM and displayed when disarmed or after a reboot. Hold down button #4 during startup to change the log setting.
+* A 'dead zone' can now be set for aileron, elevator and yaw input channels.
+* Resetting user profile #1 will now also reset a few system parameters: Default User Profile, LCD Contrast and RX Mode. Restart will therefore be enforced.
+* The beep that was produced every time the AUX switch changed position will now be skipped if the flight mode stays unchanged.
+* Increased the timeout limit for CPPM, S.Bus and Satellite input signals to make the controller less sensitive to RX signal drop-outs.
+* Code optimizations.
+* Height dampening feature removed.
+* Bug fixed: Beeps will now be produced for buttons pushed at the Trim Battery Voltage screen.
+* Bug fixed: Gimbal mixing type wasn't loaded from EEPROM on the Gimbal Settings screen.
+* Bug fixed: Satellite protocol detection prevented DSMX mode from working. Thanks to Helinor for helping out with debugging and testing.
+* Bug fixed: Re-mapping the throttle channel in S.Bus mode resulted in bad input values.

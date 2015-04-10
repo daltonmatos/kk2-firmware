@@ -1,9 +1,12 @@
 
 
 
-RemoteTuning:
+RemoteTuningDlg:
 
-	rcall LoadTuningRate
+	call LoadParameterTable			;load PI gains from EEPROM
+	call LoadSelfLevelSettings		;load SL P-gain and ACC trim settings from EEPROM
+	call LoadGimbalSettings			;load gimbal gains from EEPROM
+	rcall LoadTuningRate			;load tuning rate from EEPROM
 
 	rcall CheckTuningMode			;set TuningMode to 1 (Aileron) if it currently is set to 2 (Elevator) with roll/pitch linked
 
@@ -24,60 +27,61 @@ tun11:	lds t, TuningMode			;is tuning mode active?
 	tst t
 	brne tun13
 
-	call ScaleAuxInputValues
+	call ScaleAuxInputValues		;will display scaled RX values for aux2 and aux3 as default
 
-tun13:	b16mul Tuned6, RxAux2, TuningRateValue	;will display scaled RX values for channel 6 and 7 as default
+tun13:	b16mul Tuned6, RxAux2, TuningRateValue
 	b16mul Tuned7, RxAux3, TuningRateValue
-	rcall Tuning
+	rcall RemoteTuning
 
 	call LcdClear6x8
 
 	ldz tun1*2				;tuning mode
 	call PrintString
 
-	lds t, TuningMode			;off, aileron, elevator, rudder, SL gain, ACC trim or gimbal gains
-	ldz tunmode*2
+	lds t, TuningMode
+	tst t
+	breq tun14
+
+	cpi t, 3
+	brge tun14
+
+	lds xl, flagRollPitchLink
+	tst xl
+	breq tun14
+
+	ldz ailele*2				;aileron and elevator linked
+	call PrintString
+	rjmp tun15
+
+tun14:	ldz tunmode*2				;off, aileron, elevator, rudder, SL gain, ACC trim or gimbal gains
 	call PrintFromStringArray
 
-tun20:	lrv X1, 0				;channel 6 label
+tun15:	lrv X1, 0				;aux2 label
 	lrv Y1, 10
 	lds t, TuningMode
-	ldz ch6lbl*2
+	ldz aux2lbl*2
 	call PrintFromStringArray
+	ldz aux2*2
 	b16load Tuned6
- 	call Print16Signed
+	rcall PrintTuningValue
 
-	lrv X1, 0				;channel 7 label
-	lrv Y1, 19
-	lds t, TuningMode
-	ldz ch7lbl*2
+	lds t, TuningMode			;aux3 label
+	ldz aux3lbl*2
 	call PrintFromStringArray
+	ldz aux3*2
 	b16load Tuned7
- 	call Print16Signed
+	rcall PrintTuningValue
 
-	lrv X1, 0				;input rate
-	lrv Y1, 28
-	ldz tun4*2
+	ldz tun4*2				;input rate
 	call PrintString
 	lds t, TuningRate
 	ldz lmh*2
 	call PrintFromStringArray
 
-	lds t, TuningMode			;linked with elevator
-	cpi t, 1
-	brne tun29
-
-	rvbrflagfalse flagRollPitchLink, tun29
-
-	lrv X1, 0
-	lrv Y1, 41
-	ldz tun5*2
-	call PrintString
-
-tun29:	;footer
+	;footer
 	lrv X1, 0
 	lrv Y1, 57
-	ldz tunrate*2
+	ldz tunefn*2
 	call PrintString
 
 	;print banner
@@ -142,27 +146,19 @@ tun30:	sts TuningMode, t
 
 
 tun1:	.db "Tuning Mode: ", 0
-tun4:	.db "Input rate : ", 0
-tun5:	.db "Linked with elevator.", 0
+tun4:	.db "Input Rate : ", 0
 
 tun7:	.db 76, 0, 127, 9
 
-chan6:	.db "Channel 6  : ", 0
-chan7:	.db "Channel 7  : ", 0
-pgain6:	.db "P Gain/Ch.6: ", 0
-igain7:	.db "I Gain/Ch.7: ", 0
-rgain7:	.db "R Gain/Ch.7: ", 0
-ptrim6:	.db "P Trim/Ch.6: ", 0
-rtrim7:	.db "R Trim/Ch.7: ", 0
+test:	.db "Test", 0, 0
+aux2:	.db "Aux2", 0, 0
+aux3:	.db "Aux3", 0, 0
+rgain:	.db "R Gain", 0, 0
+ptrim:	.db "P Trim", 0, 0
+rtrim:	.db "R Trim", 0, 0
 
-ch6lbl:	.dw chan6*2, pgain6*2, pgain6*2, pgain6*2, pgain6*2, ptrim6*2, pgain6*2
-ch7lbl:	.dw chan7*2, igain7*2, igain7*2, igain7*2, chan7*2, rtrim7*2, rgain7*2
-
-rate1:	.db "LOW", 0
-rate2:	.db "MEDIUM", 0, 0
-rate3:	.db "HIGH", 0, 0
-
-lmh:	.dw null*2, rate1*2, rate2*2, rate3*2
+aux2lbl:.dw test*2, pgain*2, pgain*2, pgain*2, pgain*2, ptrim*2, pgain*2
+aux3lbl:.dw test*2, igain*2, igain*2, igain*2, null*2, rtrim*2, rgain*2
 
 pst2:	.db "NOT", 0
 
@@ -172,7 +168,8 @@ pst4:	.db "tuning controls now.", 0, 0
 pst5:	.db "A Tuning Mode must be", 0
 pst6:	.db "selected first.", 0
 
-pst10:	.dw pst3*2, pst4*2, pst5*2, pst6*2
+pst9:	.dw pst3*2, pst4*2
+pst10:	.dw pst5*2, pst6*2
 
 sir1:	.db "SET INPUT RATE", 0, 0
 sir2:	.db "Select input rate for", 0
@@ -180,8 +177,29 @@ sir3:	.db "all tuning modes. Use", 0
 sir4:	.db "LOW for fine-tuning.", 0, 0
 sir6:	.db "BACK  LOW MEDIUM HIGH", 0
 
-sir8:	.dw sir1*2, sir2*2, sir3*2, sir4*2
+sir8:	.dw sir2*2, sir3*2, sir4*2
 
+
+
+	;--- Print tuning label, colon and value ---
+
+PrintTuningValue:
+
+	lds t, X1				;skip this line if no initial text (i.e. null) was printed
+	tst t
+	brne ptv1
+
+	ret
+
+ptv1:	ldi t, '/'
+	call PrintChar
+
+	call PrintString			;register Z (input parameter) points to the label
+	lrv X1, 66
+	call PrintColonAndSpace
+ 	call PrintNumberLF			;register X (input parameter) holds the value
+	lrv X1, 0
+	ret
 
 
 
@@ -191,25 +209,14 @@ SetInputRate:
 
 sir10:	call LcdClear6x8
 
-	lrv X1, 22				;print header and three more lines of text
-	clr t
+	lrv X1, 22				;print header
+	ldz sir1*2
+	call PrintString
 
-sir11:	ldz sir8*2
-	push t
-	call PrintFromStringArray
-	lrv X1, 0
-	rvadd Y1, 9
-	pop t
-	tst t
-	brne sir12
-
-	lrv Y1, 13				;use extra distance between the header and the first text line
-	ldi t, 1
-	rjmp sir11
-
-sir12:	inc t
-	cpi t, 4
-	brne sir11
+	lrv Y1, 13				;print instructions
+	ldi t, 3
+	ldz sir8*2
+	call PrintStringArray
 
 	;footer
 	lrv X1, 0
@@ -301,30 +308,16 @@ ShowSavedStatus:
 
 ps2:	lrv X1, 34				;print "SAVED"
 ps4:	ldz saved*2
-	call PrintString
+	call PrintHeader
 
-	lrv FontSelector, f6x8
-
-	ldi xh, 2				;print two lines of text selected by the input parameter (XL)
-	lrv X1, 0
-	lrv Y1, 17
-	clr t					;t=0 will print "Please center your TX tuning controls now."
-	tst xl
+	ldz pst9*2				;print two lines of text selected by the input parameter (XL)
+	tst xl					;XL>0 will print "Please center your TX tuning controls now."
 	brne ps3
 
-	ldi t, 2				;t=2 will print "A Tuning Mode must be selected first."
+	ldz pst10*2				;XL=0 will print "A Tuning Mode must be selected first."
 
-ps3:	push xh
-	push t
-	ldz pst10*2
-	call PrintFromStringArray
-	lrv X1, 0
-	rvadd Y1, 9
-	pop t
-	inc t
-	pop xh
-	dec xh
-	brne ps3
+ps3:	ldi t, 2
+	call PrintStringArray
 
 	;footer
 	call PrintOkFooter
@@ -363,15 +356,13 @@ sav1:	b16load Tuned6
 	b16load Tuned7
 	b16store IGainRollOrg
 	rcall SaveParameter
-	rvbrflagtrue flagRollPitchLink, sav6	;aileron and elevator settings linked?
 	ret
 
 sav2:	cpi t, 2
 	brne sav3
 
-sav6:	ldi t, 1				;elevator axis
+	ldi t, 1				;elevator axis
 	clr yl					;P-Gain parameter index
-	b16load Tuned6
 	b16store PGainPitchOrg
 	rcall SaveParameter
 	ldi t, 1
@@ -451,13 +442,14 @@ SaveParameter:
 
 
 
-	;--- Tuning (will run while armed also) ---
+	;--- Remote tuning (will run while armed also) ---
 
-Tuning:
+RemoteTuning:
 
 	lds t, TuningMode			;is tuning mode active?
 	tst t
 	brne tun50
+
 	ret					;no, abort
 
 tun50:	call ScaleAuxInputValues
@@ -475,6 +467,7 @@ tun50:	call ScaleAuxInputValues
 	b16mov PGainRoll, Tuned6
 	b16mov IGainRoll, Temp
 	rvbrflagtrue flagRollPitchLink, tun55	;aileron and elevator settings linked?
+
 	ret
 
 tun51:	cpi t, 2
@@ -484,6 +477,7 @@ tun51:	cpi t, 2
 	b16mov Temp, IGainPitchOrg
 	rcall AddRxOffset
 	call TempDiv16				;Temp = Tuned7 / 16
+
 tun55:	b16mov PGainPitch, Tuned6
 	b16mov IGainPitch, Temp
 	ret
@@ -536,16 +530,16 @@ tun57:	b16add Tuned7, CamRollGainOrg, RxAux3	;gimbal gains (can be negative)
 AddRxOffset:
 
 	b16add Tuned6, Temper, RxAux2
-	brge tp1
+	brge aro1
 
 	b16clr Tuned6				;cannot use negative values
 
-tp1:	b16add Tuned7, Temp, RxAux3
-	brge tp2
+aro1:	b16add Tuned7, Temp, RxAux3
+	brge aro2
 
 	b16clr Tuned7				;cannot use negative values
 
-tp2:	b16mov Temp, Tuned7
+aro2:	b16mov Temp, Tuned7
 	ret
 
 

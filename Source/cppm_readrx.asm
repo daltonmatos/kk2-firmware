@@ -5,7 +5,7 @@
 
 IsrCppm:
 
-;	in SregSaver, sreg		;see isr.asm
+;	in SregSaver, sreg		;see readrx.asm
 
 	push xl
 	push xh
@@ -32,7 +32,7 @@ cppm8:	ldz 6250			;pulse longer than 2.5ms?
 	cpc xh, zh
 	brlo cppm11
 
-	ldz CppmChannel1L		;yes, reset cppm sequence
+	ldz Channel1L			;yes, reset cppm sequence
 
 	lds tt, CppmDetectionCounter	;detect CPPM pulse train after start-up or after a timeout
 	dec tt
@@ -51,19 +51,19 @@ cppm11:	lds zl, CppmPulseArrayAddressL	;store channel in channel array.
 	st z+, xl
 	st z+, xh
 
-	ldx CppmChannel9L		;end of array reached?
+	ldx Channel9L			;end of array reached?
 	cp  zl, xl
 	cpc zh, xh
 	brlo cppm10
 	breq cppm10
 
-	ldz CppmChannel9L		;yes, limit
+	ldz Channel9L			;yes, limit
 
 cppm10:	sts CppmPulseArrayAddressL, zl	;store array pointer
 	sts CppmPulseArrayAddressH, zh
 
 	clr tt				;reset timeout counter
-	sts CppmTimeoutCounter, tt
+	sts TimeoutCounter, tt
 
 	pop zh
 	pop zl
@@ -79,28 +79,33 @@ cppm10:	sts CppmPulseArrayAddressL, zl	;store array pointer
 
 GetCppmChannels:
 
+
 	;--- Roll ---
 
-	ldz eeCppmRoll
-	rcall GetCppmChannel
+	lds r0, MappedChannel1		;get roll channel value
+	call GetSafeChannelValue
 	call Sanitize
+	call DeadZone
+
 	clr yh				;store in register
 	b16store RxRoll
 
 	
 	;--- Pitch ---
 
-	ldz eeCppmPitch
-	rcall GetCppmChannel
+	lds r0, MappedChannel2		;get pitch channel value
+	call GetSafeChannelValue
 	call Sanitize
+	call DeadZone
+
 	clr yh				;store in register
 	b16store RxPitch
 
 
 	;--- Throttle ---
 
-	ldz eeCppmThrottle
-	rcall GetCppmChannel
+	lds r0, MappedChannel3		;get throttle channel value
+	call GetSafeChannelValue
 
 	rvsetflagfalse flagThrottleZero
 
@@ -131,44 +136,46 @@ gcc2:	clr yh				;store in register
 
 	;--- Yaw ---
 
-	ldz eeCppmYaw
-	rcall GetCppmChannel
+	lds r0, MappedChannel4		;get yaw channel value
+	call GetSafeChannelValue
 	call Sanitize
+	call DeadZone
+
 	clr yh				;store in register
 	b16store RxYaw
 
 	
 	;--- AUX ---
 
-	ldz eeCppmAux
-	rcall GetCppmChannel
+	lds r0, MappedChannel5		;get aux channel value
+	call GetSafeChannelValue
 	call Sanitize
 
-	clr yl				;detect AUX switch position
+	clr yl				;AUX switch position #1
 	ldz -600
 	cp  xl, zl
 	cpc xh, zh
-	brlt gcc35			;AUX switch is in position #1
+	brlt gcc35
 
-	inc yl
+	inc yl				;AUX switch position #2
 	ldz -200
 	cp  xl, zl
 	cpc xh, zh
-	brlt gcc35			;AUX switch is in position #2
+	brlt gcc35
 
-	inc yl
+	inc yl				;AUX switch position #3
 	ldz 200
 	cp  xl, zl
 	cpc xh, zh
-	brlt gcc35			;AUX switch is in position #3
+	brlt gcc35
 
-	inc yl
+	inc yl				;AUX switch position #4
 	ldz 600
 	cp  xl, zl
 	cpc xh, zh
-	brlt gcc35			;AUX switch is in position #4
+	brlt gcc35
 
-	inc yl				;AUX switch is in position #5
+	inc yl				;AUX switch position #5
 
 gcc35:	sts AuxSwitchPosition, yl
 
@@ -178,11 +185,8 @@ gcc35:	sts AuxSwitchPosition, yl
 
 	;--- AUX2 ---
 
-	ldz CppmChannel6L
-	cli
-	ld xl, z+
-	ld xh, z
-	sei
+	lds r0, MappedChannel6		;get aux2 channel value
+	call GetSafeChannelValue
 	call Sanitize
 
 	clr yh				;store in register
@@ -191,11 +195,8 @@ gcc35:	sts AuxSwitchPosition, yl
 
 	;--- AUX3 ---
 
-	ldz CppmChannel7L
-	cli
-	ld xl, z+
-	ld xh, z
-	sei
+	lds r0, MappedChannel7		;get aux3 channel value
+	call GetSafeChannelValue
 	call Sanitize
 
 	clr yh				;store in register
@@ -204,26 +205,23 @@ gcc35:	sts AuxSwitchPosition, yl
 
 	;--- AUX4 ---
 
-	ldz CppmChannel8L
-	cli
-	ld xl, z+
-	ld xh, z
-	sei
+	lds r0, MappedChannel8		;get aux4 channel value
+	call GetSafeChannelValue
 	call Sanitize
 
-	clr yl				;detect AUX4 switch position
+	clr yl				;AUX4 switch position #1
 	ldz -400
 	cp  xl, zl
 	cpc xh, zh
-	brlt gcc38			;AUX4 switch is in position #1
+	brlt gcc38
 
-	inc yl
+	inc yl				;AUX4 switch position #2
 	ldz 400
 	cp  xl, zl
 	cpc xh, zh
-	brlt gcc38			;AUX4 switch is in position #2
+	brlt gcc38
 
-	inc yl				;AUX4 switch is in position #3
+	inc yl				;AUX4 switch position #3
 
 gcc38:	sts Aux4SwitchPosition, yl
 
@@ -236,47 +234,21 @@ gcc38:	sts Aux4SwitchPosition, yl
 	rvbrflagfalse RxFrameValid, gcc24
 	rjmp gcc22
 
-gcc23:	ret
+gcc23:	sts TimeoutCounter, t
+	ret
 
-gcc22:	rvinc CppmTimeoutCounter	;CPPM timeout?
-	rvcp CppmTimeoutCounter, CppmTimeoutLimit
+gcc22:	lds t, TimeoutCounter		;timeout?
+	inc t
+	cpi t, TimeoutLimit
 	brlo gcc23
 
-	lrv CppmDetectionCounter, CppmDetectionCount
+	lrv CppmDetectionCounter, CppmDetectionCount	;yes
+	rvbrflagfalse flagArmed, gcc24
 
-	clr t				;select AUX switch function #1
-	sts AuxSwitchPosition, t
-	ser t				;make sure the AUX switch function will be updated
-	sts AuxSwitchPositionOld, t
+	setstatusbit RxSignalLost	;set status bit for "Signal Lost" and activate the Lost Model alarm only when armed
+	rvsetflagtrue flagAlarmOverride
 
-gcc24:	rvsetflagfalse RxFrameValid	;set flag to false and values to zero
-	b16clr RxRoll
-	b16set RxPitch
-	b16set RxThrottle
-	b16set RxYaw
-	b16set RxAux
-	b16set RxAux2
-	b16set RxAux3
-	b16set RxAux4
-	rvsetflagtrue flagThrottleZero
-	ret
-
-
-
-	;---
-
-GetCppmChannel:
-
-	call ReadEepromP
-	dec t
-	mov r0, t
-	ldzarray CppmChannel1L, 2, r0
-	cli
-	ld xl, z+
-	ld xh, z
-	sei
-
-	ret
+gcc24:	jmp ClearInputChannels		;will tag the received frame as invalid and clear all input channels
 
 
 

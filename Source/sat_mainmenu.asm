@@ -17,7 +17,7 @@ sam23:	ldy sam1 * 2
 	brcs sam22		;BACK pressed?
 	ret			;Yes, return
 	
-sam22:	lsl xl			;No, calculate index    Z = *mem18 * 2 + xl * 2
+sam22:	lsl xl			;No, calculate index    Z = *sam18 * 2 + xl * 2
 	ldz sam18 * 2
 	add zl, xl
 	clr t
@@ -35,9 +35,7 @@ sam22:	lsl xl			;No, calculate index    Z = *mem18 * 2 + xl * 2
 	call LcdClear		;blank screen
 	call LcdUpdate	
 
-sam20:	call GetButtons		;wait until buttons relesed
-	cpi t, 0
-	brne sam20	
+	call ReleaseButtons
 	
 	jmp sam23
 
@@ -51,34 +49,34 @@ sam1:	.db "Remote Tuning       "
 	.db "Mode Settings       "
 	.db "Misc. Settings      "
 	.db "Gimbal Settings     "
-	.db "Sensor Settings     "
+	.db "Advanced Settings   "
 	.db "AUX Switch Setup    "
 	.db "Initial Setup       "
 	.db "Receiver Test       "
 	.db "Sensor Test         "
-	.db "Mixer Editor        "
 	.db "Show Motor Layout   "
 	.db "User Profile        "
+	.db "Extra Features      "
 	.db "ESC Calibration     "
 	.db "Version Information "
 	.db "LCD Contrast        "
 
 
-sam18:	.dw RemoteTuning
+sam18:	.dw RemoteTuningDlg
 	.dw PiEditor
 	.dw SelflevelSettings
 	.dw StickScaling
 	.dw ModeSettings
 	.dw MiscSettings
-	.dw SatGimbalSettings
-	.dw SensorSettings
+	.dw GimbalSettings
+	.dw AdvancedSettings
 	.dw AuxSwitchSetup
 	.dw InitialSetup
-	.dw SatRxTest
+	.dw SerialRxTest
 	.dw SensorTest
-	.dw MixerEditor
 	.dw MotorLayout
 	.dw UserProfileSetup
+	.dw ExtraFeatures
 	.dw EscCalWarning
 	.dw ShowVersion
 	.dw Contrast

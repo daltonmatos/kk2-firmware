@@ -9,10 +9,7 @@ SatelliteMain:
 
 	;--- Initialize LCD ---
 
-	ldz eeLcdContrast
-	call ReadEeprom
-	sts LcdContrast, t
-
+	call LoadLcdContrast
 	call LcdUpdate
 	call LcdClear
 	call LcdUpdate
@@ -30,20 +27,35 @@ SatelliteMain:
 
 	b16ldi BatteryVoltageLogged, 1023
 
+	b16ldi FlightTimer, 398		;tuned for better accuracy (1 second)
+
 	clr t
+	sts Timer1sec, t
+	sts Timer1min, t
+
 	sts TuningMode, t
 
 	sts flagPwmGen, t
+
+	sts flagErrorLogSetup, t
 
 	sts FlashingLEDCounter, t
 
 	ldi xl, AuxCounterInit
 	sts AuxCounter, xl
-	sts AuxSwitchPosition, t
+	ldi xl, 2
+	sts AuxSwitchPosition, xl
 	ldi xl, 1
 	sts Aux4SwitchPosition, xl
+	sts AuxFunctionOld, xl
+
+	ldi xl, 16
+	sts RxFrameLength, xl
 
 	sts RxFrameValid, t
+	sts TimeoutCounter, t
+
+	sts Channel17, t		;Channel17 (used in S.Bus mode) must be cleared to avoid problems with the "Alarm" indicator
 
 	sts RxBufferIndex, t
 	sts RxBufferIndexOld, t
@@ -52,8 +64,6 @@ SatelliteMain:
 	ldz RxBuffer0
 	sts RxBufferAddressL, zl
 	sts RxBufferAddressH, zh
-	ser t
-	sts RxBufferState, t
 
 	ldi t, NoSatelliteInput
 	sts StatusBits, t
@@ -65,7 +75,15 @@ SatelliteMain:
 	call SatUsartInit
 
 
-	;--- ESC calibration ----
+	;--- Gimbal controller mode ---
+
+	call GetGimbalControllerMode
+	rvbrflagfalse flagGimbalMode, am10
+
+	jmp GimbalMain
+
+
+am10:	;--- ESC calibration ----
 
 	sei				;global interrupts must be enabled here for PWM output in EscThrottleCalibration
 
@@ -81,33 +99,46 @@ SatelliteMain:
 	load t, pinb			;read buttons. Will not use 'GetButtons' here because of delay
 	com t
 	swap t
-	andi t, 0x0f			;any button pressed?
+	andi t, 0x0F			;any button pressed?
 	breq am2
 
-	call FlightInit			;some variables must be initialized prior to ESC calibration
-	call EscThrottleCalibration
+	call EscThrottleCalibration	;yes, do calibration
 	rjmp am2
 
 
+	;--- Misc. ---
 
-	;--- Reset LCD contrast if button #1 is held down ---
+am5:	rvsetflagtrue Mode		;will prevent buttons held down during start-up from opening the menu or changing user profile
 
-am5:	call GetButtons
+
+	;--- Reset LCD contrast when button #1 is held down ---
+
+	call GetButtons
 	cpi t, 0x08
-	brne am2
+	brne am15
 
 	call SetDefaultLcdContrast
 
+
+	;--- Display the Error Log setup screen when button #4 is held down ---
+
+am15:	cpi t, 0x01
+	brne am2
+
+	rvsetflagtrue flagErrorLogSetup
 
 
 	;--- Flight loop init ---
 
 am2:	call FlightInit
 
+	lds t, StatusBits		;clear the SatProtocolError flag
+	cbr t, SatProtocolError
+	sts StatusBits, t
+
 	;       76543210		;clear pending OCR1A and B interrupt
 	ldi t,0b00000110
 	store tifr1, t
-
 
 
 	;--- Flight loop ---
@@ -117,9 +148,8 @@ am1:	call PwmStart			;runtime between PwmStart and B interrupt (in PwmEnd) must 
 	call CheckSatRx
 	call Arming
 	call Logic
-	call Tuning
+	call RemoteTuning
 	call Imu
-	call HeightDampening
 	call Mixer
 	call GimbalStab
 	call Beeper
@@ -145,10 +175,12 @@ am3:	rvbrflagfalse flagArmed, am7	;skip buttonreading if armed
 am7:	load t, pinb			;read buttons
 	com t
 	swap t
-	andi t, 0x07			;PROFILE or MENU?
+	andi t, 0x0F			;any button pushed?
 	brne am4
-	
-am8:	lrv ButtonDelay, 0		;no, reset ButtonDelay, and go to start of the loop
+
+	rvsetflagfalse Mode		;no, reset Mode and ButtonDelay, and then go to start of the loop
+
+am8:	lrv ButtonDelay, 0
 	rjmp am1	
 
 am4:	rvinc ButtonDelay		;yes, ButtonDelay++
@@ -156,16 +188,21 @@ am4:	rvinc ButtonDelay		;yes, ButtonDelay++
 	breq am6			;yes, re-check button
 	rjmp am1			;no, go to start of the loop	
 
-am6:;	         76543210		;disable OCR1A and B interrupt
+am6:	rvbrflagtrue Mode, am8		;abort if the button hasn't been released since start-up
+
+;	         76543210		;disable OCR1A and B interrupt
 	ldi t, 0b00000000
 	store timsk1, t
 
 	call GetButtons			;re-check the button and abort if it was released too soon
-	andi t, 0x07
+	andi t, 0x0F
 	breq am8
 
 	cpi t, 0x01
 	breq am9
+
+	cpi t, 0x08
+	breq am13
 
 
 	;--- User profile ---
@@ -174,9 +211,22 @@ am6:;	         76543210		;disable OCR1A and B interrupt
 	rjmp am2
 
 
-am9:	;--- Menu ---
+am9:	;--- Error log ---
 
 	call Beep
+	call ClearLoggedError		;clear logged error when the ERROR LOG screen is displayed
+	brcc am12
+
+am14:	rvsetflagtrue Mode		;will wait for the button to be released
+	rjmp am2
+
+am13:	call Beep
+	call ToggleErrorLogState	;toggle error logging state when the setup screen is displayed
+	rjmp am14
+
+
+am12:	;--- Menu ---
+
 	BuzzerOff			;will prevent constant beeping in menu when 'Button Beep' is disabled
 	call StartLedSeq		;the LED flashing sequence will indicate current user profile selection
 	call StartPwmQuiet

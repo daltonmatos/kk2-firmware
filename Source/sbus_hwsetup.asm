@@ -5,12 +5,11 @@ SetupHardwareForSBus:
 //	ldi t,0b00000000
 	ldi t,0b00110010	// output5, output6
 	out ddra,t
-	
+
 	;       76543210
-//	ldi t,0b00001010
-	ldi t,0b00001011	// DEBUGGING
+	ldi t,0b00001111
 	out ddrb,t
-	
+
 	;       76543210
 //	ldi t,0b11111111
 	ldi t,0b11111100	// scl, sda, output 1-8
@@ -51,32 +50,32 @@ SetupHardwareForSBus:
 
 	;--- Setup USART0 for S.Bus communication ---
 
-usart1:	load t, ucsr1a		;make sure USART RX buffer is empty
+usart1:	load t, ucsr0a		;make sure USART RX buffer is empty
 	andi t, 0x80
 	breq usart2
 
-	load t, udr1
+	load t, udr0
 	rjmp usart1
 
 usart2:	ldi t, 0x02		;set the 2x flag (U2X0)
-	store ucsr1a, t
+	store ucsr0a, t
 
 	clr t			;set baud rate registers for 100k baud. Baud = 20000000 / ( 8 * (UBRRn + 1))	Where U2X0 = 1
-	store ubrr1h, t
+	store ubrr0h, t
 
 	ldi t, 0x18		;UBRRn = (fOSC / (8 * BAUD)) - 1 = (20000000 / 800000) - 1 = 24
-	store ubrr1l, t
+	store ubrr0l, t
 
 	ldi t, 0x10		;enable receiver (RXEN0)
-	store ucsr1b, t
+	store ucsr0b, t
 
 	;       76543210
 	ldi t,0b00101110	;use asynchronous mode and 8E2 communication
-	store ucsr1c, t
+	store ucsr0c, t
 
-	load t, ucsr1b		;enable USART RX Complete Interrupt (RXCIE0)
+	load t, ucsr0b		;enable USART RX Complete Interrupt (RXCIE0)
 	ori t, 0x80
-	store ucsr1b, t
+	store ucsr0b, t
 
 
 

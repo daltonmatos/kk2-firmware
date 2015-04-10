@@ -5,22 +5,17 @@ ShowVersion:
 
 	lrv X1, 22				;Header
 	ldz ver1*2
-	call PrintString
+	call PrintHeader
 
-	lrv FontSelector, f6x8
+	ldi t, 4				;print version information
+	ldz ver10*2
+	call PrintStringArray
 
-	lrv X1, 10				;print version information
-	lrv Y1, 20
-	ldz ver2*2
-	call PrintString
-
-	lrv X1, 0
-	rvadd Y1, 9
-	ldz ver3*2
-	call PrintString
-
-	lrv Y1, 43
-	call PrintMotto
+	lrv X1, 36				;print RX mode
+	lrv Y1, 26
+	lds t, RxMode
+	ldz modes*2
+	call PrintFromStringArray
 
 	;footer
 	call PrintBackFooter
@@ -35,6 +30,6 @@ ver12:	call GetButtonsBlocking
 	
 
 ver1:	.db "VERSION", 0
-ver2:	.db "KK2.1++ All-in-One", 0, 0
-ver3:	.db "for KK2.1 and KK2.1.5", 0
+ver2:	.db "KK2.1++ All-in-One R2", 0
 
+ver10:	.dw ver2*2, srm2*2, null*2, motto*2

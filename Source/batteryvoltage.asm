@@ -9,11 +9,13 @@ AdjustBatteryVoltage:
 	tst t
 	breq abv11
 
-	ldi t, 2
+	ldz nadtxt2*2
 	call ShowNoAccessDlg
 	ret
 
-abv11:	call ReadBatteryVoltage
+abv11:	push Item
+	call ReadBatteryVoltage
+	pop Item
 	b16mov Temper, BatteryVoltage
 
 	call LcdClear12x16
@@ -31,19 +33,10 @@ abv15:	push Item
 
 	lrv FontSelector, f6x8
 
-	lrv X1, 0			;print menu
-	lrv Y1, 17
-	clr t
-
-abv16:	push t
+	lrv Y1, 17			;print menu
+	ldi t, 4
 	ldz abv8*2
-	call PrintFromStringArray
-	lrv X1, 0
-	rvadd Y1, 9
-	pop t
-	inc t
-	cpi t, 4
-	brne abv16
+	call PrintStringArray
 
 	;footer
 	call PrintSelectFooter
@@ -57,6 +50,12 @@ abv16:	push t
 	call RxPollDelay
 
 	call GetButtons
+	tst t
+	brne abv19
+
+	rjmp abv11			;no button pushed
+
+abv19:	call Beep
 
 	cpi t, 0x08			;BACK?
 	brne abv20
@@ -123,7 +122,7 @@ abv33:	b16mov Temp, BatteryVoltage	;modify voltage
 	b16add BatteryVoltageOffset, BatteryVoltageOffset, Temp
 	b16load BatteryVoltageOffset
 
-abv34:	ldz eeBatteryVoltageOffset	;save in EEPROM
+abv34:	ldz eeBatteryVoltageOffset	;save in EEPROM for profile #1 only
 	call StoreEeVariable16
 	rjmp abv24
 
@@ -158,7 +157,7 @@ svo8:	.dw svo1*2, svo2*2, svo3*2, svo4*2
 LoadBatteryVoltageOffset:
 
 	ldz eeBatteryVoltageOffset
-	call GetEeVariable16
+	call GetEeVariable16		;load from profile #1 only
 	clr yh
 	b16store BatteryVoltageOffset
 	ret
@@ -173,29 +172,18 @@ SaveBatteryVoltageOffset:
 	clr yh
 	b16store BatteryVoltageOffset
 
-	ldz eeBatteryVoltageOffset	;store in EEPROM
+	ldz eeBatteryVoltageOffset	;store in EEPROM for profile #1 only
 	call StoreEeVariable16
 
 	call LcdClear12x16		;show confirmation dialogue
 
 	lrv X1, 34			;header
 	ldz saved*2
-	call PrintString
+	call PrintHeader
 
-	lrv X1, 0			;print information
-	lrv Y1, 17
-	lrv FontSelector, f6x8
-	clr t
-
-svo11:	push t
+	ldi t, 4			;print information
 	ldz svo8*2
-	call PrintFromStringArray
-	lrv X1, 0
-	rvadd Y1, 9
-	pop t
-	inc t
-	cpi t, 4
-	brne svo11
+	call PrintStringArray
 
 	;footer
 	call PrintOkFooter
@@ -217,6 +205,6 @@ ResetBatteryVoltageOffset:
 
 	ldx 2				;offset for KK2.1.5 = 2
 	ldz eeBatteryVoltageOffset
-	call StoreEeVariable16
+	call StoreEeVariable16		;save in profile #1 only
 	ret
 

@@ -17,7 +17,7 @@ men23:	ldy men1 * 2
 	brcs men22		;BACK pressed?
 	ret			;Yes, return
 	
-men22:	lsl xl			;No, calculate index    Z = *mem18 * 2 + xl * 2
+men22:	lsl xl			;No, calculate index    Z = *men18 * 2 + xl * 2
 	ldz men18 * 2
 	add zl, xl
 	clr t
@@ -49,14 +49,14 @@ men1:	.db "Quick Tuning        "
 	.db "Mode Settings       "
 	.db "Misc. Settings      "
 	.db "Gimbal Settings     "
-	.db "Sensor Settings     "
+	.db "Advanced Settings   "
 	.db "AUX Switch Setup    "
 	.db "Initial Setup       "
 	.db "Receiver Test       "
 	.db "Sensor Test         "
-	.db "Mixer Editor        "
 	.db "Show Motor Layout   "
 	.db "User Profile        "
+	.db "Extra Features      "
 	.db "ESC Calibration     "
 	.db "Version Information "
 	.db "LCD Contrast        "
@@ -68,15 +68,15 @@ men18:	.dw QuickTuning
 	.dw StickScaling
 	.dw ModeSettings
 	.dw MiscSettings
-	.dw CamStabSettings
-	.dw SensorSettings
+	.dw GimbalSettings
+	.dw AdvancedSettings
 	.dw AuxSwitchSetup
 	.dw InitialSetup
 	.dw RxTest
 	.dw SensorTest
-	.dw MixerEditor
 	.dw MotorLayout
 	.dw UserProfileSetup
+	.dw ExtraFeatures
 	.dw EscCalWarning
 	.dw ShowVersion
 	.dw Contrast

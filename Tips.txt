@@ -1,0 +1,64 @@
+Tips 'n' tricks using KK2.1++ All-in-One firmware by RC911
+
+
+Accurate RX input adjustments
+=============================
+The KK2 tuning guides tell you to use sub-trim on your transmitter to make center position show as zero on the KK2 Receiver Test screen. What they don't tell you is that the displayed value is quite inaccurate (zero can mean anything from 0 to 1%) and that can be enough to make your model drift slightly. I therefore recommend that you keep adjusting the sub-trims until you see the text "Center" displayed behind the channel value on the Receiver Test screen (or until the value keeps changing between 0 and -1). Observe that this should be done with the Stick Dead Zone parameter value set to zero.
+The lower throttle endpoint should be adjusted until you see the text "Idle" displayed. Arming will otherwise be refused.
+
+
+Battery voltage offset adjustment
+=================================
+Tired of calibrating the battery voltage offset every time you update the firmware? If so, then you can simply write down the value displayed when selecting "Adjust Offset Value" and put it back in after flashing. 
+
+
+Controlling external hardware from your transmitter
+===================================================
+LED switches, brushless gimbals and other devices that take PWM input can easily be controlled from a traditional receiver (as long as it has spare outputs), but with CPPM, S.Bus and Satellite it is more difficult as you often have just a limited number of PWM outputs (if any at all). In this case the only option for CPPM, S.Bus and Satellite users is to take advantage of the Remote Gimbal Offset feature that usually controls gimbal servos on M7 and M8. If your M7 and M8 outputs are currently unused you can simply set both gimbal gains (see Gimbal Settings) to 1 and assign potentiometers or switches to AUX2 and AUX3 on your transmitter.
+If you use only the M8 output for gimbal pitch with M7 left unused, you can set your gimbal roll gain to 1 and control your device on M7 remotely via AUX3 (default).
+
+
+RX input pin gone bad (only for traditional RX)
+===============================================
+If one of the KK2 RX inputs has stopped working you can use the Channel Mapping feature to assign the AUX input pin to the defective channel. If, for example, your KK2's rudder input has gone bad you can change the channel mapping from 1, 2, 3, 4, 5, 6, 7, 8 (default) to 1, 2, 3, 5, 4, 6, 7, 8. The KK2 AUX input connector pin will then be working as rudder input so this is where you plug in your rudder RX cable now.
+You can of course no longer control flight modes (nor the lost model alarm) from the AUX switch, but you can lock it in one position (e.g. SL Mix) by using the KK2 AUX Switch Setup feature. I recommend setting all five AUX functions to the same value.
+
+
+Using virtual channels
+======================
+Do you have a TX/RX with less than 8 channels, but still want to control features assigned to AUX2, AUX3 or AUX4? Well, by using the Channel Mapping feature you can make it work, but you'll have to sacrifice one of your real channels (e.g. AUX input) to control the other (virtual) channel.
+To control gimbal pitch offset (AUX2) from your existing AUX input channel you would change the channel mapping from 1, 2, 3, 4, 5, 6, 7, 8 (default) to 1, 2, 3, 4, 6, 5, 7, 8. By doing so you can no longer control flight modes (nor the lost model alarm) from your AUX switch, but you can lock it in one position (e.g. Normal SL) by using the KK2 AUX Switch Setup feature. I recommend setting all five AUX switch functions to the same value.
+To control the gimbal HOME and LOCK features (AUX4) from AUX3 in Satellite mode you would change the channel mapping from 2, 3, 1, 4, 5, 6, 7, 8 (default) to 2, 3, 1, 4, 5, 6, 8, 7, but then you can no longer control the gimbal roll offset remotely. If you need to control both gimbal offsets remotely you can instead map AUX to AUX4 (2, 3, 1, 4, 5, 6, 7, 8 to 2, 3, 1, 4, 8, 6, 7, 5).
+
+
+Tuning the static gimbal offset parameters
+==========================================
+The gimbal offset parameters found on the first Gimbal Settings screen are used to add a static offset to gimbal pitch and roll. The following procedure can be used to find good offset values without too much trial and error:
+
+1. On the Gimbal Settings screen set both (static) offset values to zero.
+2. Return to the SAFE screen and use the potentiometers assigned to Aux2 and Aux3 to find the correct gimbal offset position when your model is level.
+3. Go to the second Receiver Test screen to find the RX input values for Aux2 (gimbal pitch) and Aux3 (gimbal roll).
+4. Multiply both values by 10 to find the static gimbal offset values.
+5. Return to the Gimbal Settings screen and input your calculated offset values for pitch and roll.
+6. Center your potentiometers and return to the SAFE screen to verify that the gimbal offset is correct.
+7. Small corrections to the gimbal offset parameter values may be needed, but they will normally fall within the +/-10 range.
+
+PS: If you have only 6 channels available (CPPM, S.Bus or Satellite) you can use the Channel Mapping feature to map AUX to Aux3. For traditional receivers (5 channels) you can do the roll axis first (map AUX to Aux3) and then change the channel mapping to set the pitch offset (map AUX to Aux2).
+
+Observe: It is not recommended to use static gimbal offsets in combination with remote offset control (i.e. potentiometers assigned to AUX2 and AUX3 on your transmitter) as this will prevent you from reaching the opposite endpoint. In this case the offset parameter(s) should be set to zero.
+
+
+Crash investigation
+===================
+Watching your model fall out of the sky for no obvious reason can be very frustrating, but the KK2 LCD can give you a few valuable hints about what went wrong (so don't be in a hurry to disconnect the battery, unless you absolutely have to). I recommend taking pictures of your crashed model (including the LCD) so that you can study them later.
+
+1. Status text: If the status text on the SAFE screen reads something like "RX signal was lost!" or "FAILSAFE!" this means the radio signal reception was interrupted. Avoid flying out of range or in noisy (e.g. WiFi) areas.
+
+2. Battery voltages: If the logged battery voltage (i.e. second value on the "Batt:" line on the SAFE screen) is very low this could mean that one or more ESCs shut down due to low battery voltage or intermittent connection. This won't work unless the the flight battery is connected to the KK2 battery monitor connector (BEWARE! Pay attention to the pin arrangement and battery polarity!). Also remember to set your Low Voltage Alarm.
+
+3. Flight timer: If the timer value in the upper left corner of the SAFE screen reads zero (i.e. 00:00) when you arrive at the crash site then this means that the board was reset due to an intermittent power failure or brown-out, so check your wiring, connectors and BEC/ESCs. Avoid powering servos from the 5V supply used for the KK2 controller (M1 or the receiver side).
+
+
+Using the KK2 Mini with CPPM input
+==================================
+The KK2 Mini board has just a single row of RX input pins where only the throttle input has adjacent power pins. This means that you'll have to modify your RX cable if you want to use this board with my firmware in CPPM mode, otherwise your receiver won't get 5V power. The signal wire (usually the white one) can quite easily be removed by lifting the flip and pulling it out if its connector. You can then place the white wire into an empty servo connector and position it so that it connects to the aileron (CPPM) pin.

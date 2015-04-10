@@ -3,27 +3,30 @@
 
 .def Item = r17
 
+
 SelflevelSettings:
 
+	clr Item
 
 sqz11:	call LcdClear6x8
-	clr t
-	ldz  eeSelflevelPgain
 
-sqz16:	push t				;print text labels and values
-	pushz
+	;labels
+	ldi t, 5
 	ldz sqz6*2
-	call PrintFromStringArray
+	call PrintStringArray
+
+	;values
+	lrv Y1, 1
+	ldz  eeSelflevelPgain
+	ldi t, 5
+
+sqz16:	push t
 	lrv X1, 84
 	call PrintColonAndSpace
-	popz
 	call GetEePVariable16
- 	call Print16Signed
-	lrv X1,0
-	rvadd Y1, 9
+ 	call PrintNumberLF
 	pop t
-	inc t
-	cpi t, 5
+	dec t
 	brne sqz16
 
 	;footer

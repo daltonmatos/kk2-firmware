@@ -6,16 +6,14 @@
 
 Arming:
 
-	rvflagand flagA, flagThrottleZero, flagAutoDisarm	;Auto disarm logic
+	rvflagand flagA, flagThrottleZero, flagAutoDisarm	;auto disarm logic
 	rvflagand flagA, flagA, flagArmed
 	rvbrflagtrue flagA, arm10	
 
-	b16clr AutoDisarmDelay					;if throttle is non zero or autodisarm is off, clear counter
+	b16clr AutoDisarmDelay					;if throttle is non-zero or auto disarm is off, clear counter
 	rjmp arm12
 
-arm10:	rvsetflagfalse flagAlarmOverride			;arming will stop the Lost Model Alarm if overridden
-
-	b16inc AutoDisarmDelay					;if throttle is zero and autodisarm is on, inc counter
+arm10:	b16inc AutoDisarmDelay					;if throttle is zero and autodisarm is on, inc counter
 	b16ldi Temp, 400 * 20
 	b16cmp AutoDisarmDelay, Temp				;counter = 20 sec?
 	brne arm12
@@ -28,17 +26,14 @@ arm10:	rvsetflagfalse flagAlarmOverride			;arming will stop the Lost Model Alarm
 	ldi t, 1						;make sure the 'NoActivityDds' counter will be reset
 	sts AuxBeepDelay, t
 	ret
-arm12:
 
-	;--- 
+arm12:	rvbrflagfalse flagThrottleZero, arm1
 
-	rvbrflagfalse flagThrottleZero, arm1	;Stick:
-
-	b16ldi Temp, -500			;Rudder in Arming position?
+	b16ldi Temp, -500			;rudder in Arming position?
 	b16cmp RxYaw, Temp
 	brlt arm2
 
-	b16ldi Temp, 500			;Rudder in Safe position?
+	b16ldi Temp, 500			;rudder in Safe position?
 	b16cmp RxYaw, Temp
 	brge arm2
 
@@ -58,12 +53,11 @@ arm9:	b16load RxYaw
 
 	lds t, StatusBits			;skip arming if status is not OK.
 	cbr t, LvaWarning			;ignore Low Voltage Alarm warning
-	tst t
 	breq arm5
 
 	ret
 
-arm5:	rvsetflagtrue flagArmed			;Arm
+arm5:	rvsetflagtrue flagArmed			;arm
 	b16ldi BeeperDelay, 300
 	call GyroCal				;calibrate gyros
 	call Initialize3dVector			;set 3d vector to point straigth up
@@ -72,10 +66,12 @@ arm5:	rvsetflagtrue flagArmed			;Arm
 	sts FlashingLEDCount, t
 	rjmp Arm11
 
-arm6:	rvsetflagfalse flagArmed		;Disarm
+arm6:	rvsetflagfalse flagArmed		;disarm
 	b16ldi BeeperDelay, 150
 
-arm11:	ldz eeArmingBeeps			;check beep setting
+arm11:	rvsetflagfalse flagAlarmOverride	;arming/disarming will stop the Lost Model Alarm if overridden
+
+	ldz eeArmingBeeps			;check beep setting
 	call GetEePVariable8
 	brflagfalse xl, arm4
 
@@ -86,6 +82,4 @@ arm4:	rvsetflagtrue flagLcdUpdate
 	b16clr AutoDisarmDelay
 
 arm3:	ret
-
-	;---
 

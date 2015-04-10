@@ -8,7 +8,7 @@ AuxSwitchSetup:
 
 	clr AuxItem
 	clr Changes
-	rcall LoadAuxSwitchSetup
+	rcall LoadAuxSwitchSetup	;load the AUX switch setup in case the user profile was modified (imported or cleared)
 
 aux11:	push AuxItem			;get RX input to update the current AUX switch position
 	push Changes
@@ -47,7 +47,7 @@ aux23:	call PrintChar
 	ldz auxtxt*2
 	call PrintFromStringArray
 	lrv X1, 0
-	rvadd Y1, 9
+	call LineFeed
 	pop t
 	inc t
 	cpi t, 5
@@ -167,7 +167,7 @@ PrintAuxValue:
 	pop t
 	ldz auxfn*2
 	call PrintFromStringArray
-	rvadd Y1, 9
+	call LineFeed
 	ret
 
 
@@ -180,16 +180,16 @@ LoadAuxSwitchSetup:
 	call GetEePVariable8
 	sts AuxPos1Function, xl
 
-	call GetEePVariable8			;eeAuxPos2Function
+	call GetEePVariable8		;eeAuxPos2Function
 	sts AuxPos2Function, xl
 
-	call GetEePVariable8			;eeAuxPos3Function
+	call GetEePVariable8		;eeAuxPos3Function
 	sts AuxPos3Function, xl
 
-	call GetEePVariable8			;eeAuxPos4Function
+	call GetEePVariable8		;eeAuxPos4Function
 	sts AuxPos4Function, xl
 
-	call GetEePVariable8			;eeAuxPos5Function
+	call GetEePVariable8		;eeAuxPos5Function
 	sts AuxPos5Function, xl
 	ret
 

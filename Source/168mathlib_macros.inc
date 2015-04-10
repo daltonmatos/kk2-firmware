@@ -84,6 +84,14 @@
 .endmacro
 
 
+.macro b16loadz			;Z  <- 16.8 register (no decimals)
+
+	lds zh, @0 + 0
+	lds zl, @0 + 1
+
+.endmacro
+
+
 .macro b16store_array		;reg -> reg[index]   b16store_array array, reg
 
 .def	Op1_2=r19

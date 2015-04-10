@@ -7,28 +7,33 @@ UpdateFlightDisplay:
 	call LcdClear12x16
 
 
+	;--- Logged error ---
 
-	;--- Print armed status ---
+	call ErrorLog				;will show the error log if any error has been logged
+	brcc udp1
+
+	rjmp udp21				;the error log is displayed so we'll just skip to the end
+
+
+udp1:	;--- Print armed status ---
 
 	rvbrflagfalse flagArmed, udp3
 
 	lrv X1, 34				;Armed
 	lrv Y1, 22
 	ldz armed*2
-	call PrintString
+	call PrintHeader
 
 	ldz udp7*2				;banner
 	call PrintSelector
 
 	lrv Y1, 45
-	lrv FontSelector, f6x8
 	call PrintMotto
 	rjmp udp21
 
 udp3:	lrv X1, 38				;Safe
 	ldz safe*2
 	call PrintString
-
 
 
 	;--- Print user profile selection ---
@@ -40,26 +45,38 @@ udp3:	lrv X1, 38				;Safe
 	lds xl, UserProfile
 	add t, xl
 	call PrintChar
-
-
-
-	;--- Print footer ---
-
-	lrv X1, 36				;footer
-	lrv Y1, 57
 	lrv FontSelector, f6x8
-	ldz upd1*2
-	call PrintString
+	lrv X1, 0
 
+
+	;--- Gimbal controller mode ---
+
+	rvbrflagfalse flagGimbalMode, udp4
+
+	lrv Y1, 17				;gimbal controller mode is active
+	ldi t, 3
+	ldz gblmode*2
+	call PrintStringArray
+
+	lrv X1, 1				;camera icon
+	lrv Y1, 0
+	lrv FontSelector, s16x16
+	ldi t, 4
+	call PrintChar
+	lrv FontSelector, f6x8
+
+	rjmp udp20				;skip ahead to the footer
+
+
+udp4:	;--- Flight timer ---
+
+	lrv Y1, 1
+	lds xl, Timer1min
+	lds yl, Timer1sec
+	rcall PrintTime
 
 
 	;--- Print status ---
-
-	lrv X1, 0
-	lrv Y1, 1
-	lds t, RxMode
-	ldz inptxt*2
-	call PrintFromStringArray
 
 	lrv X1, 0
 	lrv Y1, 17
@@ -106,34 +123,46 @@ udp25:	lds t, StatusCounter			;flashing status text banner
 	call PrintSelector
 
 
+udp51:	;--- Print flight mode and alarm status ---
 
-udp51:	;--- Print flight mode ---
-
-	lrv X1, 0				;mode
+	lrv X1, 0				;flight mode
 	lrv Y1, 27
+	ldz flmode*2
 	rcall PrintFlightMode
 
+	rvbrflagtrue flagAlarmOn, udp52		;alarm status
+
+	lds t, Channel17			;in S.Bus mode the alarm can also be activated from channel 17
+	tst t
+	breq udp53
+
+udp52:	lrv X1, 84				;alarm is active
+	ldz alarm*2
+	call PrintString
+
+udp53:	rvbrflagfalse flagGimbalMode, udp54	;skip ahead to the footer when in gimbal mode
+
+	rjmp udp20
 
 
-	;--- Print battery voltages ---
+udp54:	;--- Print battery voltages ---
 
-	lrv X1, 0				;batt
-	lrv Y1, 36
+	lrv X1, 0				;live battery voltage
+	call LineFeed
 	ldz batt*2
 	call PrintString
 	b16mov Temper, BatteryVoltage
 	rcall PrintVoltage
 
-	lrv X1, 84
+	lrv X1, 84				;lowest battery voltage logged
 	b16mov Temper, BatteryVoltageLogged
 	rcall PrintVoltage
-
 
 
 	;--- Print MPU temperature ---
 
 	lrv X1, 0				;temperature in Celcius = MPU register value / 340 + 36.53
-	rvadd Y1, 9
+	call LineFeed
 	ldz mputemp*2
 	call PrintString
 
@@ -157,6 +186,14 @@ udp51:	;--- Print flight mode ---
 	call Print16Signed
 	rcall PrintDecimal
 	ldz degf*2
+	call PrintString
+
+
+udp20:	;--- Print footer ---
+
+	lrv X1, 36				;footer
+	lrv Y1, 57
+	ldz upd1*2
 	call PrintString
 
 udp21:	call LcdUpdate
@@ -198,17 +235,39 @@ PrintDecimal:
 
 	mov xl, yh				;print the fractional part (one digit)
 	clr xh
+	clr yh
 	b16store Temp2
 	b16ldi Temper, 0.0390625
 	b16mul Temp2, Temp2, Temper
 	b16load Temp2
+	call Print16Signed
+	ret
 
-	cpi xl, 10				;print a single digit only
-	brlt pdc1
 
-	ldi xl, 9
 
-pdc1:	call Print16Signed
+	;--- Print timer value ---
+
+PrintTime:
+
+	cpi xl, 10				;minutes
+	brge ptim1
+
+	ldi t, '0'				;print leading zero
+	call PrintChar
+
+ptim1:	clr xh
+	call Print16Signed
+	ldi t, ':'
+	call PrintChar
+
+	mov xl, yl				;seconds
+	cpi xl, 10
+	brge ptim2
+
+	ldi t, '0'				;print leading zero
+	call PrintChar
+
+ptim2:	call Print16Signed
 	ret
 
 
@@ -217,27 +276,20 @@ pdc1:	call Print16Signed
 
 PrintFlightMode:
 
-	ldz flmode*2
-	call PrintString
+	call PrintString			;register Z (input parameter) points to the label
 	rvbrflagfalse flagSlOn, pfm1
 
-	ldz selflvl*2				;normal SL
+	ldz selflvl*2				;(normal) SL
 	call PrintString
 	ret
 
-pfm1:	rvbrflagfalse flagSlStickMixing, pfm3
+pfm1:	rvbrflagfalse flagSlStickMixing, pfm2
 
 	ldz slmix*2				;SL mix
 	call PrintString
-	rvbrflagfalse flagAlarmOn, pfm2
+	ret
 
-	rvadd X1, 12				;SL mix + alarm
-	ldz alarm*2
-	call PrintString
-
-pfm2:	ret
-
-pfm3:	ldz acro*2				;acro
+pfm2:	ldz acro*2				;acro
 	call PrintString
 	ret
 
@@ -247,16 +299,16 @@ upd1:	.db "<PROFILE>  MENU", 0
 safe:	.db "SAFE", 0, 0
 armed:	.db "ARMED", 0
 
+upd2:	.db "Gimbal Controller", 0
+upd3:	.db "mode is active.", 0
+noarm:	.db "Arming is disabled.", 0
+
+gblmode:.dw upd2*2, upd3*2, noarm*2
+
 udp6:	.db ". Tuning ", 0
 
 udp7:	.db 0, 19, 127, 40
 udp8:	.db 0, 16, 127, 25
-
-cppmid:	.db "CPPM", 0, 0
-sbusid:	.db "S.Bus", 0
-satid:	.db "DSM2", 0, 0
-
-inptxt:	.dw null*2, cppmid*2, sbusid*2, satid*2
 
 flmode:	.db "Mode: ", 0, 0
 batt:	.db "Batt: ", 0, 0
@@ -273,10 +325,11 @@ sta5:	.db "No rudder input.", 0, 0
 sta6:	.db "Sanity check failed.", 0, 0
 sta7:	.db "No motor layout!", 0, 0
 sta8:	.db "Check throttle level.", 0
+sta9:	.db "RX signal was lost!", 0
 
 sta21:	.db "No CPPM input!", 0, 0
 
-sta31:	.db "No S.Bus data! ", 0
+sta31:	.db "No S.Bus data!", 0, 0
 sta32:	.db "FAILSAFE!", 0
 
 sta41:	.db "No Satellite input!", 0
@@ -290,14 +343,21 @@ LoadStatusString:
 
 	lds t, StatusBits
 	cbr t, LvaWarning			;no error message displayed for LVA warning
-	tst t
-	brne lss1
+	brne lss10
 
 	rvbrflagtrue flagThrottleZero, lss8	;no critical flags are set so we'll display a warning if throttle is above idle
 
 	ldz sta8*2				;check throttle level
 
 lss8:	ret
+
+lss10:	lds t, StatusBits
+	andi t, RxSignalLost
+	cpi t, RxSignalLost
+	brne lss1
+
+	ldz sta9*2				;RX signal was lost
+	ret
 
 lss1:	lds t, StatusBits
 	andi t, NoMotorLayout
@@ -404,13 +464,13 @@ gsbs1:	ldz sta32*2				;failsafe
 GetSatStatus:
 
 	lds t, StatusBits
-	andi t, NoSatelliteInput
+	andi t, SatProtocolError
 	breq gss1
 
-	ldz sta41*2				;no Satellite input
+	ldz sta45*2				;Satellite protocol error
 	ret
 
-gss1:	ldz sta45*2				;Satellite protocol error
+gss1:	ldz sta41*2				;no Satellite input
 	ret
 
 

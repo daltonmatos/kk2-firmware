@@ -3,15 +3,15 @@
 
 Main:
 
+	ldx 100
+	call WaitXms
+
 	call SetupHardware
 
 
 	;--- Initialize LCD ---
 
-	ldz eeLcdContrast
-	call ReadEeprom
-	sts LcdContrast, t
-
+	call LoadLcdContrast
 	call LcdUpdate
 	call LcdClear
 	call LcdUpdate
@@ -29,50 +29,80 @@ Main:
 
 	b16ldi BatteryVoltageLogged, 1023
 
-	b16ldi CheckRxDelay, 400 * 10
+	b16ldi FlightTimer, 398		;tuned for better accuracy (1 second)
 
 	clr t
+	sts Timer1sec, t
+	sts Timer1min, t
+
 	sts TuningMode, t
 	sts QTuningIndex, t
 
 	sts flagPwmGen, t
 
+	sts flagErrorLogSetup, t
+
 	sts FlashingLEDCounter, t
 
 	ldi xl, AuxCounterInit
 	sts AuxCounter, xl
-	sts AuxSwitchPosition, t
+	ldi xl, 2
+	sts AuxSwitchPosition, xl
 	ldi xl, 1
 	sts Aux4SwitchPosition, xl
+	sts AuxFunctionOld, xl
 
-	sts flagAlarmOverride, t
-
-	sts RollL, t
-	sts RollH, t
-	sts PitchL, t
-	sts PitchH, t
-	sts ThrottleL, t
-	sts ThrottleH, t
-	sts YawL, t
-	sts YawH, t
-	sts AuxL, t
-	sts AuxH, t
+	sts Channel1L, t
+	sts Channel1H, t
+	sts Channel2L, t
+	sts Channel2H, t
+	sts Channel3L, t
+	sts Channel3H, t
+	sts Channel4L, t
+	sts Channel4H, t
+	sts Channel5L, t
+	sts Channel5H, t
+	sts Channel6L, t
+	sts Channel6H, t
+	sts Channel7L, t
+	sts Channel7H, t
+	sts Channel8L, t
+	sts Channel8H, t
+	sts Channel17, t		;Channel17 (used in S.Bus mode) must be cleared to avoid problems with the "Alarm" indicator
 
 	sts RudderRxPinState, t
 	sts AuxRxPinState, t
 
+	ldi xl, TimeoutLimit		;start with all RX channels timed out
+	sts RollDcnt, xl
+	sts PitchDcnt, xl
+	sts ThrottleDcnt, xl
+	sts YawDcnt, xl
+	sts AuxDcnt, xl
+	sts Aux2Dcnt, xl
+	sts Aux3Dcnt, xl
+	sts Aux4Dcnt, xl
+
 	ldi xl, 3			;RxBufferState must be set to 3 (i.e. "New data") to make the AUX Settings screen work properly
 	sts RxBufferState, xl
 
-	sts StatusBits, t
+	ldi xl, NoAileronInput | NoElevatorInput | NoThrottleInput | NoRudderInput
+	sts StatusBits, xl
 
 	call setup_mpu6050
 
 	call GyroCal
 
 
+	;--- Gimbal controller mode ---
 
-	;--- ESC calibration ----
+	call GetGimbalControllerMode
+	rvbrflagfalse flagGimbalMode, ma10
+
+	jmp GimbalMain
+
+
+ma10:	;--- ESC calibration ----
 
 	sei				;global interrupts must be enabled here for PWM output in EscThrottleCalibration
 
@@ -86,23 +116,33 @@ Main:
 	load t, pinb			;read buttons. Will not use 'GetButtons' here because of delay
 	com t
 	swap t
-	andi t, 0x0f			;any button pressed?
+	andi t, 0x0F			;any button pressed?
 	breq ma2
 
-	call FlightInit			;some variables must be initialized prior to ESC calibration
-	call EscThrottleCalibration
+	call EscThrottleCalibration	;yes, do calibration
 	rjmp ma2
 
 
+	;--- Misc. ---
 
-	;--- Reset LCD contrast if button #1 is held down ---
+ma5:	rvsetflagtrue Mode		;will prevent buttons held down during start-up from opening the menu or changing user profile
 
-ma5:	call GetButtons
+
+	;--- Reset LCD contrast when button #1 is held down ---
+
+	call GetButtons
 	cpi t, 0x08
-	brne ma2
+	brne ma15
 
 	call SetDefaultLcdContrast
 
+
+	;--- Display the Error Log setup screen when button #4 is held down ---
+
+ma15:	cpi t, 0x01
+	brne ma2
+
+	rvsetflagtrue flagErrorLogSetup
 
 
 	;--- Flight loop init ---
@@ -114,18 +154,15 @@ ma2:	call FlightInit
 	store tifr1, t
 
 
-
 	;--- Flight loop ---
 
 ma1:	call PwmStart			;runtime between PwmStart and B interrupt (in PwmEnd) must not exeed 1.5ms
 	call GetStdRxChannels
-	call CheckRx
 	call Arming
 	call Logic
 	call Imu
-	call HeightDampening
 	call Mixer
-	call CameraStab
+	call GimbalStab
 	call Beeper
 	call Lva
 	call PwmEnd
@@ -149,10 +186,12 @@ ma3:	rvbrflagfalse flagArmed, ma7	;skip buttonreading if armed
 ma7:	load t, pinb			;read buttons
 	com t
 	swap t
-	andi t, 0x07			;PROFILE or MENU?
+	andi t, 0x0F			;any button pushed?
 	brne ma4
 
-ma8:	lrv ButtonDelay, 0		;no, reset ButtonDelay, and go to start of the loop
+	rvsetflagfalse Mode		;no, reset Mode and ButtonDelay, and then go to start of the loop
+
+ma8:	lrv ButtonDelay, 0
 	rjmp ma1	
 
 ma4:	rvinc ButtonDelay		;yes, ButtonDelay++
@@ -160,16 +199,21 @@ ma4:	rvinc ButtonDelay		;yes, ButtonDelay++
 	breq ma6			;yes, re-check button
 	rjmp ma1			;no, go to start of the loop	
 
-ma6:;	         76543210		;disable OCR1A and B interrupt
+ma6:	rvbrflagtrue Mode, ma8		;abort if the button hasn't been released since start-up
+
+;	         76543210		;disable OCR1A and B interrupt
 	ldi t, 0b00000000
 	store timsk1, t
 
 	call GetButtons			;re-check the button and abort if it was released too soon
-	andi t, 0x07
+	andi t, 0x0F
 	breq ma8
 
 	cpi t, 0x01
 	breq ma9
+
+	cpi t, 0x08
+	breq ma13
 
 
 	;--- User profile ---
@@ -178,9 +222,22 @@ ma6:;	         76543210		;disable OCR1A and B interrupt
 	rjmp ma2
 
 
-ma9:	;--- Menu ---
+ma9:	;--- Error log ---
 
 	call Beep
+	call ClearLoggedError		;clear logged error when the ERROR LOG screen is displayed
+	brcc ma12
+
+ma14:	rvsetflagtrue Mode		;will wait for the button to be released
+	rjmp ma2
+
+ma13:	call Beep
+	call ToggleErrorLogState	;toggle error logging state when the setup screen is displayed
+	rjmp ma14
+
+
+ma12:	;--- Menu ---
+
 	BuzzerOff			;will prevent constant beeping in menu when 'Button Beep' is disabled
 	call StartLedSeq		;the LED flashing sequence will indicate current user profile selection
 	call StartPwmQuiet

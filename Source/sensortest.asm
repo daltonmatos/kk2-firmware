@@ -6,17 +6,9 @@ SensorTest:
 sen1:	call AdcRead
 	call LcdClear6x8
 
-	clr t			;print all text labels first
-
-sen18:	push t
+	ldi t, 6		;print all text labels first
 	ldz sen19*2
-	call PrintFromStringArray
-	lrv X1, 0
-	rvadd Y1, 9
-	pop t
-	inc t
-	cpi t, 6
-	brne sen18
+	call PrintStringArray
 
 	lrv Y1, 1		;gyro X
 	b16load GyroPitch
@@ -99,15 +91,15 @@ sen15:	lrv X1, 76
 PrintGyroValue:
 	lrv X1, 48
 	call Print16Signed 
-	call GyroCheck
+	rcall GyroCheck
 	rjmp pav1
 
 PrintAccValue:
 	lrv X1, 48
 	call Print16Signed 
-	call AccCheck
+	rcall AccCheck
 
-pav1:	rvadd Y1, 9
+pav1:	call LineFeed
 	ret
 
 

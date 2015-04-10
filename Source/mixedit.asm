@@ -9,6 +9,7 @@ MixerEditor:
 	call ReadEeprom
 	brflagtrue t, med2
 
+	ldz nadtxt1*2
 	rcall ShowNoAccessDlg
 	ret
 
@@ -16,7 +17,7 @@ med2:	lds t, UserProfile	;refuse access unless user profile #1 is selected
 	tst t
 	breq med3
 
-	ldi t, 2
+	ldz nadtxt2*2
 	rcall ShowNoAccessDlg
 	ret
 
@@ -50,9 +51,8 @@ med50:	push t
 	rcall extend
 	lrv X1, 48
 	call PrintColonAndSpace
-	call Print16Signed
+	call PrintNumberLF
 	lrv X1, 0
-	rvadd Y1, 9
 	pop t
 	inc t
 	cpi t, 5
@@ -192,13 +192,14 @@ type:	.dw med16*2, med17*2			;servo, ESC
 rate:	.dw med19*2, med18*2			;low, high
 
 nad1:	.db "NO ACCESS", 0
-nad2:	.db "A Motor Layout must", 0
-nad3:	.db "be loaded first.", 0, 0
+nad3:	.db "A Motor Layout must", 0
+nad4:	.db "be loaded first.", 0, 0
 
-nad4:	.db "User profile #1 must", 0, 0
-nad5:	.db "be selected first.", 0, 0
+nad5:	.db "User profile #1 must", 0, 0
+nad6:	.db "be selected first.", 0, 0
 
-nadtxt:	.dw nad2*2, nad3*2, nad4*2, nad5*2
+nadtxt1:.dw nad3*2, nad4*2
+nadtxt2:.dw nad5*2, nad6*2
 
 
 
@@ -206,31 +207,17 @@ nadtxt:	.dw nad2*2, nad3*2, nad4*2, nad5*2
 
 ShowNoAccessDlg:
 
-	push t				;save the input parameter (valid range: 0 - 2)
+	pushz				;register Z (input parameter) points to the string array to be used
 
 	call LcdClear12x16
 
 	lrv X1, 10			;header
 	ldz nad1*2
-	call PrintString
+	call PrintHeader
 
-	lrv X1, 0			;print two message lines
-	lrv Y1, 17
-	lrv FontSelector, f6x8
-	pop t
-	ldi yl, 2			;loop counter
-
-pna1:	push yl
-	push t
-	ldz nadtxt*2
-	call PrintFromStringArray
-	lrv X1, 0
-	rvadd Y1, 9
-	pop t
-	inc t
-	pop yl
-	dec yl
-	brne pna1
+	ldi t, 2			;print two message lines
+	popz
+	call PrintStringArray
 
 	;footer
 	call PrintOkFooter

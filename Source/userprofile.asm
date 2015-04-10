@@ -12,17 +12,9 @@ ups10:	ldz eeUserProfile		;get default user profile value (from user profile #1)
 
 	call LcdClear6x8
 
-	clr t				;print all text labels first
-
-ups11:	push t
+	ldi t, 5			;print all text labels first
 	ldz ups8*2
-	call PrintFromStringArray
-	lrv X1, 0
-	rvadd Y1, 9
-	pop t
-	inc t
-	cpi t, 5
-	brne ups11
+	call PrintStringArray
 
 	lrv X1, 102			;default user profile
 	lrv Y1, 1
@@ -90,7 +82,7 @@ ups17:	cpi t, 0x01			;CHANGE/SELECT?
 	dec xl
 	mov DefaultUserProfile, xl
 	ldz eeUserProfile
-	call StoreEeVariable8
+	call StoreEeVariable8		;save in profile #1 only
 	clr Item
 	rjmp ups10
 
@@ -132,7 +124,7 @@ ShowCopyStatus:
 	rjmp scs13
 
 scs12:	lrv X1, 34				;print "ERROR"
-	ldz scs2*2
+	ldz cerror*2
 	call PrintString
 
 scs13:	lrv FontSelector, f6x8
@@ -147,7 +139,7 @@ scs14:	push xh
 	ldz scs10*2
 	call PrintFromStringArray
 	lrv X1, 0
-	rvadd Y1, 9
+	call LineFeed
 	pop t
 	inc t
 	pop xh
@@ -181,7 +173,6 @@ ups7:	.db 101, 0, 109, 9
 ups8:	.dw ups1*2, null*2, ups3*2, ups4*2, ups5*2
 
 scs1:	.db "DONE", 0, 0
-scs2:	.db "ERROR", 0
 
 scs3:	.db "All data copied from", 0, 0
 scs4:	.db "the selected profile.", 0
@@ -258,7 +249,15 @@ cup11:	mov zh, yl
 
 ChangeUserProfile:
 
-	lsr t				;register T holds button input
+	cpi t, 0x02			;register T holds button input
+	breq cup2
+
+	cpi t, 0x04
+	breq cup2
+
+	ret				;incorrect button input
+
+cup2:	lsr t
 	andi t, 0x01
 	brne cup1
 

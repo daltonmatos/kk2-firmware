@@ -9,6 +9,7 @@ EeInit:
 
 	ldz 0				;check EEPROM signature for user profile #1
 	rcall CheckEeSignature
+	sts Init, xl
 	tst xl
 	breq eei1
 
@@ -16,22 +17,13 @@ EeInit:
 	sts UserProfile, t
 	rcall InitUserProfile
 
-	clr t				;set user profile #1 to be used as default
-	ldz eeUserProfile
-	call WriteEeprom
-
 	clr t				;not accepted yet
 	ldz eeUserAccepted
 	call WriteEeprom
 
 	call DisableEscCalibration	;initialize variables that are used in profile #1 only
-	call SetDefaultLcdContrast
 	call ResetBatteryVoltageOffset
-
-	ldi t, RxModeStandard		;set RX mode to 'Standard Receiver'
-	sts RxMode, t
-	ldz eeRxMode
-	call WriteEeprom
+	call ResetErrorLogging
 
 	call setup_mpu6050
 	rcall ShowDisclaimer
@@ -76,7 +68,7 @@ CheckEeSignature:
 	brne ces1
 
 	call GetEeVariable8
-	cpi xl, 0x00
+	cpi xl, 0x02
 	brne ces1
 
 	clr xl				;signature is OK
@@ -137,13 +129,12 @@ iup8:	movw z, y
 
 	call StoreEePVariable16		;eeEscLowLimit (set to 10)
 	ldx 0
-	call StoreEePVariable16		;eeHeightDampeningGain
-	ldx 30
-	call StoreEePVariable16		;eeHeightDampeningLimit
-	ldx 0
+	call StoreEePVariable16		;eeStickDeadZone
 	call StoreEePVariable16		;eeBattAlarmVoltage
 	ldx 50
 	call StoreEePVariable16		;eeServoFilter
+	ldx 0
+	call StoreEePVariable16		;UNUSED ****************************
 
 
 	ldi xl, 1 
@@ -156,6 +147,12 @@ iup8:	movw z, y
 	call StoreEePVariable8		;eeCppmYaw
 	ldi xl, 5
 	call StoreEePVariable8		;eeCppmAux
+	ldi xl, 6
+	call StoreEePVariable8		;eeCppmAux2
+	ldi xl, 7
+	call StoreEePVariable8		;eeCppmAux3
+	ldi xl, 8
+	call StoreEePVariable8		;eeCppmAux4
 
 
 	ser xl
@@ -169,13 +166,9 @@ iup8:	movw z, y
 
 	ldx 0
 	call StoreEePVariable16		;eeCamRollGain
-	ldx 50
 	call StoreEePVariable16		;eeCamRollOffset
-	ldx 0
 	call StoreEePVariable16		;eeCamPitchGain
-	ldx 50
 	call StoreEePVariable16		;eeCamPitchOffset
-	ldx 0
 	call StoreEePVariable8		;eeCamServoMixing (set to NONE)
 	call StoreEePVariable16		;eeCamRollLockPos
 	call StoreEePVariable16		;eeCamPitchLockPos
@@ -203,21 +196,70 @@ iup8:	movw z, y
 	ldi xl, 0x08
 	call StoreEePVariable8		;eeMpuGyroCfg (set to 500 deg/s)
 	call StoreEePVariable8		;eeMpuAccCfg (set to 4g)
-	ldx 8
-	call StoreEePVariable16		;eeAccSWFilter
 
 
-	ldz 0				;EE signature
+	clr xl
+	call StoreEePVariable8		;eeTuningRate (set to INVALID here, but it will still be read as 2, MEDIUM)
+	call StoreEePVariable8		;eeDG2Functions
+
+
+	ldi xl, 2
+	call StoreEePVariable8		;eeSatCppmRoll
+	ldi xl, 3
+	call StoreEePVariable8		;eeSatCppmPitch
+	ldi xl, 1 
+	call StoreEePVariable8		;eeSatCppmThrottle
+	ldi xl, 4
+	call StoreEePVariable8		;eeSatCppmYaw
+	ldi xl, 5
+	call StoreEePVariable8		;eeSatCppmAux
+	ldi xl, 6
+	call StoreEePVariable8		;eeSatCppmAux2
+	ldi xl, 7
+	call StoreEePVariable8		;eeSatCppmAux3
+	ldi xl, 8
+	call StoreEePVariable8		;eeSatCppmAux4
+
+
+	ldz 0				;EEPROM signature
 	ldi xl, 0x21
 	call StoreEePVariable8
 	ldi xl, 0x05
 	call StoreEePVariable8
 	ldi xl, 0xAA
 	call StoreEePVariable8
-	ldi xl, 0x00
+	ldi xl, 0x02
 	call StoreEePVariable8
 
+
+	;--- User profile #1 ---
+
+	lds t, UserProfile		;skip this section for user profile 2 - 4
+	tst t
+	brne iup7
+
+	ldz eeUserProfile		;set user profile #1 to be used as default
+	call WriteEeprom
+
+	call SetDefaultLcdContrast
+	call ResetGimbalControllerMode
+	call ResetRxMode
+
+	lds t, Init			;display initial setup menu and enforce restart when called from the User Profile menu
+	tst t
+	brne iup9
+
+	rcall InitialSetup
+	rjmp EnforceRestart
+
+iup9:	clr t
+	sts Init, t
+
+
+iup7:	;--- Done ---
+
 	ldi Counter, 5
+
 iup6:	call Beep
 	ldi yl, 0
 	call wms
@@ -236,23 +278,11 @@ ShowDisclaimer:
 
 	lrv X1, 16			;reminder
 	ldz eew1*2
-	call PrintString
+	call PrintHeader
 
-	lrv FontSelector, f6x8
-
-	lrv X1, 0			;print disclaimer text
-	lrv Y1, 17
-	clr t
-
-eew12:	push t
+	ldi t, 4			;print disclaimer text
 	ldz eew10*2
-	call PrintFromStringArray
-	lrv X1, 0
-	rvadd Y1, 9
-	pop t
-	inc t
-	cpi t, 4
-	brne eew12
+	call PrintStringArray
 
 	;footer
 	call PrintOkFooter
@@ -317,23 +347,11 @@ isp11:	call LcdClear12x16
 
 	lrv X1, 34			;setup
 	ldz isp1*2
-	call PrintString
+	call PrintHeader
 
-	lrv FontSelector, f6x8
-
-	lrv X1, 0
-	lrv Y1, 17
-	clr t
-
-isp12:	push t
+	ldi t, 4
 	ldz isp10*2
-	call PrintFromStringArray
-	lrv X1, 0
-	rvadd Y1, 9
-	pop t
-	inc t
-	cpi t, 4
-	brne isp12
+	call PrintStringArray
 
 	;footer
 	call PrintMenuFooter
@@ -355,11 +373,10 @@ isp15:	cpi t, 0x04			;PREV?
 	brne isp20
 
 	dec Counter
-	brpl isp16
+	brpl isp11
 
 	clr Counter
-
-isp16:	rjmp isp11
+	rjmp isp11
 
 isp20:	cpi t, 0x02			;NEXT?
 	brne isp25
@@ -402,4 +419,18 @@ isp40:	pop Counter
 
 
 .undef Counter
+
+
+
+	;--- Enforce restart ---
+
+EnforceRestart:
+
+	call LcdClear6x8		;restart is required
+	lrv Y1, 28
+	ldz srm4*2
+	call PrintString
+	call LcdUpdate
+
+enf1:	rjmp enf1			;infinite loop
 

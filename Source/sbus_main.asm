@@ -3,15 +3,15 @@
 
 SBusMain:
 
+	ldx 100
+	call WaitXms
+
 	call SetupHardwareForSBus
 
 
 	;--- Initialize LCD ---
 
-	ldz eeLcdContrast
-	call ReadEeprom
-	sts LcdContrast, t
-
+	call LoadLcdContrast
 	call LcdUpdate
 	call LcdClear
 	call LcdUpdate
@@ -29,25 +29,38 @@ SBusMain:
 
 	b16ldi BatteryVoltageLogged, 1023
 
+	b16ldi FlightTimer, 398		;tuned for better accuracy (1 second)
+
 	clr t
+	sts Timer1sec, t
+	sts Timer1min, t
+
 	sts TuningMode, t
 
 	sts flagPwmGen, t
+
+	sts flagErrorLogSetup, t
 
 	sts FlashingLEDCounter, t
 
 	ldi xl, AuxCounterInit
 	sts AuxCounter, xl
-	sts AuxSwitchPosition, t
+	ldi xl, 2
+	sts AuxSwitchPosition, xl
 	ldi xl, 1
 	sts Aux4SwitchPosition, xl
+	sts AuxFunctionOld, xl
+
+	ldi xl, 25
+	sts RxFrameLength, xl
 
 	sts RxFrameValid, t
+	sts TimeoutCounter, t
+
 	sts Channel17, t
 	sts Channel18, t
-	call ClearSBusErrors
+	sts Failsafe, t
 
-	clr t
 	sts RxBufferIndex, t
 	sts RxBufferIndexOld, t
 	sts RxBufferState, t
@@ -64,8 +77,15 @@ SBusMain:
 	call GyroCal
 
 
+	;--- Gimbal controller mode ---
 
-	;--- ESC calibration ----
+	call GetGimbalControllerMode
+	rvbrflagfalse flagGimbalMode, bm10
+
+	jmp GimbalMain
+
+
+bm10:	;--- ESC calibration ----
 
 	sei				;global interrupts must be enabled here for PWM output in EscThrottleCalibration
 
@@ -79,23 +99,33 @@ SBusMain:
 	load t, pinb			;read buttons. Will not use 'GetButtons' here because of delay
 	com t
 	swap t
-	andi t, 0x0f			;any button pressed?
+	andi t, 0x0F			;any button pressed?
 	breq bm2
 
-	call FlightInit			;some variables must be initialized prior to ESC calibration
-	call EscThrottleCalibration
+	call EscThrottleCalibration	;yes, do calibration
 	rjmp bm2
 
 
+	;--- Misc. ---
 
-	;--- Reset LCD contrast if button #1 is held down ---
+bm5:	rvsetflagtrue Mode		;will prevent buttons held down during start-up from opening the menu or changing user profile
 
-bm5:	call GetButtons
+
+	;--- Reset LCD contrast when button #1 is held down ---
+
+	call GetButtons
 	cpi t, 0x08
-	brne bm2
+	brne bm15
 
 	call SetDefaultLcdContrast
 
+
+	;--- Display the Error Log setup screen when button #4 is held down ---
+
+bm15:	cpi t, 0x01
+	brne bm2
+
+	rvsetflagtrue flagErrorLogSetup
 
 
 	;--- Flight loop init ---
@@ -111,17 +141,16 @@ bm2:	call FlightInit
 	store tifr1, t
 
 
-
 	;--- Flight loop ---
 
 bm1:	call PwmStart			;runtime between PwmStart and B interrupt (in PwmEnd) must not exeed 1.5ms
 	call GetSBusChannels
 	call GetSBusFlags
+	call SBusFeatures
 	call Arming
 	call Logic
-	call Tuning
+	call RemoteTuning
 	call Imu
-	call HeightDampening
 	call Mixer
 	call GimbalStab
 	call Beeper
@@ -147,10 +176,12 @@ bm3:	rvbrflagfalse flagArmed, bm7	;skip buttonreading if armed
 bm7:	load t, pinb			;read buttons
 	com t
 	swap t
-	andi t, 0x07			;PROFILE or MENU?
+	andi t, 0x0F			;any button pushed?
 	brne bm4
-	
-bm8:	lrv ButtonDelay, 0		;no, reset ButtonDelay, and go to start of the loop
+
+	rvsetflagfalse Mode		;no, reset Mode and ButtonDelay, and then go to start of the loop
+
+bm8:	lrv ButtonDelay, 0
 	rjmp bm1	
 
 bm4:	rvinc ButtonDelay		;yes, ButtonDelay++
@@ -158,16 +189,21 @@ bm4:	rvinc ButtonDelay		;yes, ButtonDelay++
 	breq bm6			;yes, re-check button
 	rjmp bm1			;no, go to start of the loop	
 
-bm6:;	         76543210		;disable OCR1A and B interrupt
+bm6:	rvbrflagtrue Mode, bm8		;abort if the button hasn't been released since start-up
+
+;	         76543210		;disable OCR1A and B interrupt
 	ldi t, 0b00000000
 	store timsk1, t
 
 	call GetButtons			;re-check the button and abort if it was released too soon
-	andi t, 0x07
+	andi t, 0x0F
 	breq bm8
 
 	cpi t, 0x01
 	breq bm9
+
+	cpi t, 0x08
+	breq bm13
 
 
 	;--- User profile ---
@@ -176,9 +212,22 @@ bm6:;	         76543210		;disable OCR1A and B interrupt
 	rjmp bm2
 
 
-bm9:	;--- Menu ---
+bm9:	;--- Error log ---
 
 	call Beep
+	call ClearLoggedError		;clear logged error when the ERROR LOG screen is displayed
+	brcc bm12
+
+bm14:	rvsetflagtrue Mode		;will wait for the button to be released
+	rjmp bm2
+
+bm13:	call Beep
+	call ToggleErrorLogState	;toggle error logging state when the setup screen is displayed
+	rjmp bm14
+
+
+bm12:	;--- Menu ---
+
 	BuzzerOff			;will prevent constant beeping in menu when 'Button Beep' is disabled
 	call StartLedSeq		;the LED flashing sequence will indicate current user profile selection
 	call StartPwmQuiet

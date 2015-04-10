@@ -6,8 +6,8 @@ SetupHardwareForSatellite:
 	out ddra,t
 	
 	;       76543210
-//	ldi t,0b00001010
-	ldi t,0b00001011	// DEBUGGING
+	ldi t,0b00001010
+//	ldi t,0b00001011	// DEBUGGING
 	out ddrb,t
 	
 	;       76543210
@@ -35,9 +35,9 @@ SetupHardwareForSatellite:
 	out portd ,t
 
 
-	//***********************************************************
-	// Spektrum receiver binding - Code from David Thompson
-	//***********************************************************
+	//*****************************************************************
+	// Spektrum receiver binding - Code from David Thompson and Steveis
+	//*****************************************************************
 
 	// Wait 70 msec (GetButtons has 10 msec debounce)
 
@@ -46,22 +46,29 @@ SetupHardwareForSatellite:
 
 	// Bind as master if button 2&3 are pressed
 
-	call GetButtons	
-	cpi t, 0x06		;Button 2&3 presses for DSM2 binding
+	call GetButtons
+	cpi t, 0x06		;button 2&3 pressed for Satellite binding
 	brne skipbinding
-	ldi xl,3		;3 bind pulses to force DSM2 1024 single frame
 
-	// Make port d,0 (throttle) output for binding
+	ldi xl, 3		;3 bind pulses to force DSM2 1024 single frame
+
+	lds t, RxMode
+	cpi t, RxModeSatDSMX
+	brne srb1
+
+	ldi xl, 7		;7 bind pulses to force DSMX 2048 single frame
+
+srb1:	// Make port d,0 (throttle) output for binding
 	;       76543210
 	ldi t,0b11110011
-	out ddrd,t
+	out ddrd, t
 
 	call bind_master
 
 	// set port D direction back (throttle input)
 	;       76543210
 	ldi t,0b11110010
-	out ddrd,t
+	out ddrd, t
 
 	rvsetflagtrue Mode	;set flag to skip ESC calibration
 
