@@ -1,0 +1,85 @@
+Revision 1:
+-----------
+
+* Adjustable LCD contrast.
+* Battery voltage is logged and displayed on the SAFE screen.
+* Button and arming beeps can be turned off individually.
+* Corrected the motor layout for 'DualCopter'. Rotation for M1 was incorrect.
+* Customizable AUX switch functions.
+* Fixed a bug (original FW) that forced you to go via the SAFE screen before mixer changes were reflected on the 'Show Motor Layout' screen.
+* Flight mode replaced 'Self-level' on the SAFE screen and will indicate "ACRO", "SL MIX LOW/MED./HIGH" or "NORMAL SL".
+* LED flashing in sync with the LVA (Low Voltage Alarm) beeps.
+* No access to the Mixer Editor or the Show Motor Layout screen unless a motor layout is selected.
+* The Lost Model Alarm will sound after 20 seconds (i.e. after the Auto Disarm countdown) if AUX switch pos. 1 is selected or if there is no AUX input.
+* Usage warning and a disclaimer are displayed after a factory reset.
+
+
+Revision 2:
+-----------
+
+* Multiple user profiles.
+* Customizable AUX switch functions (now with 5 positions).
+* The Confirmation dialogue now has a header ("CONFIRM") and is also more informative.
+* A confirmation beep is produced when the AUX switch is moved to a new position.
+* ESC throttle calibration is now a lot safer since it will require enabling through the KK2 menu before it can be accessed.
+* Camera gimbal can now be tuned and tested without arming the KK2 controller.
+* Added the "SL Mixing" parameter to the Stick Scaling screen. This adjusts the stick input sensitivity in "Mixed" mode.
+* SL mixing rate is now configurable. The old modes correspond to a value of 5 (LOW), 10 (MEDIUM) and 20 (HIGH).
+* LED will flash rapidly for a few seconds after arming if the Low Voltage Alarm value is set too low.
+* The AUX switch no longer needs to be in position #1 to trigger the Lost Model Alarm after the Auto Disarm countdown.
+* Replaced the "Calibrating ESCs..." text with "ESC CALIBRATION" to make it less confusing.
+* Improved button handling on the main menu. Pushing button 4 (MENU) on the SAFE screen and holding it down for too long will no longer activate a menu item.
+* Fixed a problem with the Lost Model Alarm. It was not trigged after the Auto Disarm countdown if the Alarm function was assigned to AUX position 1.
+* Fixed a bug in the Number Editor (original firmware) that allowed setting a value to zero (CLR) when the lower limit was higher.
+* Fixed a bug causing an error message ("Sensor calibration data out of limits") to be displayed after a factory reset.
+* Fixed a bug in the original firmware that kept the "Link Roll Pitch" flag from being updated until the user returned to the SAFE screen.
+* Fixed a bug that affected SL P-gain when switching from mixed to normal SL mode. SL P-gain remained on its previous value instead of being reloaded.
+
+
+Revision 3:
+-----------
+
+* Quick Tuning feature added.
+* M7 and M8 outputs are now controlled by using a 16 bit timer to reduce servo jitter.
+* The DualCopter layout was renamed "DualCopter II" and both servos were copied to M7/M8 (reduced servo jitter).
+* The TriCopter layout was renamed "Tricopter II" and a second yaw servo was added to M7 (reduced servo jitter).
+* PWM output resolution increased from 555 to 625 steps on M1 to M6 and from 555 to 2500 steps on M7 and M8.
+* ESCs will now be quiet while browsing the KK2 menus. This feature can be switched on/off from the Mode Settings screen.
+* A small text position adjustment on the ESC calibration screen.
+* Will now cut throttle if aileron or elevator input signals stop working. This change was suggested by Steveis.
+* User profile selection method changed. Holding down a button will now skip through the user profiles on the SAFE screen.
+* Bug fixed: Pushing the MENU button on the SAFE screen could change user profile (if the button was released too quickly).
+* Bug fixed: LVA setting wasn't checked when re-arming the controller, preventing the LED from flashing if the voltage level was set too low.
+* Fixed a bug in the original KK firmware: Disabling OCR1A/B interrupts using a restricted register.
+* Fixed a bug in the original KK firmware: Test for ButtonDelay wasn't working correctly.
+
+
+Revision 4:
+-----------
+
+* Channel mapping with support for AUX2, AUX3 and AUX4 features.
+* Flight timer (displayed on the SAFE screen) runs while armed and throttle is above idle.
+* A setup menu is displayed after a factory reset and whenever user profile #1 is reset. This menu is also accessible from the KK2 main menu (select "Initial Setup").
+* New motor layout: V-Tail Hunter.
+* LVA beep length is now limited to 1/4 second.
+* RX signal handling improved. For slow booting receivers status texts like "No aileron input" will be displayed until valid RX signals are detected.
+* The LVA setting is now checked upon arming from the Quick Tuning screen. This makes the KK2 LED flash if the LVA value is set too low.
+* Added a second Receiver Test screen for displaying AUX2, AUX3 and AUX4 input values.
+* On the Receiver Test screen, the throttle text now says "Idle" when the throttle actually IS idle. This makes the lower throttle endpoint adjustment easier.
+* On the Receiver Test screen the aileron, elevator, rudder, aux2 and aux3 texts now say "Center" when these channels are centered precisely.
+* The status text on the SAFE screen will now be highlighted (and flashing) when attention is needed. This also applies to the Quick Tuning screen.
+* New status message: "Check throttle level" will be displayed when the throttle stick is above idle position (preventing arming).
+* New status message: "RX signal was lost" will be displayed on the SAFE screen if an RX output failure occurred during flight. This will also trigger the Lost Model Alarm.
+* Added a second screen to Gimbal Settings. The gimbal home position parameters are set from this new screen and they can be utilized by mapping the KK2 AUX input to AUX4.
+* ESC calibration now has more on-screen (usage) information.
+* When roll and pitch are linked only one set of PI parameters are displayed for "Ail+Ele".
+* SL Mixed mode is now activated when the (Lost Model) Alarm function is selected. Acro mode was used earlier.
+* Alarm status is now shown on the SAFE screen.
+* Sanity error screen improved/optimized.
+* The beep that was produced every time the AUX switch changed position will now be skipped if the flight mode stays unchanged.
+* Removed code for "hidden" button (PREV) on the Show Motor Layout screen.
+* Miscellaneous GUI changes and code optimizations.
+* Bug fixed: Button(s) held down during start-up will no longer trigger the menu or change user profile.
+* Bug fixed: Setting the Minimum Throttle value to 20 (maximum) will no longer produce a "One or more settings are out of limits" warning.
+* Bug fixed: AUX switch settings appeared to be unaffected by a profile reset (when visiting the AUX Switch Setup screen before the SAFE screen).
+* Bug fixed: The User Profile screen had a problem with selection highlighting after importing profile data.
