@@ -1,0 +1,106 @@
+Revision 1:
+-----------
+
+* Fixed a bug in the ESC calibration routine that set the upper level to 50% instead of 100% on M7 and M8. Only OCTOs were affected by this bug.
+* Fixed warning about M7/M8 being set to ESC mode displayed when entering the Camera Stab Settings screen.
+* Optimized code for printing ACC values in sensorcal.asm.
+* Corrected the variable type for 'TuningRateValue'.
+* Removed an unused file (liveupdate.asm).
+
+
+Revision 2:
+-----------
+
+* Adjustable LCD contrast.
+* Battery voltage is logged and displayed on the SAFE screen.
+* Corrected the motor layout for 'DualCopter'. Rotation for M1 was incorrect.
+* Customizable AUX switch functions (5 positions).
+* Two new gimbal modes, LOCK and HOME, are controlled from a 3-way switch on channel 8. Home position is configurable.
+* Added the "SL Mixing" parameter to the Stick Scaling screen. This adjusts the stick input sensitivity in all "SL Mixed" modes.
+* Flight mode replaced 'Self-level' on the SAFE screen and will indicate "ACRO", "SL MIX LOW/MED./HIGH" or "NORMAL SL".
+* LED flashing in sync with the LVA (Low Voltage Alarm) beeps.
+* LED will flash rapidly for a few seconds after arming if no Low Voltage Alarm value is set.
+* No access to the Mixer Editor or the Show Motor Layout screen unless a motor layout is selected.
+* The Lost Model Alarm will sound after 20 seconds (i.e. after the Auto Disarm countdown).
+* ACC Trim values can be tuned remotely.
+* The Confirmation dialogue now has a header ("CONFIRM") and is also more informative.
+* A confirmation beep is produced when the AUX switch is moved to a new position.
+* ESC throttle calibration is now a lot safer since it will require enabling through the KK2 menu before it can be accessed.
+* Improved button handling on the main menu. Pushing button 4 (MENU) on the SAFE screen and holding it down for too long will no longer activate a menu item.
+* Fixed a bug that prevented remote tuning of SL P-gain from working.
+* Fixed a bug in the Number Editor (original firmware) that allowed setting a value to zero (CLR) when the lower limit was higher (e.g. CPPM channel setup).
+* Fixed a bug in the original firmware that kept the "Link Roll Pitch" flag from being updated until the user returned to the SAFE screen.
+
+
+Revision 2a:
+------------
+
+* Fixed a bug in the new gimbal HOME code. The Home position value wasn't initialized correctly even if it appears to be OK on the Gimbal Settings screen.
+
+
+Revision 3:
+-----------
+
+* M7 and M8 outputs are now controlled by using a 16 bit timer to reduce servo jitter.
+* The DualCopter layout was renamed "DualCopter II" and both servos were copied to M7/M8 (reduced servo jitter).
+* The TriCopter layout was renamed "Tricopter II" and a second yaw servo was added to M7 (reduced servo jitter).
+* PWM output resolution increased from 555 to 625 steps on M1 to M6 and from 555 to 2500 steps on M7 and M8.
+* Replaced the "Calibrating ESCs..." text with "ESC CALIBRATION" to make it less confusing.
+* Selecting "ESC Calibration" from the main menu will now display a confirmation dialogue window.
+* Fixed a bug that affected SL P-gain when switching from mixed to normal SL mode. SL P-gain remained on its previous value instead of being reloaded.
+* Fixed a bug that prevented the "Tuning ..." text from being displayed on the SAFE screen when no LVA value was set.
+* Fixed a tiny bug in the gimbal detection code. Roll gain wasn't checked for a non-zero value. Pitch gain was checked twice.
+* Improved the "No LVA value" check code. It will now check for a too low LVA value instead of just zero.
+* Improved initialization of the "SL Mixing" stick scaling value. Limitations in fractional numbers reduced the stick sensitivity by 22%.
+* The status text on the SAFE screen will now read "Tuning Ail+Ele" if tuning aileron when linked with elevator.
+* SL mixing rate is now configurable. The old modes correspond to a value of 5 (LOW), 10 (MEDIUM) and 20 (HIGH).
+* Disabled all unused interrupts.
+* The tuning rate setting is now remembered.
+* Increased the gimbal offset resolution by a factor of ten. The gimbal HOME position values now go from -1000 to 1000.
+* The Channel 7 value will now remain zero on the Remote Tuning screen when SL Gain is selected.
+* Fixed a bug in the original KK firmware: Disabling OCR1A/B interrupts using a restricted register.
+* Removed a small piece of code that had a bug in it (from the original KK firmware): Test for ButtonDelay.
+
+
+Revision 4:
+-----------
+
+* Channel mapping is now configurable for all input channels. The old CPPM Settings menu item has been replaced because of this.
+* RX channel 6 will now control gimbal pitch offset while channel 7 will control roll offset as default. This will also affect remote tuning of ACC trims and gimbal gains.
+* ESCs will now be quiet while browsing the KK2 menus. This feature can be switched on/off from the Mode Settings screen.
+* Safety improved in the PWM output generator for M7 and M8 (as suggested by Steveis).
+* LVA beep length is now limited to 1/4 second.
+* New motor layout: V-Tail Hunter.
+* The status text on the SAFE screen will now be highlighted (and flashing) when attention is needed.
+* New status message: "RX signal was lost!" will be displayed if the receiver for any reason has stopped outputting a valid CPPM signal during flight.
+* New status message: "Check throttle level" will be displayed when the throttle stick is above idle position (preventing arming).
+* On the Receiver Test screen, the throttle text now says "Idle" when the throttle actually IS idle. This makes the lower throttle endpoint adjustment easier.
+* On the Receiver Test screen, the aileron, elevator, rudder, aux2 and aux3 texts now say "Center" when these channels are centred precisely.
+* SL Mixed mode is now activated when the (Lost Model) Alarm function is selected. Acro mode was used earlier.
+* AUX switch functions are now set to 1:Acro, 2:Alarm, 3:SL Mix, 4:Alarm and 5:Normal SL after a Factory Reset.
+* The main menu was rearranged a bit so that the Remote Tuning item now is on top.
+* Improved the Remote Tuning screen and did a few minor GUI changes in other areas.
+* Bug fixed: Negative gimbal gain values couldn't be tuned remotely (i.e. they were forced to zero).
+* Bug fixed: Remote tuning parameters are now loaded from EEPROM when the Remote Tuning screen is accessed.
+* Bug fixed: Setting the Minimum Throttle value to 20 (maximum) will no longer produce a "One or more settings are out of limits" warning.
+
+
+Revision 4a:
+------------
+
+* Critical bug fixed: Stack corruption occurred on the Receiver Test screen.
+
+
+Revision 5:
+-----------
+
+* Flight timer (displayed on the SAFE screen) runs while armed and throttle is above idle.
+* Channel mapping improved so that RX channel IDs are read from SRAM instead of EEPROM.
+* New status message: "Bad channel mapping" will be displayed if incorrect channel mapping values are detected.
+* CPPM interrupt changed. The code change should also make the input less sensitive to noise.
+* ESC calibration now has more on-screen (usage) information.
+* When roll and pitch are linked only one set of PI parameters are displayed for "Ail+Ele".
+* The beep that was produced every time the AUX switch changed position will now be skipped if the flight mode stays unchanged.
+* Removed code for "hidden" button (PREV) on the Show Motor Layout screen.
+* Miscellaneous GUI changes and code optimizations.
+* Bug fixed: Button held down during start-up will no longer trigger the menu.
