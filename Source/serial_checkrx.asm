@@ -46,7 +46,7 @@ nsd1:	.db "NO DATA", 0
 nosat:	.db "Please supply Sat", 0
 nosbus:	.db "Please supply S.Bus", 0
 nsd3:	.db "data to the throttle", 0, 0
-nsd4:	.db "input connector.", 0, 0
+nsd4:	.db "input pin.", 0, 0
 
 nsd8:	.dw nsd3*2, nsd4*2
 

@@ -60,3 +60,21 @@ Revision 3:
 * The Quiet ESC feature is now affected by running the 'Import' and 'Reset' functions on the User Profile screen.
 * Disabled pull-up resistor on the CPPM input pin. This might improve CPPM signal detection.
 * Bug fixed: Servos no longer go to the endpoint when running the Check Motor Outputs feature.
+
+
+Revision 4:
+-----------
+
+* A stick scaling offset can be assigned to each Aux switch position. You can add zero (default), 20, 30 or 50 to the normal aileron and elevator stick scaling values.
+	- Selected stick scaling offset is displayed on the SAFE screen as "SS +20", 30 or 50. Alarm status is no longer displayed because of this.
+	- In S.Bus mode you can no longer increase stick scaling values by using a switch assigned to DG2 (Channel 18).
+* CPPM input was moved to the throttle input pin. This simplifies connection on the KK Mini board.
+* Loss of CPPM sync is now detected and the ERROR LOG screen will display "CPPM sync was lost!" if this occurs while armed.
+* KK2 LED will be flashing (one short flash per second) on logged error. This should be especially useful for the KK2 HC users.
+* Added a delay (0.5 seconds) to the Motor Output Test sequence loop to give the active motor time to stop before the next one spins up.
+* The Quiet ESC feature will always be active while browsing the KK2 menus. The configurable setting has been removed.
+* In CPPM, S.Bus and Satellite mode the KK2 rudder pin is used as a Low Voltage Alarm output. A transistor is required to drive external devices like LEDs and buzzers.
+* It is now possible to exit Stand-alone Gimbal mode without having to reset user profile #1.
+* On the Sensor Test screen the "OK" and "Not OK" texts will no longer be displayed. Texts for ACC tilt directions will be displayed as before.
+* The on-screen instructions for board orientation were changed to avoid confusion.
+* Bug fixed: An incorrect battery offset value was shown when "Adjust Offset Value" was selected immediately after a firmware update (i.e. during the setup process).

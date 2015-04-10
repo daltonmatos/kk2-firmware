@@ -17,7 +17,8 @@ ErrorLog:
 el10:	clc					;no error logged
 	ret
 
-el11:	mov ErrCode, t
+el11:	LedToggle
+	mov ErrCode, t
 	andi ErrCode, 0x03
 
 	;header
@@ -96,10 +97,11 @@ eloff:	.db "DISABLED", 0, 0
 
 estate:	.dw eloff*2, elon*2
 
+csl1:	.db "CPPM sync was lost!", 0
 ;sta9:	.db "RX signal was lost!", 0
 ;sta32:	.db "FAILSAFE!", 0
 ;sta45:	.db "Sat protocol error!", 0
-ecode:	.dw null*2, sta9*2, sta32*2, sta45*2
+ecode:	.dw csl1*2, sta9*2, sta32*2, sta45*2
 
 
 
@@ -146,6 +148,7 @@ cle1:	clr t					;clear error
 	call WriteEeprom
 
 cle2:	rvsetflagfalse flagErrorLogSetup
+	LedOff
 	sec
 	ret
 

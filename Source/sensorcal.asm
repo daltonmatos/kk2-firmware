@@ -68,7 +68,8 @@ cel22:	ldi yl, 0
 	ldi t, 3
 	ldz accxyz*2
 	call PrintStringArray
-	clt				;clear the T flag to indicate that sensors are being calibrated
+
+	clt				;clear the T flag to indicate that sensor calibration is running
 
 	lrv Y1, 10			;acc X
 	b16load AccXZero

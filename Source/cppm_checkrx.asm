@@ -15,8 +15,8 @@ CheckCppmRx:
 
 ncs1:	.db "NO SIGNAL", 0
 ncs2:	.db "Please supply a CPPM", 0, 0
-ncs3:	.db "signal to the aileron", 0
-ncs4:	.db "input connector.", 0, 0
+ncs3:	.db "(PPM) signal to the", 0
+ncs4:	.db "throttle input pin.", 0
 
 ncs8:	.dw ncs2*2, ncs3*2, ncs4*2
 
@@ -32,7 +32,7 @@ ShowNoCppmSignalDlg:
 	ldz ncs1*2
 	call PrintHeader
 
-	ldi t, 3			;print "Please supply a CPPM signal to the aileron input connector."
+	ldi t, 3			;print "Please supply a CPPM (PPM) signal to the throttle input pin."
 	ldz ncs8*2
 	call PrintStringArray
 

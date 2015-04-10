@@ -37,6 +37,7 @@ cppm8:	ldz 6250			;pulse longer than 2.5ms?
 	lds tt, CppmChannelCount	;CPPM pulse train is considered valid when minimum 4 channels have been detected
 	clr treg
 	sts CppmChannelCount, treg
+	sts ChannelCount, tt
 	cpi tt, 4
 	brge cppm6
 
@@ -239,7 +240,17 @@ gcc38:	sts Aux4SwitchPosition, yl
 	rjmp gcc22
 
 gcc23:	sts TimeoutCounter, t
-	ret
+	rvbrflagfalse flagArmed, gcc21
+
+	lds t, ChannelCount		;CPPM sync lost while armed?
+	lds xl, ChannelCountArmed
+	cp t, xl
+	breq gcc21
+
+	ldi xl, 4			;yes
+	call LogError
+
+gcc21:	ret
 
 gcc22:	lds t, TimeoutCounter		;timeout?
 	inc t

@@ -64,6 +64,9 @@ arm5:	rvsetflagtrue flagArmed			;arm
 
 	ldi t, 10				;initialize counter for warning about no LVA value set
 	sts FlashingLEDCount, t
+
+	lds t, ChannelCount			;register number of channels used while arming
+	sts ChannelCountArmed, t
 	rjmp Arm11
 
 arm6:	rvsetflagfalse flagArmed		;disarm

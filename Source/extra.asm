@@ -71,7 +71,7 @@ ef40:	pop Item
 
 
 ef1:	.db "EXTRA", 0
-ef2:	.db "Check Motor Outputs ", 0, 0
+ef2:	.db "Check Motor Outputs", 0
 ef3:	.db "Gimbal Controller", 0
 
 ef10:	.dw ef2*2, ef3*2

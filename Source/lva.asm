@@ -37,12 +37,25 @@ lva2:	b16add LvaDdsAcc, LvaDdsAcc, Error				;DDS
 	sts LvaDdsOn, t
 
 	rvsetflagtrue flagLvaBuzzerOn
-	ret
+
+	lds t, RxMode							;set digital output when not in standard RX mode
+	cpi t, RxModeStandard
+	breq lva6
+
+	sbi LvaOutputPin
+
+lva6:	ret
 
 lva1:	ldi t, 100
 	sts LvaDdsOn, t
 
 lva5:	rvsetflagfalse flagLvaBuzzerOn
+
+	lds t, RxMode							;clear digital output when not in standard RX mode
+	cpi t, RxModeStandard
+	breq lva6
+
+	cbi LvaOutputPin
 	ret
 
 

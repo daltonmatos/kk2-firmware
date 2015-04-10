@@ -91,6 +91,16 @@ lol10:
 
 asp1:	sts AuxSwitchPositionOld, t
 
+	ldx AuxPos1SS				;calculate the address of the variable holding the stick scaling offset
+	add xl, t
+	brcc asp6
+
+	inc xh
+
+asp6:	ld zl, x				;get the stick scaling offset ID
+	andi zl, 0x03
+	sts AuxStickScaling, zl
+
 	ldx AuxPos1Function			;calculate the address of the variable holding the function ID
 	add xl, t
 	brcc asp2
@@ -104,9 +114,11 @@ asp2:	clr t					;reset flags
 
 	ld t, x					;get the function ID
 
-	lds xl, AuxFunctionOld			;produce a short beep when the AUX function changes
-	sts AuxFunctionOld, t
-	cp t, xl
+	lds xl, AuxFunctionOld			;produce a short beep when the AUX function (flight mode + alarm + stick scaling) changes
+	swap zl
+	or zl, t
+	sts AuxFunctionOld, zl
+	cp zl, xl
 	breq asp5
 
 	ser xl

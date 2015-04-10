@@ -2,13 +2,12 @@
 SetupHardwareForCppm:
 
 	;       76543210	;set port directions
-//	ldi t,0b00000000
 	ldi t,0b00110010	// output5, output6
 	out ddra,t
 
 	;       76543210
-	ldi t,0b00001010
-//	ldi t,0b00001011	// DEBUGGING
+	ldi t,0b00001110
+//	ldi t,0b00001111	// DEBUGGING
 	out ddrb,t
 
 	;       76543210
@@ -25,7 +24,7 @@ SetupHardwareForCppm:
 	store didr0,t
 
 	;       76543210
-	ldi t,0b11110101	;turn on pull ups on button inputs and aux, rud
+	ldi t,0b11110001	;turn on pull ups on button inputs and aux pin
 	out portb,t
 
 	;       76543210
@@ -33,7 +32,7 @@ SetupHardwareForCppm:
 	out portc,t
 
 	;       76543210
-	ldi t,0b00000101	;turn on pull ups on thr and ele. No pull-up on the aileron/CPPM input pin
+	ldi t,0b00001101	;turn on pull ups on thr, ele and ail
 	out portd ,t
 
 	;       76543210
@@ -49,12 +48,12 @@ SetupHardwareForCppm:
 	store tccr1c, t
 
 	;       76543210
-	ldi t,0b00001100	;setup external interrupts. Only the rising edge will trigger an INT1 interrupt
-	store eicra, t
+	ldi t,0b00001000	;CPPM input on throttle pin
+	store pcicr, t
 
 	;       76543210
-	ldi t,0b00000010	;enable INT1 only
-	store eimsk, t
+	ldi t,0b00000001
+	store pcmsk3, t
 
 
 

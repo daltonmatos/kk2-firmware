@@ -44,8 +44,9 @@ aux22:	ldi t, ' '
 aux23:	call PrintChar
 	pop t
 	push t
-	ldz auxtxt*2
-	call PrintFromStringArray
+	ldi xl, '1'
+	add t, xl
+	call PrintChar
 	lrv X1, 0
 	call LineFeed
 	pop t
@@ -55,19 +56,35 @@ aux23:	call PrintChar
 
 	lrv Y1, 1			;aux position 1 function
 	lds t, AuxPos1Function
-	rcall PrintAuxValue
+	rcall PrintAuxFnValue
 
 	lds t, AuxPos2Function		;aux position 2 function
-	rcall PrintAuxValue
+	rcall PrintAuxFnValue
 
 	lds t, AuxPos3Function		;aux position 3 function
-	rcall PrintAuxValue
+	rcall PrintAuxFnValue
 
 	lds t, AuxPos4Function		;aux position 4 function
-	rcall PrintAuxValue
+	rcall PrintAuxFnValue
 
 	lds t, AuxPos5Function		;aux position 5 function
-	rcall PrintAuxValue
+	rcall PrintAuxFnValue
+
+	lrv Y1, 1			;aux position 1 stick scaling
+	lds t, AuxPos1SS
+	rcall PrintAuxSSValue
+
+	lds t, AuxPos2SS		;aux position 2 stick scaling
+	rcall PrintAuxSSValue
+
+	lds t, AuxPos3SS		;aux position 3 stick scaling
+	rcall PrintAuxSSValue
+
+	lds t, AuxPos4SS		;aux position 4 stick scaling
+	rcall PrintAuxSSValue
+
+	lds t, AuxPos5SS		;aux position 5 stick scaling
+	rcall PrintAuxSSValue
 
 	;footer
 	call PrintStdFooter
@@ -89,12 +106,11 @@ aux18:	call GetButtons
 	cpi t, 0x08			;BACK?
 	brne aux12
 
-	tst Changes
-	brne aux17
+	mov t, Changes
+	andi t, 0x01
+	breq aux17
 
-	ret	
-
-aux17:	lds xl, AuxPos1Function		;save to EEPROM
+	lds xl, AuxPos1Function		;save AUX functions to EEPROM
 	ldz eeAuxPos1Function
 	call StoreEePVariable8
 
@@ -109,7 +125,27 @@ aux17:	lds xl, AuxPos1Function		;save to EEPROM
 
 	lds xl, AuxPos5Function
 	call StoreEePVariable8		;eeAuxPos5Function
-	ret
+
+aux17:	andi Changes, 0x02
+	breq aux24
+
+	lds xl, AuxPos1SS		;save AUX stick scaling offsets to EEPROM
+	ldz eeAuxPos1SS
+	call StoreEePVariable8
+
+	lds xl, AuxPos2SS
+	call StoreEePVariable8		;eeAuxPos2SS
+
+	lds xl, AuxPos3SS
+	call StoreEePVariable8		;eeAuxPos3SS
+
+	lds xl, AuxPos4SS
+	call StoreEePVariable8		;eeAuxPos4SS
+
+	lds xl, AuxPos5SS
+	call StoreEePVariable8		;eeAuxPos5SS
+
+aux24:	ret
 
 aux12:	cpi t, 0x04			;PREV?
 	brne aux13
@@ -117,7 +153,7 @@ aux12:	cpi t, 0x04			;PREV?
 	dec AuxItem
 	brpl aux16
 
-	ldi AuxItem, 4
+	ldi AuxItem, 9
 
 aux16:	call Beep
 	call ReleaseButtons
@@ -127,7 +163,7 @@ aux13:	cpi t, 0x02			;NEXT?
 	brne aux14
 
 	inc AuxItem
-	cpi AuxItem, 5
+	cpi AuxItem, 10
 	brne aux16
 
 	clr AuxItem
@@ -136,9 +172,20 @@ aux13:	cpi t, 0x02			;NEXT?
 aux14:	cpi t, 0x01			;CHANGE?
 	brne aux19
 
-	ser Changes
-	ldx AuxPos1Function		;calculate variable's address
-	add xl, AuxItem
+	mov yl, AuxItem
+	lsr yl
+	mov yh, AuxItem
+	andi yh, 0x01
+	breq aux25
+
+	ldx AuxPos1SS
+	ori Changes, 0x02
+	rjmp aux26
+
+aux25:	ldx AuxPos1Function
+	ori Changes, 0x01
+
+aux26:	add xl, yl			;calculate variable's address
 	brcc aux20
 
 	inc xh
@@ -159,13 +206,27 @@ aux19:	rjmp aux11
 
 	;--- Print AUX function (string) ---
 
-PrintAuxValue:
+PrintAuxFnValue:
 
 	push t				;register T holds the item index
-	lrv X1, 36
+	lrv X1, 12
 	call PrintColonAndSpace
 	pop t
 	ldz auxfn*2
+	call PrintFromStringArray
+	call LineFeed
+	ret
+
+
+
+	;--- Print AUX stick scaling offset (string) ---
+
+PrintAuxSSValue:
+
+	push t				;register T holds the item index
+	lrv X1, 91
+	pop t
+	ldz auxss*2
 	call PrintFromStringArray
 	call LineFeed
 	ret
@@ -176,8 +237,23 @@ PrintAuxValue:
 
 LoadAuxSwitchSetup:
 
-	ldz eeAuxPos1Function
+	ldz eeAuxPos1SS
 	call GetEePVariable8
+	sts AuxPos1SS, xl
+
+	call GetEePVariable8		;eeAuxPos2SS
+	sts AuxPos2SS, xl
+
+	call GetEePVariable8		;eeAuxPos3SS
+	sts AuxPos3SS, xl
+
+	call GetEePVariable8		;eeAuxPos4SS
+	sts AuxPos4SS, xl
+
+	call GetEePVariable8		;eeAuxPos5SS
+	sts AuxPos5SS, xl
+
+	call GetEePVariable8		;eeAuxPos1Function
 	sts AuxPos1Function, xl
 
 	call GetEePVariable8		;eeAuxPos2Function
@@ -196,12 +272,45 @@ LoadAuxSwitchSetup:
 
 
 
-aux7:	.db 47, 0, 127, 9
-	.db 47, 9, 127, 18
-	.db 47, 18, 127, 27
-	.db 47, 27, 127, 36
-	.db 47, 36, 127, 45
+aux7:	.db 23, 0, 79, 9
+	.db 90, 0, 127, 9
+	.db 23, 9, 79, 18
+	.db 90, 9, 127, 18
+	.db 23, 18, 79, 27
+	.db 90, 18, 127, 27
+	.db 23, 27, 79, 36
+	.db 90, 27, 127, 36
+	.db 23, 36, 79, 45
+	.db 90, 36, 127, 45
 
 
 .undef Changes
 .undef AuxItem
+
+
+
+	;--- AUX stick scaling offset ---
+
+AddAuxStickScaling:
+
+	clr xl
+	clr xh
+	clr yh
+
+	lds yl, AuxStickScaling
+	lsr yl
+	brcc ass1
+
+	adiw x, 20			;increase aileron and elevator stick scaling
+
+ass1:	lsr yl
+	brcc ass2
+
+	adiw x, 30			;increase aileron and elevator stick scaling
+
+ass2:	b16store Temp			;increase aileron and elevator stick scaling by 0 (off), 20, 30 or 50
+	call TempDiv16
+	b16add StickScaleRoll, StickScaleRollOrg, Temp
+	b16add StickScalePitch, StickScalePitchOrg, Temp
+	ret
+

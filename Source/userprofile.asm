@@ -102,8 +102,7 @@ ups21:	ldz ups5*2			;reset the active user profile
 	ldi Item, 2			;CANCEL was pressed
 	rjmp ups10
 
-ups18:	call StopPwmQuiet		;YES was pressed. Resetting parameters
-	call InitUserProfile
+ups18:	call InitUserProfile		;YES was pressed. Resetting parameters
 	call setup_mpu6050		;update the MPU
 	call InitialSetup		;display initial setup menu
 	ret
@@ -237,8 +236,6 @@ cup11:	mov zh, yl
 	brne cup11
 
 	BuzzerOff			;yes
-	call StopPwmQuiet
-	call StartPwmQuiet
 	clr xl				;show status dialogue (XL=0 means Success)
 	rjmp cup8
 

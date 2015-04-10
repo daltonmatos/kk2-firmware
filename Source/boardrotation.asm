@@ -82,7 +82,7 @@ brd36:	cpi t, 0x01			;SELECT?
 	call PrintHeader
 
 	;text
-	ldi t, 3
+	ldi t, 4
 	ldz brr10*2
 	call PrintStringArray
 
@@ -105,10 +105,11 @@ brd8:	.db 56, 0			;arrow positions
 
 
 brr1:	.db "Mount your KK2 board", 0, 0
-brr2:	.db "according to selected", 0
-brr3:	.db "board orientation.", 0, 0
+brr2:	.db "so that the on-screen", 0
+brr3:	.db "arrow points to the", 0
+brr4:	.db "front of your model.", 0, 0
 
-brr10:	.dw brr1*2, brr2*2, brr3*2
+brr10:	.dw brr1*2, brr2*2, brr3*2, brr4*2
 
 
 

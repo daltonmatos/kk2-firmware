@@ -96,7 +96,7 @@ abv31:	cpi Item, 1
 abv32:	cpi Item, 2
 	breq abv33
 
-	b16load BatteryVoltageOffset	;adjust offset value
+	rcall LoadBatteryVoltageOffset	;adjust offset value
 	ldy -1023			;lower limit
 	ldz 1023			;upper limit
 	call NumberEdit

@@ -55,17 +55,12 @@ sbf1:	ret
 
 SBusFeatures:
 
-	clr xl
-	clr xh
-	clr yh
-
 	lds t, Channel18		;get DG2 switch position
 	tst t
 	brne ref1
 
-	cbi DigitalOut4Pin		;off. Use normal stick scaling values and set digital outputs (rudder & aux)
-	sbi DigitalOut5Pin
-	rjmp ref20
+	sbi DigitalOutPin		;off. Reset digital output (aux)
+	rjmp ref3
 
 ref1:	lds yl, DG2Functions		;on. Handle active functions
 	lsr yl
@@ -76,22 +71,7 @@ ref1:	lds yl, DG2Functions		;on. Handle active functions
 ref2:	lsr yl
 	brcc ref3
 
-	sbi DigitalOut4Pin		;set digital outputs (rudder & aux)
-	cbi DigitalOut5Pin
+	cbi DigitalOutPin		;set digital output (aux)
 
-ref3:	lsr yl
-	brcc ref4
-
-	adiw x, 20			;increase aileron and elevator stick scaling
-
-ref4:	lsr yl
-	brcc ref20
-
-	adiw x, 30			;increase aileron and elevator stick scaling
-
-ref20:	b16store Temp			;increase aileron and elevator stick scaling by 0 (off), 20, 30 or 50
-	call TempDiv16
-	b16add StickScaleRoll, StickScaleRollOrg, Temp
-	b16add StickScalePitch, StickScalePitchOrg, Temp
-	ret
+ref3:	ret
 

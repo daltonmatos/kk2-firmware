@@ -71,7 +71,7 @@ CheckEeSignature:
 	brne ces1
 
 	call GetEeVariable8
-	cpi xl, 0x03
+	cpi xl, 0x04
 	brne ces1
 
 	clr xl				;signature is OK
@@ -147,21 +147,39 @@ iup8:	movw z, y
 
 
 	ldi xl, 1 
-	call StoreEePVariable8		;eeCppmRoll
+	call StoreEePVariable8		;eeChannelRoll
 	ldi xl, 2
-	call StoreEePVariable8		;eeCppmPitch
+	call StoreEePVariable8		;eeChannelPitch
 	ldi xl, 3
-	call StoreEePVariable8		;eeCppmThrottle
+	call StoreEePVariable8		;eeChannelThrottle
 	ldi xl, 4
-	call StoreEePVariable8		;eeCppmYaw
+	call StoreEePVariable8		;eeChannelYaw
 	ldi xl, 5
-	call StoreEePVariable8		;eeCppmAux
+	call StoreEePVariable8		;eeChannelAux
 	ldi xl, 6
-	call StoreEePVariable8		;eeCppmAux2
+	call StoreEePVariable8		;eeChannelAux2
 	ldi xl, 7
-	call StoreEePVariable8		;eeCppmAux3
+	call StoreEePVariable8		;eeChannelAux3
 	ldi xl, 8
-	call StoreEePVariable8		;eeCppmAux4
+	call StoreEePVariable8		;eeChannelAux4
+
+
+	ldi xl, 2
+	call StoreEePVariable8		;eeSatChannelRoll
+	ldi xl, 3
+	call StoreEePVariable8		;eeSatChannelPitch
+	ldi xl, 1 
+	call StoreEePVariable8		;eeSatChannelThrottle
+	ldi xl, 4
+	call StoreEePVariable8		;eeSatChannelYaw
+	ldi xl, 5
+	call StoreEePVariable8		;eeSatChannelAux
+	ldi xl, 6
+	call StoreEePVariable8		;eeSatChannelAux2
+	ldi xl, 7
+	call StoreEePVariable8		;eeSatChannelAux3
+	ldi xl, 8
+	call StoreEePVariable8		;eeSatChannelAux4
 
 
 	ser xl
@@ -169,8 +187,7 @@ iup8:	movw z, y
 	call StoreEePVariable8		;eeAutoDisarm (set to YES)
 	call StoreEePVariable8		;eeButtonBeep (set to YES)
 	call StoreEePVariable8		;eeArmingBeeps (set to YES)
-	clr xl
-	call StoreEePVariable8		;eeQuietESCs (set to NO)
+	call StoreEePVariable8		;eeUnused2
 
 
 	ldx 0
@@ -189,6 +206,11 @@ iup8:	movw z, y
 
 
 	clr xl
+	call StoreEePVariable8		;eeAuxPos1SS
+	call StoreEePVariable8		;eeAuxPos2SS
+	call StoreEePVariable8		;eeAuxPos3SS
+	call StoreEePVariable8		;eeAuxPos4SS
+	call StoreEePVariable8		;eeAuxPos5SS
 	call StoreEePVariable8		;eeAuxPos1Function (set to Acro)
 	ldi xl, 3
 	call StoreEePVariable8		;eeAuxPos2Function (set to Alarm)
@@ -212,24 +234,6 @@ iup8:	movw z, y
 	call StoreEePVariable8		;eeDG2Functions
 
 
-	ldi xl, 2
-	call StoreEePVariable8		;eeSatCppmRoll
-	ldi xl, 3
-	call StoreEePVariable8		;eeSatCppmPitch
-	ldi xl, 1 
-	call StoreEePVariable8		;eeSatCppmThrottle
-	ldi xl, 4
-	call StoreEePVariable8		;eeSatCppmYaw
-	ldi xl, 5
-	call StoreEePVariable8		;eeSatCppmAux
-	ldi xl, 6
-	call StoreEePVariable8		;eeSatCppmAux2
-	ldi xl, 7
-	call StoreEePVariable8		;eeSatCppmAux3
-	ldi xl, 8
-	call StoreEePVariable8		;eeSatCppmAux4
-
-
 	ldz 0				;EEPROM signature
 	ldi xl, 0x21
 	call StoreEePVariable8
@@ -237,7 +241,7 @@ iup8:	movw z, y
 	call StoreEePVariable8
 	ldi xl, 0xAA
 	call StoreEePVariable8
-	ldi xl, 0x03
+	ldi xl, 0x04
 	call StoreEePVariable8
 
 
@@ -250,7 +254,7 @@ iup8:	movw z, y
 	ldz eeUserProfile		;set user profile #1 to be used as default
 	call WriteEeprom
 
-	clr t				;set board rotation to normal (0 degrees)
+	clr t				;set board orientation back to normal (0 degrees)
 	ldz eeBoardOrientation
 	call WriteEeprom
 

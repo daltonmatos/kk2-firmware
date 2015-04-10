@@ -2,7 +2,6 @@
 SetupHardwareForSBus:
 
 	;       76543210	;set port directions
-//	ldi t,0b00000000
 	ldi t,0b00110010	// output5, output6
 	out ddra,t
 
@@ -24,7 +23,7 @@ SetupHardwareForSBus:
 	store didr0,t
 
 	;       76543210
-	ldi t,0b11110101	;turn on pull ups on button inputs and aux, rud
+	ldi t,0b11110000	;turn on pull ups on button inputs
 	out portb,t
 
 	;       76543210

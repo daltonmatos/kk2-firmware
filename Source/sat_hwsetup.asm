@@ -4,12 +4,12 @@ SetupHardwareForSatellite:
 	;       76543210	;set port directions
 	ldi t,0b00110010	;output5, output6
 	out ddra,t
-	
+
 	;       76543210
-	ldi t,0b00001010
-//	ldi t,0b00001011	// DEBUGGING
+	ldi t,0b00001110
+//	ldi t,0b00001111	// DEBUGGING
 	out ddrb,t
-	
+
 	;       76543210
 	ldi t,0b11111100	;scl, sda, output 1-8
 	out ddrc,t
@@ -23,7 +23,7 @@ SetupHardwareForSatellite:
 	store didr0,t
 
 	;       76543210
-	ldi t,0b11110101	;turn on pull ups on button inputs and aux, rud
+	ldi t,0b11110001	;turn on pull ups on button inputs and aux pin
 	out portb,t
 
 	;       76543210
@@ -135,16 +135,16 @@ SatUsartInit:
 	sts ubrr0h, t		; Baud High Byte = 0
 	ldi t, 0x0A
 	sts ubrr0l, t		; Baud Low Byte = 10
-	
+
 	; Enable receiver and Enable Receive Data Complete Interupt, 8 data
 	;       76543210
 	ldi t,0b10010000
 	sts ucsr0b,t
-	
+
 	; Set frame format: Async, No Parity, 1 stop bit, 8 data
 	;       76543210
 	ldi t,0b00000110
 	sts ucsr0c,t
-	
+
 	ret
 

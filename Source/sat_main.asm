@@ -148,6 +148,7 @@ am1:	call PwmStart			;runtime between PwmStart and B interrupt (in PwmEnd) must 
 	call CheckSatRx
 	call Arming
 	call Logic
+	call AddAuxStickScaling
 	call RemoteTuning
 	call Imu
 	call Mixer
@@ -228,6 +229,7 @@ am13:	call Beep
 am12:	;--- Menu ---
 
 	BuzzerOff			;will prevent constant beeping in menu when 'Button Beep' is disabled
+	cbi LvaOutputPin		;will avoid constant high level on external LVA output pin
 	call StartLedSeq		;the LED flashing sequence will indicate current user profile selection
 	call StartPwmQuiet
 	call SatMainMenu

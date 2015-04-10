@@ -8,6 +8,7 @@
 
 #define LedOn		sbi portb, 3
 #define LedOff		cbi portb, 3
+#define LedToggle	sbi pinb, 3
 
 #define BuzzerOn	sbi portb, 1
 #define BuzzerOff	cbi portb, 1
@@ -21,6 +22,8 @@
 #define OutputPin7	portc, 5
 #define OutputPin8	portc, 7
 
-#define DebugOutputPin	portb, 0
-#define DigitalOut4Pin	portb, 2
-#define DigitalOut5Pin	portb, 0
+//#define DebugOutputPin	portb, 0
+
+#define LvaOutputPin	portb, 2
+
+#define DigitalOutPin	portb, 0

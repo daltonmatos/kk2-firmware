@@ -2,20 +2,9 @@
 
 
 
-IsrRollCppm:
+IsrRoll:
 
 	in SregSaver, sreg
-	lds tt, RxMode
-	cpi tt, RxModeCppm
-	breq isr2
-
-	rjmp IsrRoll
-
-isr2:	jmp IsrCppm
-
-
-
-IsrRoll:
 
 	sbis pind,3			;rising or falling?
 	rjmp rx1
@@ -79,9 +68,24 @@ rx2:	lds tt, tcnt1l			;falling, calculate the pulse length
 
 
 
-IsrThrottle:
+IsrThrottleCppm:
 
 	in SregSaver, sreg
+
+	lds tt, RxMode			;CPPM?
+	cpi tt, RxModeCppm
+	brne IsrThrottle
+
+	sbic pind, 0			;yes, rising or falling?
+
+	jmp IsrCppm
+
+	out sreg, SregSaver		;falling, exit	
+	reti
+
+
+
+IsrThrottle:
 
 	sbis pind,0			;rising or falling?
 	rjmp rx3

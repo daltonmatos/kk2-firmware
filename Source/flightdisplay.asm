@@ -123,26 +123,20 @@ udp25:	lds t, StatusCounter			;flashing status text banner
 	call PrintSelector
 
 
-udp51:	;--- Print flight mode and alarm status ---
+udp51:	;--- Print flight mode and stick scaling offset ---
 
 	lrv X1, 0				;flight mode
 	lrv Y1, 27
 	ldz flmode*2
 	rcall PrintFlightMode
 
-	rvbrflagtrue flagAlarmOn, udp52		;alarm status
+	lrv X1, 84				;stick scaling offset selected from AUX switch position
+	lds t, AuxStickScaling
+	tst t					;skip printing when zero
+	breq udp54
 
-	lds t, Channel17			;in S.Bus mode the alarm can also be activated from channel 17
-	tst t
-	breq udp53
-
-udp52:	lrv X1, 84				;alarm is active
-	ldz alarm*2
-	call PrintString
-
-udp53:	rvbrflagfalse flagGimbalMode, udp54	;skip ahead to the footer when in gimbal mode
-
-	rjmp udp20
+	ldz auxss*2
+	call PrintFromStringArray
 
 
 udp54:	;--- Print battery voltages ---

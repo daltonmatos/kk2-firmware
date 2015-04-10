@@ -78,7 +78,7 @@ mch14:	;update LCD
 	push Motor
 	push OutputType
 
-mch15:	;PWM loop
+mch15:	;PWM loop (run)
 	push Output
 	call PwmStart
 	b16mov Temp, EscLowLimit
@@ -89,9 +89,18 @@ mch15:	;PWM loop
 	b16dec Temp2
 	brne mch15
 
-	;stop motor and select next
+	b16ldi Temp2, 200			;pause for 0.5 seconds
+
+mch17:	;PWM loop (stop)
+	push Output
+	call PwmStart
 	b16clr Temp
 	rcall SetMotorOutput
+	call PwmEnd
+	pop Output
+
+	b16dec Temp2
+	brne mch17
 
 	pop OutputType
 	pop Motor

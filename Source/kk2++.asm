@@ -18,12 +18,12 @@
 
 	jmp reset		; Reset
 	jmp IsrPitch		; External Interrupt Request 0
-	jmp IsrRollCppm		; External Interrupt Request 1
+	jmp IsrRoll		; External Interrupt Request 1
 	jmp unused		; External Interrupt Request 2
 	jmp unused		; Pin Change Interrupt Request 0
 	jmp IsrYawAux		; Pin Change Interrupt Request 1
 	jmp unused		; Pin Change Interrupt Request 2
-	jmp IsrThrottle		; Pin Change Interrupt Request 3
+	jmp IsrThrottleCppm	; Pin Change Interrupt Request 3
 	jmp unused		; Watchdog Time-out Interrupt
 	jmp unused		; Timer/Counter2 Compare Match A
 	jmp unused		; Timer/Counter2 Compare Match B

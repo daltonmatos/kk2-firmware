@@ -154,7 +154,6 @@ pwm58:	;loop setup
 
 pwm50:	b16load_array PwmOutput, Out1
 
-
 	lds t, OutputTypeBitmaskCopy		;ESC or SERVO?
 	lsr t
 	sts OutputTypeBitmaskCopy, t
@@ -430,14 +429,7 @@ StartPwmQuiet:
 	clr t				;all PWM outputs are low
 	sts flagPwmState, t
 
-	ldz eeQuietESCs			;abort if this feature is switched off
-	call GetEePVariable8
-	tst xl
-	brne pms1
-
-	ret
-
-pms1:	call LoadMixerTable		;load the mixer table in case some settings were changed
+	call LoadMixerTable		;load the mixer table in case some settings were changed
 	call UpdateOutputTypeAndRate
 
 	ldi t, 217			;set timer2 to generate an interrupt 0.5ms from now (256 - 39 = 217)

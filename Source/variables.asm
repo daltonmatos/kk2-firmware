@@ -113,7 +113,7 @@ FixedPointVariableEnumerate168 StickScaleYaw
 FixedPointVariableEnumerate168 StickScaleThrottle
 FixedPointVariableEnumerate168 MixFactor
 
-FixedPointVariableEnumerate168 StickScaleRollOrg	;variables used for stick scaling adjustments in S.Bus mode
+FixedPointVariableEnumerate168 StickScaleRollOrg	;variables used for stick scaling offset
 FixedPointVariableEnumerate168 StickScalePitchOrg
 
 FixedPointVariableEnumerate168 StickDeadZone
@@ -353,7 +353,13 @@ RamVariableEnumerate8 AuxPos2Function
 RamVariableEnumerate8 AuxPos3Function
 RamVariableEnumerate8 AuxPos4Function
 RamVariableEnumerate8 AuxPos5Function
+RamVariableEnumerate8 AuxPos1SS
+RamVariableEnumerate8 AuxPos2SS
+RamVariableEnumerate8 AuxPos3SS
+RamVariableEnumerate8 AuxPos4SS
+RamVariableEnumerate8 AuxPos5SS
 RamVariableEnumerate8 Aux4SwitchPosition
+RamVariableEnumerate8 AuxStickScaling
 
 RamVariableEnumerate8 ButtonDelay
 RamVariableEnumerate8 BtnReversed		;false = normal button order, true = reversed (4 - 3 - 2 - 1)
@@ -398,6 +404,8 @@ RamVariableEnumerate8 TuningRate		;0=invalid, 1=Low, 2=Medium, 3=High
 
 RamVariableEnumerate8 TimeoutCounter
 
+RamVariableEnumerate8 ChannelCount
+RamVariableEnumerate8 ChannelCountArmed
 RamVariableEnumerate8 CppmChannelCount
 
 RamVariableEnumerate8 CppmPulseStartL
@@ -516,8 +524,13 @@ EEVariableEnumerate8 eeUserProfile
 EEVariableEnumerate8 eeEscCalibration
 EEVariableEnumerate16 eeBatteryVoltageOffset
 EEVariableEnumerate8 eeGimbalMode
-EEVariableEnumerate8 eeErrorLogState
 EEVariableEnumerate8 eeButtonsReversed
+EEVariableEnumerate8 eeBoardOrientation		;0=normal, 1=90 degrees, 2=180 degrees and 3=270 degrees
+
+EEVariableEnumerate8 eeErrorLogState
+EEVariableEnumerate8 eeErrorCode
+EEVariableEnumerate8 eeErrorTimeSec
+EEVariableEnumerate8 eeErrorTimeMin
 
 EEVariableEnumerate16 eeStickScaleRoll
 EEVariableEnumerate16 eeStickScalePitch
@@ -546,11 +559,20 @@ EEVariableEnumerate8 eeChannelAux2
 EEVariableEnumerate8 eeChannelAux3
 EEVariableEnumerate8 eeChannelAux4
 
+EEVariableEnumerate8 eeSatChannelRoll		;channel mapping for Satellite mode
+EEVariableEnumerate8 eeSatChannelPitch
+EEVariableEnumerate8 eeSatChannelThrottle
+EEVariableEnumerate8 eeSatChannelYaw
+EEVariableEnumerate8 eeSatChannelAux
+EEVariableEnumerate8 eeSatChannelAux2
+EEVariableEnumerate8 eeSatChannelAux3
+EEVariableEnumerate8 eeSatChannelAux4
+
 EEVariableEnumerate8 eeLinkRollPitch		;true=on  false=off
 EEVariableEnumerate8 eeAutoDisarm		;true=on  false=off
 EEVariableEnumerate8 eeButtonBeep		;true=on  false=off
 EEVariableEnumerate8 eeArmingBeeps		;true=on  false=off
-EEVariableEnumerate8 eeQuietESCs		;true=on  false=off
+EEVariableEnumerate8 eeUnused2			;true=on  false=off
 
 EEVariableEnumerate16 eeCamRollGain
 EEVariableEnumerate16 eeCamRollOffset
@@ -563,6 +585,11 @@ EEVariableEnumerate16 eeCamPitchHomePos
 EEVariableEnumerate8 eeSensorsCalibrated
 EEVariableEnumerate8 eeMotorLayoutOk
 
+EEVariableEnumerate8 eeAuxPos1SS
+EEVariableEnumerate8 eeAuxPos2SS
+EEVariableEnumerate8 eeAuxPos3SS
+EEVariableEnumerate8 eeAuxPos4SS
+EEVariableEnumerate8 eeAuxPos5SS
 EEVariableEnumerate8 eeAuxPos1Function
 EEVariableEnumerate8 eeAuxPos2Function
 EEVariableEnumerate8 eeAuxPos3Function
@@ -576,21 +603,6 @@ EEVariableEnumerate8 eeMpuAccCfg
 EEVariableEnumerate8 eeTuningRate
 
 EEVariableEnumerate8 eeDG2Functions
-
-EEVariableEnumerate8 eeSatChannelRoll		;channel mapping for Satellite mode
-EEVariableEnumerate8 eeSatChannelPitch
-EEVariableEnumerate8 eeSatChannelThrottle
-EEVariableEnumerate8 eeSatChannelYaw
-EEVariableEnumerate8 eeSatChannelAux
-EEVariableEnumerate8 eeSatChannelAux2
-EEVariableEnumerate8 eeSatChannelAux3
-EEVariableEnumerate8 eeSatChannelAux4
-
-EEVariableEnumerate8 eeErrorCode
-EEVariableEnumerate8 eeErrorTimeSec
-EEVariableEnumerate8 eeErrorTimeMin
-
-EEVariableEnumerate8 eeBoardOrientation		;0=normal, 1=90 degrees, 2=180 degrees and 3=270 degrees
 
 
 

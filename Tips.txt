@@ -57,8 +57,3 @@ Watching your model fall out of the sky for no obvious reason can be very frustr
 2. Battery voltages: If the logged battery voltage (i.e. second value on the "Batt:" line on the SAFE screen) is very low this could mean that one or more ESCs shut down due to low battery voltage or intermittent connection. This won't work unless the the flight battery is connected to the KK2 battery monitor connector (BEWARE! Pay attention to the pin arrangement and battery polarity!). Also remember to set your Low Voltage Alarm.
 
 3. Flight timer: If the timer value in the upper left corner of the SAFE screen reads zero (i.e. 00:00) when you arrive at the crash site then this means that the board was reset due to an intermittent power failure or brown-out, so check your wiring, connectors and BEC/ESCs. Avoid powering servos from the 5V supply used for the KK2 controller (M1 or the receiver side).
-
-
-Using the KK2 Mini with CPPM input
-==================================
-The KK2 Mini board has just a single row of RX input pins where only the throttle input has adjacent power pins. This means that you'll have to modify your RX cable if you want to use this board with my firmware in CPPM mode, otherwise your receiver won't get 5V power. The signal wire (usually the white one) can quite easily be removed by lifting the flip and pulling it out if its connector. You can then place the white wire into an empty servo connector and position it so that it connects to the aileron (CPPM) pin.

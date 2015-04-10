@@ -72,6 +72,7 @@ CppmMain:
 	sts RxFrameValid, t
 	sts TimeoutCounter, t
 	sts CppmChannelCount, t
+	sts ChannelCount, t
 
 	ldz Channel1L
 	sts CppmPulseArrayAddressL, zl
@@ -155,6 +156,7 @@ cm1:	call PwmStart			;runtime between PwmStart and B interrupt (in PwmEnd) must 
 	call CheckCppmRx
 	call Arming
 	call Logic
+	call AddAuxStickScaling
 	call RemoteTuning
 	call Imu
 	call Mixer
@@ -235,6 +237,7 @@ cm13:	call Beep
 cm12:	;--- Menu ---
 
 	BuzzerOff			;will prevent constant beeping in menu when 'Button Beep' is disabled
+	cbi LvaOutputPin		;will avoid constant high level on external LVA output pin
 	call StartLedSeq		;the LED flashing sequence will indicate current user profile selection
 	call StartPwmQuiet
 	call CppmMainMenu

@@ -9,9 +9,13 @@ sen1:	call ReadSensors
 
 	call LcdClear6x8
 
-	ldi t, 6			;print all text labels first
+	;labels
+	ldi t, 6
 	ldz sen19*2
 	call PrintStringArray
+
+	;values
+	set				;set the T flag to indicate that sensor test is running
 
 	lrv Y1, 1			;gyro X
 	b16load GyroPitch
@@ -23,8 +27,6 @@ sen1:	call ReadSensors
 	b16load GyroYaw			;gyro Z
 	rcall PrintGyroValue
 
-	set				;set the T flag to indicate that sensor test is running
-
 	b16load AccX			;acc X
 	ldz sen21*2
 	rcall PrintAccValue
@@ -34,7 +36,7 @@ sen1:	call ReadSensors
 	rcall PrintAccValue
 
 	b16load AccZ			;acc Z
-	ldz sen23*2
+	ldz notext*2
 	rcall PrintAccValue
 
 	;footer
@@ -61,6 +63,7 @@ sen16:	jmp sen1
 
 
 GyroCheck:
+
 	ldy GyroLowLimit
 	rcall GetGyroLimit16		;compensate for selected gyro configuration
 	call CmpXy
@@ -75,49 +78,19 @@ GyroCheck:
 	rjmp sen15
 
 AccCheck:
+
 	ldy AccLowLimit
 	rcall GetAccLimit16		;compensate for selected ACC configuration
 	call CmpXy
 	brlt sen14
 
-	brts sen11
-
-	ldy AccZHighLimit		;calibrating ACC. Use higher limit due to gravity
-	rjmp sen12
-
-sen11:	ldy AccHighLimit		;testing ACC. Use lower limit
-
-sen12:	rcall GetAccLimit16		;compensate for selected ACC configuration
+	ldy AccZHighLimit
+	rcall GetAccLimit16		;compensate for selected ACC configuration
 	call CmpXy
 	brge sen14
 
 	ldi t, 1			;OK
-	brtc sen15			;skip ahead when ACC calibration is running
-
-	ldi yl, 40			;will print text (Forward, Back, Left and Right) when the board is slightly tilted
-	rcall GetAccLimit8		;compensate for selected ACC configuration
-
-	call CmpXy			;positive tilt limit (40, 20, 10 or 5, corresponding to 2g, 4g, 8g and 16g) for text display
-	brge sen17
-
-	neg yl				;negative tilt limit
-	inc yl
-	ser yh
-	call CmpXy
-	brlt sen18
-
-	rjmp sen15			;OK
-
-sen17:	clr t
-
-sen18:	lds xl, BoardOrientation	;compensate for +/- 90 degrees board rotation
-	andi xl, 0x01
-	add t, xl
-
-	ldi xl, 76
-	sts X1, xl
-	call PrintFromStringArray
-	ret
+	rjmp sen15
 
 sen14:	clr t				;not OK
 	sts flagSensorsOk, t
@@ -130,16 +103,55 @@ sen15:	ldi xl, 76
 
 
 
+AccDirectionText:
+
+	ldi yl, 32			;will print text (Forward, Back, Left and Right) when the board is slightly tilted
+	rcall GetAccLimit8		;compensate for selected ACC configuration
+	ldi t, 1
+
+	call CmpXy			;positive tilt limit (32, 16, 8 or 4, corresponding to 2g, 4g, 8g and 16g) for text display
+	brge sen17
+
+	neg yl				;negative tilt limit
+	inc yl
+	ser yh
+	call CmpXy
+	brlt sen18
+
+	ret				;no text is printed when the board isn't tilted enough
+
+sen17:	clr t
+
+sen18:	lds xl, BoardOrientation	;compensate for +/- 90 degrees board rotation
+	andi xl, 0x01
+	add t, xl			;normal (XL=0) or reversed (XL=1) axis
+
+	ldi xl, 76
+	sts X1, xl
+	call PrintFromStringArray
+	ret
+
+
+
 PrintGyroValue:
+
 	lrv X1, 48
-	call Print16Signed 
-	rcall GyroCheck
+	call Print16Signed
+	brts pav1
+
+	rcall GyroCheck			;print "OK" or "Not OK" only during sensor calibration
 	rjmp pav1
 
 PrintAccValue:
+
 	lrv X1, 48
-	call Print16Signed 
-	rcall AccCheck
+	call Print16Signed
+	brts pav2
+
+	rcall AccCheck			;print "OK" or "Not OK" only during sensor calibration
+	rjmp pav1
+
+pav2:	rcall AccDirectionText		;print tilt direction during sensor test only
 
 pav1:	call LineFeed
 	ret
@@ -218,7 +230,8 @@ sen13:	.db "Not OK", 0, 0
 
 sen19:	.dw sen2*2, sen3*2, sen4*2, sen5*2, sen6*2, sen7*2
 sen20:	.dw sen13*2, ok*2
-sen21:	.dw fwd*2, rev*2, fwd*2
+
+sen21:	.dw fwd*2, rev*2, fwd*2		;normal and reversed tilt directions
 sen22:	.dw left*2, right*2, left*2
-sen23:	.dw ok*2, ok*2, ok*2
+
 

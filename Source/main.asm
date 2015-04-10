@@ -160,6 +160,7 @@ ma1:	call PwmStart			;runtime between PwmStart and B interrupt (in PwmEnd) must 
 	call GetStdRxChannels
 	call Arming
 	call Logic
+	call AddAuxStickScaling
 	call Imu
 	call Mixer
 	call GimbalStab

@@ -972,6 +972,10 @@ pos5:	.db "Pos 5", 0
 rate1:	.db "LOW", 0
 rate2:	.db "MEDIUM", 0, 0
 rate3:	.db "HIGH", 0, 0
+ss0:	.db "SS +0", 0
+ss20:	.db "SS +20", 0, 0
+ss30:	.db "SS +30", 0, 0
+ss50:	.db "SS +50", 0, 0
 
 	;arrays
 yesno:	.dw no*2, yes*2
@@ -979,5 +983,6 @@ tunmode:.dw off*2, ail*2, ele*2, rudd*2, slgain*2, sltrim*2, gimbal*2
 lmh:	.dw null*2, rate1*2, rate2*2, rate3*2
 auxtxt:	.dw pos1*2, pos2*2, pos3*2, pos4*2, pos5*2
 auxfn:	.dw acro*2, slmix*2, normsl*2, alarm*2
+auxss:	.dw ss0*2, ss20*2, ss30*2, ss50*2
 aux4txt:.dw locked*2, off*2, home*2
 rxch:	.dw ail*2, ele*2, thr*2, rudd*2, aux*2
