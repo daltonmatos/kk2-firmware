@@ -1,0 +1,63 @@
+Revision 1:
+-----------
+
+* The S.Bus serial protocol was updated to support receivers in FASSTest mode.
+* The S.Bus Status screen now displays the highest frame loss value logged (%) in addition to the real-time value (%).
+* The S.Bus Failsafe flag will now trigger the Lost Model Alarm.
+* Frame loss lower than 15% will no longer display a status message on the SAFE screen and prevent arming.
+* Battery voltage is logged and displayed on the SAFE screen.
+* Two new gimbal modes, LOCK and HOME, are controlled from a 3-way switch on channel 8. Home position is configurable.
+* Added the "SL Mixing" parameter to the Stick Scaling screen. This adjusts the stick input sensitivity in all "SL Mixed" modes.
+* SL mixing rate is now configurable. The old modes correspond to a value of 5 (LOW), 10 (MEDIUM) and 20 (HIGH).
+* Flight mode replaced 'Self-level' on the SAFE screen and will indicate "ACRO", "SL MIXING" or "NORMAL SL".
+* LED flashing in sync with the LVA (Low Voltage Alarm) beeps.
+* LED will flash rapidly for a few seconds after arming if the Low Voltage Alarm value is set too low.
+* No access to the Mixer Editor or the Show Motor Layout screen unless a motor layout is selected.
+* The Lost Model Alarm will sound after 20 seconds (i.e. after the Auto Disarm countdown).
+* ACC Trim values can be tuned remotely.
+* The Confirmation dialogue now has a header ("CONFIRM") and is also more informative.
+* A confirmation beep is produced when the AUX switch is moved to a new position.
+* ESC throttle calibration is now a lot safer since it will require enabling through the KK2 menu before it can be accessed.
+* Improved button handling on the main menu. Pushing button 4 (MENU) on the SAFE screen and holding it down for too long will no longer activate a menu item.
+* Fixed a bug that prevented remote tuning of SL P-gain from working.
+* Fixed a bug in the Number Editor (original firmware) that allowed setting a value to zero (CLR) when the lower limit was higher.
+* Fixed a bug in the original firmware that kept the "Link Roll Pitch" flag from being updated until the user returned to the SAFE screen.
+* Fixed a bug that affected SL P-gain when switching from mixed to normal SL mode. SL P-gain remained on its previous value instead of being reloaded.
+* The status text on the SAFE screen will now read "Tuning Ail+Ele" if tuning aileron when linked with elevator.
+
+
+Revision 2:
+-----------
+
+* M7 and M8 outputs are now controlled by using a 16 bit timer to make them (almost) jitter-free.
+* The DualCopter layout was renamed "DualCopter II" and both servos were copied to M7/M8 (reduced jitter).
+* The TriCopter layout was renamed "Tricopter II" and a second yaw servo was added to M7 (reduced jitter).
+* Bug fixed: The "Tuning Aileron" text wasn't displayed on the SAFE screen when aileron and elevator was un-linked.
+* Replaced the "Calibrating ESCs..." text with "ESC CALIBRATION" to make it less confusing.
+* Selecting "ESC Calibration" from the main menu will now display a confirmation dialogue window.
+* The tuning rate setting is now remembered.
+* Removed the S.Bus Status screen.
+* A 'Failsafe' condition is now cleared by visiting the KK2 menu.
+* Added the digital channel (DG1 aka. channel 17) to the second Receiver Test screen.
+* Frame loss will no longer display a status message on the SAFE screen and prevent arming.
+* Increased the gimbal offset resolution (10x). The gimbal HOME position values now go from -1000 to 1000.
+* PWM output resolution increased from 555 to 625 steps on M1 to M6 and from 555 to 2500 steps on M7 and M8.
+* ESCs will now be quiet while browsing the KK2 menus. This feature can be switched on/off from the Mode Settings screen.
+* The Channel 7 value will now remain zero on the Remote Tuning screen when SL Gain is selected.
+
+
+Revision 3:
+-----------
+
+* RX channel 6 will now control gimbal pitch offset while channel 7 will control roll offset.
+* RX channel 6 now controls pitch and channel 7 controls roll when remotely tuning ACC trims and gimbal gains.
+* LVA beeps are now limited to 1/4 second.
+* New motor layout: V-Tail Hunter
+* The status text on the SAFE screen will now be highlighted (and flashing) when attention is needed.
+* New status message: "Check throttle level" will be displayed when the throttle stick is above idle position (preventing arming).
+* On the Receiver Test screen, the throttle text now says "Idle" when the throttle actually IS idle. This makes the lower throttle endpoint adjustment easier.
+* The main menu was rearranged a bit so that the Remote Tuning item now is on top.
+* A few minor GUI changes.
+* Bug fixed: Negative gimbal gain values couldn't be tuned remotely (i.e. they were forced to zero).
+* Improved the Lost Model Alarm feature. The delay is now reset every time the switch (channel 17/DG1) changes state.
+* The Lost Model Alarm will now sound (instead of the "Arming beeps") if the throttle level is set to idle during a failsafe condition.
