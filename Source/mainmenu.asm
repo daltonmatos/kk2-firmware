@@ -7,7 +7,7 @@ men23:	ldy men1 * 2
 	lds xl, MainMenuListYposSave
 	lds xh, MainMenuCursorYposSave
 
-	ldi t, 17		;number of menu items
+	ldi t, 18		;number of menu items
 
 	call Menu
 
@@ -49,6 +49,7 @@ men1:	.db "Remote Tuning       "
 	.db "Mode Settings       "
 	.db "Misc. Settings      "
 	.db "Gimbal Settings     "
+	.db "Channel Mapping     "
 	.db "Receiver Test       "
 	.db "Sensor Test         "
 	.db "ACC Calibration     "
@@ -61,13 +62,14 @@ men1:	.db "Remote Tuning       "
 	.db "LCD Contrast        "
 
 
-men18:	.dw RemoteTuning
+men18:	.dw RemoteTuningDlg
 	.dw PiEditor
 	.dw SelflevelSettings
 	.dw StickScaling
 	.dw ModeSettings
 	.dw MiscSettings
 	.dw GimbalSettings
+	.dw ChannelMapping
 	.dw RxTest
 	.dw SensorTest
 	.dw CalibrateSensors

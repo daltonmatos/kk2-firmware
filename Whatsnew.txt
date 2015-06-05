@@ -61,3 +61,24 @@ Revision 3:
 * Bug fixed: Negative gimbal gain values couldn't be tuned remotely (i.e. they were forced to zero).
 * Improved the Lost Model Alarm feature. The delay is now reset every time the switch (channel 17/DG1) changes state.
 * The Lost Model Alarm will now sound (instead of the "Arming beeps") if the throttle level is set to idle during a failsafe condition.
+
+
+Revision 4:
+-----------
+
+* Channel mapping (configurable for all input channels).
+* Flight timer (displayed on the SAFE screen) runs while armed and throttle is above idle.
+* Arming is refused unless aileron and elevator channels are centred.
+* New status message: "Check aileron level." will be displayed if the aileron channel is more than 2.5% off-center.
+* New status message: "Check elevator level." will be displayed if the elevator channel is more than 2.5% off-center.
+* New status message: "RX signal was lost!" will be displayed if the receiver for any reason has stopped outputting valid S.Bus data during flight.
+* New status message: "Bad channel mapping" will be displayed if incorrect channel mapping values are detected.
+* Gimbal offsets can be set from the Gimbal Settings screen. Parameters for Home position were moved to the second Gimbal Settings screen.
+* On the Receiver Test screen the aileron, elevator, rudder, aux2 and aux3 texts now show "Center" when these channels are centred precisely.
+* ESC calibration now has more on-screen (usage) information.
+* When roll and pitch are linked only one set of PI parameters are displayed for "Ail+Ele".
+* Removed code for "hidden" button (PREV) on the Show Motor Layout screen.
+* Miscellaneous GUI changes and code optimizations.
+* Bug fixed: The Receiver Test screen will now be updated also when serial communication has timed out.
+* Bug fixed: Button held down during start-up will no longer trigger the menu.
+* Bug fixed: Remote tuning parameters are now loaded from EEPROM when the Remote Tuning screen is accessed.

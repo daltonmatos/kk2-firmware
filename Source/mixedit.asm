@@ -42,9 +42,8 @@ med50:	push t
 	rcall extend
 	lrv X1, 48
 	call PrintColonAndSpace
-	call Print16Signed
+	call PrintNumberLF
 	lrv X1, 0
-	rvadd Y1, 9
 	pop t
 	inc t
 	cpi t, 5
@@ -189,6 +188,8 @@ nad2:	.db 58, 59, 59, 61, 70, 70, 0, 0	;the text "ACCESS" in the mangled 12x16 f
 nad3:	.db "A Motor Layout must", 0
 nad4:	.db "be loaded first.", 0, 0
 
+nadtxt:	.dw nad3*2, nad4*2
+
 
 
 	;--- Show the "No access" dialogue ---
@@ -196,23 +197,17 @@ nad4:	.db "be loaded first.", 0, 0
 ShowNoAccessDlg:
 
 	call LcdClear12x16
-	lrv X1, 10
+
+	lrv X1, 10			;header
 	ldz nad1*2
 	call PrintString
 	rvadd X1, 12
 	ldz nad2*2
-	call PrintString
+	call PrintHeader
 
-	lrv FontSelector, f6x8
-	lrv X1, 0
-	lrv Y1, 17
-	ldz nad3*2
-	call PrintString
-
-	lrv X1, 0
-	lrv Y1, 26
-	ldz nad4*2
-	call PrintString
+	ldi t, 2			;print "A Motor Layout must be loaded first."
+	ldz nadtxt*2
+	call PrintStringArray
 
 	;footer
 	call PrintOkFooter

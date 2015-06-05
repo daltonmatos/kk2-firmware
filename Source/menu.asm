@@ -56,7 +56,7 @@ men5:	lpm t, z+
 	dec Counter
 	brne men6
 
-	ldi t,8			;highligth the choosen line
+	ldi t, 8		;highligth the choosen line
 	mul t, CursorYpos
 	mov t, r0
 	subi t, -7
@@ -68,9 +68,10 @@ men5:	lpm t, z+
 	lrv PixelType, 0
 	call HilightRectangle
 
-	lrv X1,0		;print the footer
-	lrv Y1,57
-	ldz men12*2
+	;footer
+	lrv X1, 0
+	lrv Y1, 57
+	ldz updown*2
 	call PrintString
 
 	call LcdUpdate
@@ -158,5 +159,4 @@ men11:	rjmp men2
 .undef NumberOfItems
 
 
-men12:	.db "BACK  UP   DOWN ENTER", 0
 

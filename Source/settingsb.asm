@@ -5,22 +5,26 @@
 
 MiscSettings:
 
-stt11:	call LcdClear6x8
-	clr t
-	ldz eeEscLowLimit
+	clr Item
 
-stt21:	push t			;the T register is a loop counter, but it also acts as a parameter to the 'PrintFromStringArray' function
-	pushz			;the Z register must be saved here since it is also used to print text
+stt11:	call LcdClear6x8
+
+	;labels
+	ldi t, 5
 	ldz stt20*2
-	call PrintFromStringArray
-	popz
+	call PrintStringArray
+
+	;values
+	lrv Y1, 1
+	ldz eeEscLowLimit
+	ldi t, 5
+
+stt21:	push t
+	lrv X1, 108
 	call GetEeVariable16
- 	call Print16Signed
-	lrv X1, 0
-	rvadd Y1, 9
+ 	call PrintNumberLF
 	pop t
-	inc t
-	cpi t, 5		;number of text lines printed
+	dec t
 	brne stt21
 
 	;footer
@@ -82,7 +86,7 @@ stt14:	rjmp stt11
 stt1:	.db "Minimum Throttle: ", 0, 0
 stt3:	.db "Height Dampening: ", 0, 0
 stt4:	.db "Height D. Limit : ", 0, 0
-stt5:	.db "Alarm 1/10 volts: ", 0, 0
+stt5:	.db "Alarm 1/10 Volts: ", 0, 0
 stt6:	.db "Servo Filter    : ", 0, 0
 
 stt20:	.dw stt1*2, stt3*2, stt4*2, stt5*2, stt6*2

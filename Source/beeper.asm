@@ -37,9 +37,6 @@ bee11:	;--- Make a short beep regulary when armed and throttle at idle ---
 	rvbrflagtrue flagAlarmOverride, bee4			;skip this section if failsafe was trigged
 
 	b16dec ArmedBeepDds
-
-	b16clr Temp
-	b16cmp ArmedBeepDds, Temp
 	brge bee4
 
 	b16ldi ArmedBeepDds, 400*2
@@ -81,8 +78,6 @@ bee9:	b16ldi Temp, 937.5 * 3					;30 minutes without activity? (arming or disarm
 	brlt bee6
 
 bee7:	b16dec NoActivityDds					;yes, beep once every 5s
-	b16clr Temp
-	b16cmp NoActivityDds, Temp
 	brge bee6
 
 	b16ldi NoActivityDds, 400*5

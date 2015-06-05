@@ -55,7 +55,7 @@ unused:	reti
 
 reset:
 
-	ldi t,low(ramend)	;initalize stack pointer
+	ldi t,low(ramend)		;initalize stack pointer
 	out spl,t
 	ldi t,high(ramend)
 	out sph,t
@@ -68,10 +68,7 @@ reset:
 
 	;--- Initialize LCD ---
 
-	ldz eeLcdContrast
-	call ReadEeprom
-	sts LcdContrast, t
-
+	call LoadLcdContrast
 	call LcdUpdate
 	call LcdClear
 	call LcdUpdate
@@ -89,7 +86,12 @@ reset:
 
 	b16ldi BatteryVoltageLogged, 1023
 
+	b16ldi FlightTimer, 398		;tuned for better accuracy (1 second)
+
 	clr t
+	sts Timer1sec, t
+	sts Timer1min, t
+
 	sts TuningMode, t
 
 	sts flagPwmGen, t
@@ -98,16 +100,21 @@ reset:
 
 	ldi xl, AuxCounterInit
 	sts AuxCounter, xl
-	sts AuxSwitchPosition, t
+	ldi xl, 2
+	sts AuxSwitchPosition, xl
 	ldi xl, 1
 	sts Aux4SwitchPosition, xl
 
+	sts flagAileronCentered, t	;set to false
+	sts flagElevatorCentered, t
+
 	sts flagSBusFrameValid, t
+	sts TimeoutCounter, t
+
 	sts Channel17, t
 	sts Channel18, t
-	call ClearSBusErrors
+	sts Failsafe, t
 
-	clr t
 	sts RxBufferIndex, t
 	sts RxBufferIndexOld, t
 	sts RxBufferState, t
@@ -137,37 +144,34 @@ reset:
 	load t, pinb			;read buttons. Will not use 'GetButtons' here because of delay
 	com t
 	swap t
-	andi t, 0x0f			;any button pressed?
+	andi t, 0x0F			;any button pressed?
 	breq ma2
 
-	call FlightInit			;some variables must be initialized prior to ESC calibration
-	call EscThrottleCalibration
+	call EscThrottleCalibration	;yes, do calibration
 	rjmp ma2
 
 
+	;--- Misc. ---
 
-	;--- Reset LCD contrast if button #1 is held down ---
+ma5:	rvsetflagtrue Mode		;will prevent buttons held down during start-up from opening the menu
 
-ma5:	call GetButtons
+
+	;--- Reset LCD contrast when button #1 is held down ---
+
+	call GetButtons
 	cpi t, 0x08
 	brne ma2
 
 	call SetDefaultLcdContrast
 
 
-
 	;--- Flight loop init ---
 
 ma2:	call FlightInit
 
-	lds t, StatusBits		;clear the failsafe flag
-	cbr t, SBusFailsafe
-	sts StatusBits, t
-
 	;       76543210		;clear pending OCR1A and B interrupt
 	ldi t,0b00000110
 	store tifr1, t
-
 
 
 	;--- Flight loop ---
@@ -177,7 +181,7 @@ ma1:	call PwmStart			;runtime between PwmStart and B interrupt (in PwmEnd) must 
 	call GetSBusFlags
 	call Arming
 	call Logic
-	call Tuning
+	call RemoteTuning
 	call Imu
 	call HeightDampening
 	call Mixer
@@ -194,7 +198,7 @@ ma1:	call PwmStart			;runtime between PwmStart and B interrupt (in PwmEnd) must 
 	lds t, flagArmed
 	sts flagArmedOldState, t
 
-ma11:	rvbrflagfalse flagLcdUpdate, ma3;update LCD once if flagLcdUpdate is true 
+ma11:	rvbrflagfalse flagLcdUpdate, ma3;update LCD once if flagLcdUpdate is true
 
 	rvsetflagfalse flagLcdUpdate
 	call UpdateFlightDisplay
@@ -207,14 +211,18 @@ ma7:	load t, pinb			;read buttons
 	swap t
 	andi t, 0x01			;MENU?
 	brne ma4
-	
-	rjmp ma1			;no, go to start of the loop	
+
+	rvsetflagfalse Mode		;no, reset Mode and then go to start of the loop
+
+ma8:	rjmp ma1
 
 
 	;--- Menu ---
 
+ma4:	rvbrflagtrue Mode, ma8		;abort if the button hasn't been released since start-up
+
 ;	         76543210		;disable OCR1A and B interrupt
-ma4:	ldi t, 0b00000000
+	ldi t, 0b00000000
 	store timsk1, t
 
 	call Beep
@@ -224,8 +232,10 @@ ma4:	ldi t, 0b00000000
 	call StopPwmQuiet
 	rjmp ma2
 
+
 .include "gimbal.asm"
 .include "trigonometry.asm"
+.include "channelmapping.asm"
 .include "setuphw.asm"
 .include "version.asm"
 .include "reset.asm"

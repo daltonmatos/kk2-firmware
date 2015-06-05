@@ -3,18 +3,41 @@ Logic:
 
 	;--- Live update ---
 
-	rvbrflagtrue flagArmed, liv1		;skip this section if armed	
+	rvbrflagtrue flagArmed, liv1		;skip this section when armed
 
 	b16dec LiveUpdateTimer			;set flagLcdUpdate every second
-	b16clr Temp
-	b16cmp LiveUpdateTimer, Temp
-	brge lol10
+	brlt liv2
 
-	rvsetflagtrue flagLcdUpdate
+	rjmp lol10
+
+liv2:	rvsetflagtrue flagLcdUpdate
 	b16ldi LiveUpdateTimer, 400
 	rjmp lol10
 
 liv1:
+
+	;--- Flight timer update ---
+
+	rvbrflagtrue flagThrottleZero, tim1	;skip this section if throttle is zero
+
+	b16dec FlightTimer
+	brne tim1
+
+	b16ldi FlightTimer, 398			;tuned for better accuracy
+
+	lds xl, Timer1sec			;flight timer (running while motors are spinning)
+	inc xl
+	cpi xl, 60
+	brne tim2
+
+	lds xh, Timer1min
+	inc xh
+	sts Timer1min, xh
+	clr xl
+
+tim2:	sts Timer1sec, xl
+
+tim1:
 
 	;--- Flashing LED if status bits are set while armed ---
 
@@ -34,7 +57,6 @@ lol1:	ldi t, 40
 	lds zl, FlashingLEDCount		;update counter every time the LED is turned on
 	dec zl
 	sts FlashingLEDCount, zl
-	tst zl
 	brne lol5
 
 	lds zl, StatusBits			;clear the LVA Warning bit to end flashing
@@ -93,7 +115,6 @@ asp3:	ser xl					;SL Stick Mixing is active
 	sts flagSlStickMixing, xl
 
 asp20:
-
 
 	;--- LED flashing in sync with the LVA beeps ---
 

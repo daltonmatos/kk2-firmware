@@ -75,23 +75,23 @@ im55:
 
 	b16ldi Temp, 20					;skip correction at angles greater than +-20
 	b16cmp AccAnglePitch, Temp
-	longbrge im40
+	longbrge im41
 	b16cmp AccAngleRoll, Temp
-	longbrge im40
+	longbrge im41
 
 	b16neg Temp
 	b16cmp AccAnglePitch, Temp
-	longbrlt im40
+	longbrlt im41
 	b16cmp AccAngleRoll, Temp
-	longbrlt im40
+	longbrlt im41
 
 	b16ldi Temp, 60					;skip correction if vertical accelleration is outside 0.5 to 1.5 G
 	b16cmp AccZfilter, Temp
-	longbrge im40
+	longbrge im41
 
 	b16neg Temp
 	b16cmp AccZfilter, Temp
-	longbrlt im40
+	longbrlt im41
 	 
 	b16sub Temp, EulerAngleRoll, AccAngleRoll	;add roll correction
 	b16fdiv Temp, 2
@@ -100,11 +100,6 @@ im55:
 	b16sub Temp, EulerAnglePitch, AccAnglePitch	;add pitch correction
 	b16fdiv Temp, 2
 	b16add GyroPitchVC, GyroPitchVC, Temp
-
-	;rvsetflagtrue flagDebugBuzzerOn
-	;rjmp im41
-
-im40:	;rvsetflagfalse flagDebugBuzzerOn
 
 im41:
 
@@ -125,11 +120,11 @@ im41:
 	b16set IntegralPitch
 	b16set IntegralYaw
 
-im7:	b16fdiv RxRoll, 4			;Right align to the 16.4 multiply usable bit limit.
+im7:	b16fdiv RxRoll, 4			;right align to the 16.4 multiply usable bit limit
 	b16fdiv RxPitch, 4
 	b16fdiv RxYaw, 4
 
-	b16mul RxRoll, RxRoll, StickScaleRoll	;scale Stick input. 
+	b16mul RxRoll, RxRoll, StickScaleRoll	;scale stick inputs
 	b16mul RxPitch, RxPitch, StickScalePitch
 	b16mul RxYaw, RxYaw, StickScaleYaw
 	b16mul RxThrottle, RxThrottle, StickScaleThrottle
@@ -157,10 +152,10 @@ im60:	;--- Roll Axis Self-level P ---
 	b16sub Error, EulerAngleRoll, RxRoll	;calculate error
 	b16fdiv Error, 4
 
-	b16mul Value, Error, SelflevelPgain	;Proposjonal gain
+	b16mul Value, Error, SelflevelPgain	;Proportional gain
 
-	b16mov LimitV, SelflevelPlimit		;Proposjonal limit
-	rcall limiter
+	b16mov LimitV, SelflevelPlimit		;Proportional limit
+	rcall Limiter
 	b16mov RxRoll, Value
 
 	b16fdiv RxRoll, 1
@@ -175,10 +170,10 @@ im60:	;--- Roll Axis Self-level P ---
 	b16sub Error, EulerAnglePitch, RxPitch	;calculate error
 	b16fdiv Error, 4
 
-	b16mul Value, Error, SelflevelPgain	;Proposjonal gain
+	b16mul Value, Error, SelflevelPgain	;Proportional gain
 
-	b16mov LimitV, SelflevelPlimit		;Proposjonal limit
-	rcall limiter
+	b16mov LimitV, SelflevelPlimit		;Proportional limit
+	rcall Limiter
 	b16mov RxPitch, Value
 
 	b16fdiv RxPitch, 1
@@ -196,10 +191,10 @@ im30:	;--- Roll Axis PI ---
 	b16sub Error, GyroRoll, RxRoll		;calculate error
 	b16fdiv Error, 1
 
-	b16mul Value, Error, PgainRoll		;Proposjonal gain
+	b16mul Value, Error, PgainRoll		;Proportional gain
 
-	b16mov LimitV, PlimitRoll		;Proposjonal limit
-	rcall limiter
+	b16mov LimitV, PlimitRoll		;Proportional limit
+	rcall Limiter
 	b16mov CommandRoll, Value
 
 	b16fdiv Error, 3
@@ -207,7 +202,7 @@ im30:	;--- Roll Axis PI ---
 	b16add Value, IntegralRoll, Temp
 
 	b16mov LimitV, IlimitRoll 		;Integral limit
-	rcall limiter
+	rcall Limiter
 	b16mov IntegralRoll, Value
 
 	b16add CommandRoll, CommandRoll, IntegralRoll
@@ -218,10 +213,10 @@ im30:	;--- Roll Axis PI ---
 	b16sub Error, RxPitch, GyroPitch	;calculate error
 	b16fdiv Error, 1
 
-	b16mul Value, Error, PgainPitch		;Proposjonal gain
+	b16mul Value, Error, PgainPitch		;Proportional gain
 
-	b16mov LimitV, PlimitPitch		;Proposjonal limit
-	rcall limiter
+	b16mov LimitV, PlimitPitch		;Proportional limit
+	rcall Limiter
 	b16mov CommandPitch, Value
 
 	b16fdiv Error, 3
@@ -229,7 +224,7 @@ im30:	;--- Roll Axis PI ---
 	b16add Value, IntegralPitch, Temp
 
 	b16mov LimitV, IlimitPitch 		;Integral limit
-	rcall limiter
+	rcall Limiter
 	b16mov IntegralPitch, Value
 
 	b16add CommandPitch, CommandPitch, IntegralPitch
@@ -240,10 +235,10 @@ im30:	;--- Roll Axis PI ---
 	b16sub Error, RxYaw, GyroYaw		;calculate error
 	b16fdiv Error, 1
 
-	b16mul Value, Error, PgainYaw		;Proposjonal gain
+	b16mul Value, Error, PgainYaw		;Proportional gain
 
-	b16mov LimitV, PlimitYaw		;Proposjonal limit
-	rcall limiter
+	b16mov LimitV, PlimitYaw		;Proportional limit
+	rcall Limiter
 	b16mov CommandYaw, Value
 
 	b16fdiv Error, 3
@@ -251,18 +246,18 @@ im30:	;--- Roll Axis PI ---
 	b16add Value, IntegralYaw, Temp
 
 	b16mov LimitV, IlimitYaw 		;Integral limit
-	rcall limiter
+	rcall Limiter
 	b16mov IntegralYaw, Value
 
 	b16add CommandYaw, CommandYaw, IntegralYaw
-
-
-	;------
 	ret
 
 
 
-limiter:
+	;--- Limiter ---
+
+Limiter:
+
 	b16cmp Value, LimitV	;high limit
 	brlt lim5
 	b16mov Value, LimitV
@@ -277,15 +272,3 @@ lim6:	ret
 
 
 
-
-
-
-
-/*
-
-	b16mov LimitV, 
-	b16mov Value, 
-	rcall limiter
-	b16mov , Value
-
-*/

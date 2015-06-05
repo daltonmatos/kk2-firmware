@@ -56,12 +56,14 @@ arm9:	b16load RxYaw
 
 	lds t, StatusBits			;skip arming if status is not OK.
 	cbr t, LvaWarning			;ignore Low Voltage Alarm warning
-	tst t
 	breq arm5
 
-	ret
+arm7:	ret
 
-arm5:	rvsetflagtrue flagArmed			;Arm
+arm5:	rvbrflagfalse flagAileronCentered, arm7	;skip arming if the aileron/elevator stick isn't centered
+	rvbrflagfalse flagElevatorCentered, arm7
+
+	rvsetflagtrue flagArmed			;Arm
 	b16ldi BeeperDelay, 300
 	call GyroCal				;calibrate gyros
 	call Initialize3dVector			;set 3d vector to point straigth up
@@ -87,5 +89,4 @@ arm4:	rvsetflagtrue flagLcdUpdate
 
 arm3:	ret
 
-	;---
 

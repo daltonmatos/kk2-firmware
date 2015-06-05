@@ -63,7 +63,7 @@ b16fdiv_c:
 
 
 	;--- 16.8 fixed point fast multiply ---
-
+/*
 .def	Op1_2=r22
 .def	Op1_1=r23
 .def	Op1_0=r24
@@ -80,7 +80,7 @@ b16fmul_c:
 .undef	Op1_2
 .undef	Op1_1
 .undef	Op1_0
-
+*/
 
 	;--- 16.8 fixed point multiply ---
 

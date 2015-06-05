@@ -8,11 +8,10 @@ con11:	call LcdClear12x16
 
 	lrv X1, 46			;header
 	ldz con1*2
-	call PrintString
+	call PrintHeader
 
 	lrv X1, 0			;LCD contrast
 	lrv Y1, 26
-	lrv FontSelector, f6x8
 	ldz con2*2
 	call PrintString
 	clr xh
@@ -33,9 +32,7 @@ con11:	call LcdClear12x16
 	cpi t, 0x08			;BACK?
 	brne con16
 
-	ldz eeLcdContrast		;reload the LCD contrast setting
-	call GetEeVariable8
-	sts LcdContrast, xl
+	rcall LoadLcdContrast		;reload the LCD contrast setting
 	ret
 
 con16:	cpi t, 0x04			;UP?
@@ -78,6 +75,17 @@ con20:	rjmp con11
 con1:	.db 65, 59, 60, 0		;the text "LCD" in the mangled 12x16 font
 con2:	.db "LCD contrast: ", 0, 0
 con6:	.db "BACK  UP   DOWN  SAVE", 0
+
+
+
+	;--- Load LCD contrast ---
+
+LoadLcdContrast:
+
+	ldz eeLcdContrast
+	call ReadEeprom
+	sts LcdContrast, t
+	ret
 
 
 

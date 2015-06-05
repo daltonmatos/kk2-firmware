@@ -14,12 +14,12 @@
 .equ	M7			= 0x20	;portc,5
 .equ	M8			= 0x80	;portc,7
 
-.equ	MixvalueThrottle	= 0
-.equ	MixvalueRoll		= 1
-.equ	MixvaluePitch		= 2
-.equ	MixvalueYaw		= 3
-.equ	MixvalueOffset		= 4
-.equ	MixvalueFlags		= 5
+.equ	MixValueThrottle	= 0
+.equ	MixValueRoll		= 1
+.equ	MixValuePitch		= 2
+.equ	MixValueYaw		= 3
+.equ	MixValueOffset		= 4
+.equ	MixValueFlags		= 5
 
 .equ	bMixerFlagType		= 0	;1 = ESC  0 = servo
 .equ	fEsc			= 1
@@ -41,8 +41,9 @@
 .equ	SanityCheckFailed	= 0x02
 .equ	NoMotorLayout		= 0x04
 .equ	LvaWarning		= 0x08	;this bit will not prevent arming
-
 .equ	NoSBusInput		= 0x10
 .equ	SBusFailsafe		= 0x20
+.equ	RxSignalLost		= 0x40
+.equ	ChannelMappingError	= 0x80
 
-.equ 	SBusTimeoutLimit	= 30	;timeout value for S.Bus data
+.equ 	SBusTimeoutLimit	= 250	;timeout value for S.Bus data

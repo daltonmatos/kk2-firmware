@@ -6,13 +6,22 @@ EscThrottleCalibration:
 
 	rvsetflagtrue Mode		;true = 2ms output, false = 1.02ms output
 
+	clr t
+	sts flagMutePwm, t
+
 esc1:	call LcdClear6x8
 
 	lrv X1, 19			;print "ESC CALIBRATION"
 	ldz esc10*2
 	call PrintString
 
-	rvbrflagtrue Mode, esc6		;will not print the footer while setting upper throttle limit
+	lrv X1, 0			;print instructions
+	lrv Y1, 20
+	rvbrflagtrue Mode, esc6
+
+	ldi t, 2			;step 2
+	ldz esc26*2
+	call PrintStringArray
 
 	lrv X1, 0			;print footer (i.e. 'EXIT')
 	lrv Y1, 57
@@ -22,15 +31,9 @@ esc1:	call LcdClear6x8
 	call LcdUpdate
 	rjmp esc2
 
-esc6:	lrv X1, 0			;print "Release button to set LOW throttle level." over two lines
-	lrv Y1, 20
-	ldz esc20*2
-	call PrintString
-
-	lrv X1, 0
-	lrv Y1, 29
-	ldz esc21*2
-	call PrintString
+esc6:	ldi t, 2			;step 1
+	ldz esc25*2
+	call PrintStringArray
 
 	call LcdUpdate
 
@@ -64,10 +67,11 @@ esc2:	call PwmStart
 	load t, pinb			;read buttons. Cannot use 'GetButtons' here because of delay
 	com t
 	swap t
-	andi t, 0x0f
-	push t				;must save register 't' since it is used by 'rvbrflagfalse' also
+	andi t, 0x0F
 
+	push t				;must save register T since it is used in 'rvbrflagfalse'
 	rvbrflagfalse Mode, esc3
+
 	pop t
 	tst t				;button released?
 	breq esc5
@@ -115,25 +119,11 @@ EscCalWarning:
 
 war13:	call LcdClear12x16
 
-	lrv X1, 22			;warning
-	ldz war1*2
-	call PrintString
+	call PrintWarningHeader
 
-	lrv FontSelector, f6x8
-
-	lrv X1, 0			;print text
-	lrv Y1, 17
-	clr t
-
-war12:	push t
+	ldi t, 4			;print text
 	ldz war10*2
-	call PrintFromStringArray
-	lrv X1, 0
-	rvadd Y1, 9
-	pop t
-	inc t
-	cpi t, 4
-	brne war12
+	call PrintStringArray
 
 	call LcdUpdate
 
@@ -150,10 +140,13 @@ war11:	call GetButtonsBlocking		;infinite loop. Restart is required
 
 esc10:	.db "ESC CALIBRATION", 0
 esc13:	.db "EXIT", 0, 0
-esc20:	.db "Release button to set", 0
-esc21:	.db "LOW throttle level.", 0
 
-war1:	.db 73, 58, 69, 67, 64, 67, 63, 0	;the text "WARNING" in the mangled 12x16 font
+esc20:	.db "Release button at the", 0
+esc21:	.db "ESC confirmation beep", 0
+esc22:	.db "Wait for the final", 0, 0
+
+esc25:	.dw esc20*2, esc21*2
+esc26:	.dw esc22*2, esc21*2
 
 war2:	.db "ESC calibration will", 0, 0
 war3:	.db "be available on the", 0

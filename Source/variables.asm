@@ -29,7 +29,8 @@
 ;---  16.8 bit signed registers ---
 
 FixedPointVariableEnumerate168 Temp
-FixedPointVariableEnumerate168 RxChannel
+FixedPointVariableEnumerate168 Temper
+
 FixedPointVariableEnumerate168 RxRoll
 FixedPointVariableEnumerate168 RxPitch
 FixedPointVariableEnumerate168 RxThrottle
@@ -128,8 +129,6 @@ FixedPointVariableEnumerate168 Offset6
 FixedPointVariableEnumerate168 Offset7
 FixedPointVariableEnumerate168 Offset8
 
-FixedPointVariableEnumerate168 Temper
-
 FixedPointVariableEnumerate168 SelflevelPgain
 FixedPointVariableEnumerate168 SelflevelPgainOrg	;used for remote tuning
 FixedPointVariableEnumerate168 SelflevelPgainRate
@@ -168,6 +167,7 @@ FixedPointVariableEnumerate168 NoActivityTimer
 FixedPointVariableEnumerate168 NoActivityDds
 
 FixedPointVariableEnumerate168 LiveUpdateTimer
+FixedPointVariableEnumerate168 FlightTimer
 
 FixedPointVariableEnumerate168 EulerAngleRoll
 FixedPointVariableEnumerate168 EulerAnglePitch
@@ -186,6 +186,9 @@ FixedPointVariableEnumerate168 CamRoll
 FixedPointVariableEnumerate168 CamPitch
 FixedPointVariableEnumerate168 CamRollHomePos
 FixedPointVariableEnumerate168 CamPitchHomePos
+
+FixedPointVariableEnumerate168 NewCamRollOffset
+FixedPointVariableEnumerate168 NewCamPitchOffset
 
 FixedPointVariableEnumerate168 CamRollGainOrg		;variables used for remote tuning
 FixedPointVariableEnumerate168 CamPitchGainOrg
@@ -250,12 +253,8 @@ RamVariableEnumerate8 SBusFlags
 
 RamVariableEnumerate8 Channel17
 RamVariableEnumerate8 Channel18
-RamVariableEnumerate8 FrameLossMax
 RamVariableEnumerate8 Failsafe
 RamVariableEnumerate8 flagSBusFrameValid
-RamVariableEnumerate8 TimeoutCounter
-RamVariableEnumerate8 FrameCounter
-RamVariableEnumerate8 FrameLossCounter
 
 RamVariableEnumerate8 OutputRateBitmask		;for each output channel: 0=slow rate  1=fast rate
 RamVariableEnumerate8 OutputTypeBitmask		;for each output channel: 0=servo 1=ESC
@@ -271,8 +270,11 @@ RamVariableEnumerate8 PwmOutputMask
 
 RamVariableEnumerate8 flagArmed
 RamVariableEnumerate8 flagArmedOldState
-RamVariableEnumerate8 flagThrottleZero
 RamVariableEnumerate8 ArmingDelay
+
+RamVariableEnumerate8 flagThrottleZero
+RamVariableEnumerate8 flagAileronCentered
+RamVariableEnumerate8 flagElevatorCentered
 
 RamVariableEnumerate8 FlashingLEDCounter
 RamVariableEnumerate8 FlashingLEDCount
@@ -317,14 +319,32 @@ RamVariableEnumerate8 flagMutePwm
 
 RamVariableEnumerate8 flagDebugBuzzerOn
 
-RamVariableEnumerate8 flagGyrosCalibrated
-
 RamVariableEnumerate8 CamServoMixing
 
 RamVariableEnumerate8 LcdContrast
 
+RamVariableEnumerate8 Timer1sec
+RamVariableEnumerate8 Timer1min
+
 RamVariableEnumerate8 TuningMode		;0=Off, 1=Aileron, 2=Elevator, 3=Rudder, 4=SL gain, 5=ACC trim, 6=Gimbal
 RamVariableEnumerate8 TuningRate		;0=invalid, 1=Low, 2=Medium, 3=High
+
+RamVariableEnumerate8 Channel1L
+RamVariableEnumerate8 Channel1H
+RamVariableEnumerate8 Channel2L
+RamVariableEnumerate8 Channel2H
+RamVariableEnumerate8 Channel3L
+RamVariableEnumerate8 Channel3H
+RamVariableEnumerate8 Channel4L
+RamVariableEnumerate8 Channel4H
+RamVariableEnumerate8 Channel5L
+RamVariableEnumerate8 Channel5H
+RamVariableEnumerate8 Channel6L
+RamVariableEnumerate8 Channel6H
+RamVariableEnumerate8 Channel7L
+RamVariableEnumerate8 Channel7H
+RamVariableEnumerate8 Channel8L
+RamVariableEnumerate8 Channel8H
 
 RamVariableEnumerate8 RxBuffer0
 RamVariableEnumerate8 RxBuffer1
@@ -359,6 +379,17 @@ RamVariableEnumerate8 RxBufferIndex
 RamVariableEnumerate8 RxBufferIndexOld
 RamVariableEnumerate8 RxBufferState
 
+RamVariableEnumerate8 MappedChannel1
+RamVariableEnumerate8 MappedChannel2
+RamVariableEnumerate8 MappedChannel3
+RamVariableEnumerate8 MappedChannel4
+RamVariableEnumerate8 MappedChannel5
+RamVariableEnumerate8 MappedChannel6
+RamVariableEnumerate8 MappedChannel7
+RamVariableEnumerate8 MappedChannel8
+
+RamVariableEnumerate8 TimeoutCounter
+
 RamVariableEnumerate8 FlagByte1			;bit flags for motor layout arrays (one byte for each output, M1 - M8) to set negative values
 RamVariableEnumerate8 FlagByte2			;(throttle aileron elevator rudder X X X Y) where Y sets rudder to -1 and X is unused
 RamVariableEnumerate8 FlagByte3
@@ -374,6 +405,7 @@ RamVariableEnumerate8 FlagByte8
 ;--- EEPROM registers ----			;Do not change the order of the EEPROM variables! They are read and written sequentially.
 
 EEVariableEnumerate8 eeLcdContrast
+EEVariableEnumerate8 eeEscCalibration
 
 EEVariableEnumerate16 eeStickScaleRoll
 EEVariableEnumerate16 eeStickScalePitch
@@ -398,19 +430,30 @@ EEVariableEnumerate8 eeAutoDisarm		;true=on  false=off
 EEVariableEnumerate8 eeButtonBeep		;true=on  false=off
 EEVariableEnumerate8 eeArmingBeeps		;true=on  false=off
 EEVariableEnumerate8 eeQuietESCs		;true=on  false=off
+EEVariableEnumerate8 eePadding1
 
 EEVariableEnumerate16 eeCamRollGain
+EEVariableEnumerate16 eeCamRollOffset
 EEVariableEnumerate16 eeCamPitchGain
-EEVariableEnumerate8 eeCamServoMixing		;true=vtail/differential mixing false=vanilla servo output
+EEVariableEnumerate16 eeCamPitchOffset
 EEVariableEnumerate16 eeCamRollHomePos
 EEVariableEnumerate16 eeCamPitchHomePos
+
+EEVariableEnumerate8 eeCamServoMixing		;true=vtail/differential mixing false=vanilla servo output
+EEVariableEnumerate8 eePadding2
+
+EEVariableEnumerate8 eeChannelRoll
+EEVariableEnumerate8 eeChannelPitch
+EEVariableEnumerate8 eeChannelThrottle
+EEVariableEnumerate8 eeChannelYaw
+EEVariableEnumerate8 eeChannelAux
+EEVariableEnumerate8 eeChannelAux2
+EEVariableEnumerate8 eeChannelAux3
+EEVariableEnumerate8 eeChannelAux4
 
 EEVariableEnumerate8 eeSensorsCalibrated
 EEVariableEnumerate8 eeMotorLayoutOk
 EEVariableEnumerate8 eeUserAccepted
-
-EEVariableEnumerate8 eeEscCalibration
-
 EEVariableEnumerate8 eeTuningRate
 
 

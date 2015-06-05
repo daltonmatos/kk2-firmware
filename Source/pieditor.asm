@@ -14,15 +14,23 @@ PiEditor:
 
 pie1:	call LcdClear6x8			;clear the LCD, select the 6x8 font and go to screen coordinates (0, 1)
 
-	;Axis
+	;axis
 	ldz pie2*2
 	call PrintString
+	rvbrflagfalse flagRollPitchLink, pie16
 
-	mov t, Axis
+	cpi Axis, 2
+	breq pie16
+
+	ldz ailele*2				;aileron and elevator linked
+	call PrintString
+	rjmp pie17
+
+pie16:	mov t, Axis
 	ldz pie11*2
 	call PrintFromStringArray
 
-	;P Gain, P Limit, I Gain and I Limit
+pie17:	;P Gain, P Limit, I Gain and I Limit
 	lrv X1, 0
 	lrv Y1, 10
 	clr t
@@ -36,9 +44,8 @@ pie15:	push t
 	push t
 	mov ParameterIndex, t
 	rcall GetParameter
-	call Print16Signed
+	call PrintNumberLF
 	lrv X1, 0
-	rvadd Y1, 9
 	pop t
 	inc t
 	cpi t, 4
@@ -48,7 +55,7 @@ pie15:	push t
 	call PrintStdFooter
 
 	;print selector
-	ldzarray pie50*2, 4, Item
+	ldzarray pie7*2, 4, Item
 	call PrintSelector
 
 	call LcdUpdate
@@ -81,7 +88,7 @@ pie31:	cpi t, 0x02		;NEXT?
 pie35:	rjmp pie1
 
 pie32:	cpi t, 0x01		;CHANGE?
-	brne pie63
+	brne pie35
 
 	cpi Item, 0		;change Axis
 	brne pie40
@@ -92,9 +99,16 @@ pie32:	cpi t, 0x01		;CHANGE?
 
 	clr Axis
 
-pie33:	rjmp pie1
+pie33:	cpi Axis, 1
+	brne pie36
 
-pie40:	mov ParameterIndex, Item;Edit parameter
+	rvbrflagfalse flagRollPitchLink, pie36
+
+	ldi Axis, 2
+
+pie36:	rjmp pie1
+
+pie40:	mov ParameterIndex, Item;edit parameter
 	dec ParameterIndex
 	rcall GetParameter
 	ldy 0			;lower limit
@@ -103,30 +117,17 @@ pie40:	mov ParameterIndex, Item;Edit parameter
 	mov xl, r0
 	mov xh, r1
 	rcall StoreParameter
-	cpi Axis, 2
-	breq pie63
-
-	rvbrflagfalse flagRollPitchLink, pie63
-
-	push Axis
-	ldi t, 1		;store both roll and pitch if flagRollPitchLink == true
-	eor Axis, t
-	rcall StoreParameter
-	pop Axis
-
-pie63:	rjmp pie1
-
-
-
-pie50:	.db 52, 0, 103, 9
-	.db 52, 9, 79, 18
-	.db 52, 18, 79, 27
-	.db 52, 27, 79, 36
-	.db 52, 36, 79, 45
+	rjmp pie1
 
 
 
 pie2:	.db "Axis   : ", 0
+
+pie7:	.db 52, 0, 103, 9
+	.db 52, 9, 79, 18
+	.db 52, 18, 79, 27
+	.db 52, 27, 79, 36
+	.db 52, 36, 79, 45
 
 pie10:	.dw pgain*2, plimit*2, igain*2, ilimit*2
 pie11:	.dw ail*2, ele*2, rudd*2

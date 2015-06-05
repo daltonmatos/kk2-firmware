@@ -18,10 +18,9 @@ set16:	push t
 	call GetEeVariable16
 	lrv X1, 54
 	call PrintColonAndSpace
- 	call Print16Signed
+ 	call PrintNumberLF
 	lds xl, X1
 	lrv X1, 0
-	rvadd Y1, 9
 	pop t
 	inc t
 	cpi t, 5

@@ -1,40 +1,43 @@
-KK2.0 v1.6++ S.Bus firmware by RC911
+KK2.0 v1.6++ S.Bus R4 firmware by RC911
 
 
-Features
-========
-This custom firmware is based on the original KK2.0 1V6 firmware by Rolf Bakke. It has the following features:
+Features (Revision 4)
+=====================
+This custom firmware is based on the original KK2.0 1V6 firmware by Rolf Bakke. It has the following key features:
 - This version is for Futaba S.Bus only. The S.Bus serial protocol support receivers in FASST and FASSTest mode. Code and information for FAASTest mode was supplied by fnurgel.
-- SL Stick Mixing mode with adjustable rate setting. This will give a soft transition from Self-level to ACRO mode based on aileron/elevator stick deflection. It will be displayed on the SAFE screen as "SL MIXING" when active. Read the instructions below.
+- SL Stick Mixing mode with adjustable rate setting. This will give a soft transition from Self-level to ACRO mode based on aileron/elevator stick deflection. It will be displayed on the SAFE screen as "SL Mix" when active. Read the instructions below.
 - ESC calibration is done without a transmitter and it is sufficient to hold down a single button. This will help users with slow binding receivers do ESC calibration in a simple and safe way. This feature must be enabled through the KK2 menu before it can be accessed. Read the instructions below to learn the new ESC calibration routine.
-- Remote tuning of PI gains, ACC trim and gimbal gains using channel 6 and 7.
+- Remote tuning of PI gains, ACC trim and gimbal gains using potentiometers assigned to AUX2 and AUX3.
+- Channel mapping with support for AUX2, AUX3 and AUX4 features. Read more about this feature below.
 - Quiet ESCs while browsing the KK2 menu and editing settings. This feature can be switched on/off from the Mode Settings screen.
 - Servo jitter has been reduced on M7 and M8 and motor layouts for Dualcopter and Tricopter were changed to take advantage of this.
 - PWM output resolution has increased from 555 to 625 steps on M1 - M6 and from 555 to 2500 steps on M7 and M8. You may have to increase all Stick Scaling values by 10 - 15% because of this.
-- Alarm (i.e. 'Lost Model Alarm') can be activated from a switch assigned to digital channel DG1 (aka. channel 17). It will also sound after 20 seconds (i.e. after the Auto Disarm countdown).
-- Remote gimbal offset control using channel 6 and 7. Based on Steveis' firmware, but with some of my own changes.
+- Alarm (i.e. 'Lost Model Alarm') can be activated from a switch assigned to digital channel DG1 (aka. channel 17). It will also sound after 20 seconds at zero throttle (i.e. after the Auto Disarm countdown).
+- Remote gimbal offset control using AUX2 and AUX3. Based on Steveis' firmware, but with some of my own changes.
 - Support for gimbals with differential mixing (in addition to normal gimbals). Differential mixing code borrowed from Brontide's firmware.
-- Two gimbal modes, LOCK and HOME, are controlled from a 3-way switch on channel 8. Home position is configurable from the Gimbal Settings screen.
-- The 'Version Info' screen is accessible from the main menu and is not displayed during start-up.
+- Two gimbal modes, LOCK and HOME, are controlled from a 3-way switch assigned to AUX4. Home position is configurable from the Gimbal Settings screen.
+- Flight timer (displayed on the SAFE screen) runs while armed and throttle is above idle.
+- The Version Info screen is accessible from the main menu and is not displayed during start-up.
 - Button and arming beeps can be turned off individually.
 - Adjustable LCD contrast.
 - Battery voltage is logged and displayed on the SAFE screen.
 - The KK2 LED is flashing in sync with the LVA (Low Voltage Alarm) beeps.
 - The KK2 LED will flash rapidly for a few seconds after arming if the Low Voltage Alarm value is set too low.
-- The KK2 LED will flash if a status change occurs while armed. Flashing stops when the KK2 controller is disarmed.
 - A Factory Reset will clear the mixer table instead of loading the QUAD+ motor layout. This feature was borrowed from Brontide's firmware and further improved by me. An error message (i.e. "No motor layout") is displayed on the SAFE screen and arming is refused until a motor layout has been loaded.
 - Gyro limits have been expanded to let boards with slightly damaged gyros arm. Values borrowed from Steveis' firmware.
-- Receiver Test has a second screen for monitoring the Aux2, Aux3 and Aux4 input channels (i.e. channel 6 - 8). Digital input channel DG1 is also monitored.
-- Adjustable LCD contrast.
-- Other improvements and bug-fixes. See the Whatsnew.txt file for more info.
+
+See the whatsnew.txt document to learn what has changed since the previous version.
+See the tips.txt document for a few tips and tricks regarding setup, tuning and crash investigation. 
 
 
 Connections
 ===========
 To get data from your S.Bus receiver you will need a special converter cable connected to the throttle input connector on your KK2 board. The other input pins should remain disconnected.
-The 'SAFE' screen will show a "No S.Bus input" message until a valid data stream has been detected (unless there are other, more important messages to display).
+The SAFE screen will show a "No S.Bus input" message until a valid data stream has been detected (unless there are other, more important messages to display).
 
 If you see a "FAILSAFE!" message on the SAFE screen this means that the receiver lost communication with the transmitter (even temporarily). This will trigger the KK2 Lost Model Alarm, but it won't do anything else. You are still responsible for setting up the failsafe function properly on your system. To clear the "FAILSAFE!" message you can enter the KK2 menu and return to the SAFE screen. You will then be able to arm the KK2 controller again.
+
+PS: Arming is refused unless the status text on the SAFE screen reads "OK" or "OK. Tuning ...".
 
 
 ESC calibration routine (no transmitter required)
@@ -57,18 +60,18 @@ Observe:
 - The 'Version Information' screen and its one second delay has been removed from the start-up sequence. This will make the ESC calibration routine safer because your ESCs will now see the 'full throttle' signal one second sooner (compared to the original KK2.0 1V6 firmware) and this reduces the risk for having motors going full throttle while doing the ESC calibration.
 
 
-SL Stick Mixing
+SL stick mixing
 ===============
-The SL Stick Mixing mode is activated from the AUX switch (i.e. middle position) while the mixing rate is set from the Self-level Settings screen. The mixing rate parameter is still related to your SL P-gain setting so you should tune the SL P-gain first. A value of 5 corresponds to the LOW setting used in the previous version, 10 corresponds to MEDIUM and 20 to HIGH.
+The SL Stick Mixing mode is activated from the AUX switch (i.e. middle position) and the mixing rate is set from the Self-level Settings screen. The mixing rate parameter is still related to your SL P-gain setting so you should tune the SL P-gain first. A value of 5 corresponds to the LOW setting used in the early versions, 10 corresponds to MEDIUM and 20 to HIGH, but you can even go as high as 50 if your SL P-gain is very high.
 
-I use this mode all the time now and found that it is great for practicing aerobatics and if you get in trouble (e.g. lose orientation) you can just center the aileron/elevator stick and the model will level itself. Another advantage is that you don't have to ramp up your 'Stick Scaling' values for flying around (compared to the original Self-level mode in KK2.0 1V6).
+The Stick Scaling parameter called "SL Mixing" lets you adjust the stick input sensitivity for SL Mix mode relative to Acro or normal SL mode. If you feel that SL Mix mode is less responsive compared to Acro mode you can increase this value. To make SL Mix mode act more like normal SL mode you should lower this value. In any case you should adjust the stick scaling parameters to suit your flying style in Acro or Normal SL mode before adjusting the "SL Mixing" parameter. Leave it at 100% (default) if you only use SL Mix mode.
 
-The new Stick Scaling parameter called "SL Mixing" lets you adjust the stick input sensitivity for SL mixed mode relative to acro or normal SL. If you never use acro or normal SL mode you might as well leave this new setting at 100% and adjust the stick scaling values for roll and pitch instead, but if you do use the other modes then you should adjust the stick scaling parameters for roll and pitch to suit your flying style in those modes first.
+I use this mode all the time now and found that it is great for practicing aerobatics. If you get in trouble (e.g. lose orientation) you can just center the aileron/elevator stick and the model will level itself. Another advantage is that you don't have to ramp up your 'Stick Scaling' values or mess with PI limits for flying around (compared to the original Self-level mode).
 
 BEWARE! If you center your aileron/elevator stick while your model is upside-down it will remain inverted until you add some more stick input. This is a "feature" of the original KK2 firmware and not something that I've implemented. 
 
 Observe:
-- A 3-way switch should be assigned to channel 5 (AUX) to select flight mode - Acro, SL Mixing or Normal SL. The selected flight mode will be displayed on the SAFE screen.
+- A 3-way switch should be assigned to the AUX channel to select flight mode - Acro, SL Mix or Normal SL. The selected flight mode will be displayed on the SAFE screen.
 - You should tune your model as best as you can in both acro and normal SL mode before trying the SL Stick Mixing mode.
 - Don't count on this mode saving your model if you perform acrobatic stunts and exceed the 440 degrees/second gyro limitation. It may actually make it worse! 
 - If your model has built up any momentum, it will not stop moving immediately after centering the aileron/elevator stick! Take it slow if you're at beginner level.
@@ -76,45 +79,58 @@ Observe:
 - Avoid using this mode if your model requires excessive stick trimming (e.g. when center of gravity is too far off). This will affect the SL mixing. In other words: You should only use this mode on a well-balanced model.
 
 
-Lost Model Alarm
+Lost model alarm
 ================
 The Lost Model alarm is activated from a switch assigned to digital channel DG1 (aka. channel 17).
 
 An alternative way to activate the Lost Model Alarm is to wait 20 seconds for the Auto Disarm feature (must be active) to disarm your KK2 board. The alarm will not sound if you disarm your KK2 manually and the alarm will stop when you arm (or disarm) your board again.
 
 Observe:
-- You can use the Receiver Test screen to verify that your switch is assigned correctly.
+- You can also use the Receiver Test screen to verify that your switch is assigned correctly.
 - A "Failsafe" signal from the receiver will trigger the Lost Model alarm.
-- The alarm will still be triggered after 30 minutes counted from the last arm/disarm operation, just like in the original KK2.0 1V6 firmware.
+- The alarm will still be trigged after 30 minutes counted from the last arm/disarm operation, just like in the original KK2.0 1V6 firmware.
 
 
-Remote Gimbal Offset Control
-============================
-Gimbal offsets can be controlled from your transmitter on channel 6 (pitch) and 7 (roll). Potentiometers are recommended, but you can also use switches if you only want to change between a few fixed offset positions. This feature is based on Steveis' firmware, but I did some changes to make it utilize the full input control range.
+Channel mapping
+===============
+A few S.Bus receivers don't follow the default channel order so to fix this the Channel Mapping feature will let you rearrange all input channels.
+
+If your receiver outputs less than 8 channels you can use the Channel Mapping feature to access features normally controlled from AUX2, AUX3 or AUX4. If you have only 6 real channels you can exchange your AUX channel (and all its features) for one of the virtual channels (AUX2, AUX3 or AUX4). Sacrificing the AUX features will only be a problem if you need to change flight mode while flying, but if you normally stay in one flight mode you can use the AUX Switch Setup screen to lock the controller in the desired mode. Remember that you can use one user profile for aerobatics and the next profile for SL mode so that you can quite easily switch flight modes from the SAFE screen. The Lost Model Alarm will still be activated if you let the Auto Disarm counter time out (keeping throttle at idle position for 20 seconds).
+
+To better understand how the channel mapping works it might help to look at the items in the first column (i.e. Aileron, Elevator, Throttle...) as "functions" and the values in the second column as channel numbers going from 1 through 8 in the order your receiver is outputting them. If the throttle channel is output first (i.e. channel 1) then the Throttle "function" value should be set to 1. If throttle is output third then you should set this value to 3.
+
+ATTENTION:
+After modifying the channel mapping, go to the Receiver Test screen and verify that aileron, elevator, throttle and rudder respond correctly to your stick input!
 
 Observe:
-- Roll and pitch gains are set from the Gimbal Settings screen. Values in the range of 500 to 600 are common. A negative value will reverse the servo direction.
-- Select gimbal mixing mode according to your gimbal type. 'Diff' is used for SSG (Super Simple Gimbal) and 'None' is for normal gimbal with one servo for roll and one for pitch.
+- Mapping the same input channel to multiple functions is allowed, but should be avoided unless you know what you're doing. In any case, DO NOT map the same input channel to multiple flight critical functions!!!
+- See the Tips.txt document for more examples on how to use the channel mapping feature.
+
+
+Remote gimbal offset control
+============================
+Gimbal offsets can be controlled from your transmitter channels assigned to AUX2 (pitch) and AUX3 (roll). Potentiometers are recommended, but you can also use switches if you only want to change between a few fixed offset positions. This feature is based on Steveis' firmware, but I did some changes to make it utilize the full input control range.
+
+Observe:
 - Offsets cannot be adjusted while navigating the KK2 menus. This can only be done during flight and at the SAFE screen.
-- Most Mixer Editor values (e.g. Offset) for M6 and M7 have no effect on the gimbal, but output type and rate will.
 
 
 Other gimbal features
 =====================
-The gimbal Lock and Home features are controlled from a 3-way switch assigned to channel 8. Position #1 activates the Lock feature while position #3 activates the Home feature. Both features are inactive when the switch is in the middle position, making the gimbal operate normally. The second page on the Receiver Test screen can be used to find which feature is assigned to which switch position (AUX 4).
+The gimbal Lock and Home features are controlled from a 3-way switch assigned to AUX4. Position #1 activates the Lock feature while position #3 activates the Home feature. Both features are inactive when the switch is in the middle position, making the gimbal operate normally. The second page on the Receiver Test screen can be used to find which feature is assigned to which switch position (AUX4).
 
 When activated, the Lock feature will make the gimbal stop responding to self-level corrections, but gimbal offsets can still be adjusted remotely.
 
-When the Home feature is activated the gimbal will go to a user-defined position and stay there until this feature is switched off again. It will not respond to self-level corrections or remote offset adjustments in this mode. Home roll and pitch positions are set from the Gimbal Settings screen. Valid range is -1000 to +1000.
+When the Home feature is activated the gimbal will go to a user-defined position and stay there until this feature is switched off again. It will not respond to self-level corrections nor remote offset adjustments in this mode. The Home Roll and Pitch positions are set from the second Gimbal Settings screen. Valid range is -1000 to 1000.
 
 
-Remote Tuning
+Remote tuning
 =============
-This feature allows you to adjust several parameters from your transmitter (even while flying). This requires potentiometers assigned to channel 6 and 7 on your transmitter. Use the Receiver Test (2nd) screen to make sure that the input range for Aux 2 and 3 goes from -100 to +100 with zero at center.
-You can adjust PI gains for aileron, elevator and rudder using this feature. If aileron and elevator is linked (see the 'Mode Settings' screen) you will be able to adjust P and I gains for both axes simultaneously. You can also adjust self-level P gain, ACC trim values and roll and pitch gains for camera gimbal remotely.
+This feature allows you to adjust several parameters from your transmitter (even while flying). This requires potentiometers assigned to AUX2 and AUX3 on your transmitter. Use the Receiver Test (2nd) screen to make sure that the input range for AUX2 and AUX3 goes from -100 to +100 with zero at center.
+You can adjust PI gains for aileron, elevator and rudder using this feature. If aileron and elevator is linked (see the Mode Settings screen) you will be able to adjust P and I gains for both axes simultaneously. You can also adjust self-level P gain, ACC trim values and roll and pitch gains for camera gimbal remotely.
 
 This is the recommended procedure for aileron, elevator and rudder PI gain tuning:
-1. Center your potentiometers (channel 6 and 7).
+1. Center your potentiometers (AUX2 and AUX3).
 2. Go to the 'Remote Tuning' screen and select aileron, elevator or rudder tuning mode and a suitable input rate.
 3. You can now try adjusting your potentiometers to learn which one is for P and which one is for I gain, but remember to center them before leaving. You will also see how much the gain values will change based on your input rate selection.
 4. Return to the SAFE screen by pressing the BACK button twice. The status text will show the selected tuning mode.
@@ -124,7 +140,7 @@ This is the recommended procedure for aileron, elevator and rudder PI gain tunin
 8. Repeat from step #4 (with a different input rate) if required.
 
 This is the recommended procedure for SL P gain tuning:
-1. Center your potentiometer on channel 6.
+1. Center your potentiometer assigned to AUX2.
 2. Go to the 'Remote Tuning' screen and select SL gain tuning mode and a suitable input rate.
 3. You can now try adjusting your potentiometers to learn which one controls the P gain, but remember to center it before leaving. You will also see how much the gain value will change based on your input rate selection.
 4. Return to the SAFE screen by pressing the BACK button twice. The status text will show the selected tuning mode.
@@ -134,7 +150,7 @@ This is the recommended procedure for SL P gain tuning:
 8. Repeat from step #4 (with a different input rate) if required.
 
 This is the recommended procedure for ACC trim tuning:
-1. Center your potentiometers (channel 6 and 7).
+1. Center your potentiometers (AUX2 and AUX3).
 2. Go to the 'Remote Tuning' screen and select ACC trim tuning mode and a suitable input rate. TIP: Start with input rate set to HIGH.
 3. You can now try adjusting your potentiometers to learn which one is for pitch (P) and which one is for roll (R) trim, but remember to center them before leaving. You will also see how much the gain values will change based on your input rate selection.
 4. Return to the SAFE screen by pressing the BACK button twice. The status text will show the selected tuning mode.
@@ -145,7 +161,7 @@ This is the recommended procedure for ACC trim tuning:
 
 This is the recommended procedure for gimbal gain tuning:
 1. Connect your camera to an external screen so you can observe the image while tilting your copter.
-2. Center your potentiometers (channel 6 and 7).
+2. Center your potentiometers (AUX2 and AUX3).
 3. Go to the 'Gimbal Settings' screen and set both gains to 500 (use -500 if you need to reverse the servo direction). Also set the mixing mode to match your gimbal type.
 4. Go to the 'Remote Tuning' screen and select gimbal tuning mode and a suitable input rate. TIP: Start with input rate set to HIGH.
 5. You can now try adjusting your potentiometers to learn which one is for pitch (P) and which one is for roll (R) gain, but remember to center them before leaving. You will also see how much the gain values will change based on your input rate selection.
@@ -160,14 +176,14 @@ Observe:
 - You can still use the original/manual input method to adjust all parameters.
 - If you find it difficult to adjust the potentiometers while flying you can always land your model, adjust the potentiometers and take off again.
 - Gimbal servo offsets are centered while tuning.
-- ACC trim values must be tuned in NORMAL SL mode only. Using "SL Mix" mode will have no effect.
+- ACC trim values must be tuned in NORMAL SL mode only. Using "SL Mix" mode will have no visual effect.
 - The selected tuning mode will not be saved. Power cycling will make it return to normal mode.
-- The chosen input/tuning rate will be remembered.
+- The chosen input/tuning rate will be saved.
 
 
-Button/Arming Beeps
+Button/Arming beeps
 ===================
-The Mode Settings screen now has independent settings for "Button Beep" and "Arming Beeps". Setting Button Beep to NO will remove the short 'clicking' sound produced when you push a button on the KK2 board. Setting Arming Beeps to NO will remove the loud beep produced during arming and disarming.
+The Mode Settings screen has independent settings for "Button Beep" and "Arming Beeps". Setting Button Beep to NO will remove the short 'clicking' sound produced when you push a button on the KK2 board. Setting Arming Beeps to NO will remove the loud beep produced during arming and disarming.
 
 Observe:
 - Do not disable the arming beeps if your KK2 board is covered by a canopy (or anything else) that blocks the view of the LED or LCD display.
@@ -175,9 +191,9 @@ Observe:
 - Alarms and other beeps are unaffected as well (e.g. short beeps while throttle is idle).
 
 
-LCD Contrast
+LCD contrast
 ============
-The LCD contrast can now be adjusted within a limited range. Go to the LCD Contrast screen and use the UP and DOWN buttons to adjust, then press the SAVE button to save your new setting and exit.
+The LCD contrast can be adjusted within a limited range. Go to the LCD Contrast screen and use the UP and DOWN buttons to adjust, then press the SAVE button to save your new setting and exit.
 
 Observe:
 - Pushing the BACK button will reload the last saved contrast setting.
