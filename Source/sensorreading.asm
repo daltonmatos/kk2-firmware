@@ -8,28 +8,33 @@ ReadBatteryVoltage:
 	;--- ADC pt. 1 ---
 
 	ldi t, 3
-	store admux, t		;channel to be read
+	store admux, t			;channel to be read
 
 	;        76543210
 	ldi t, 0b11000111
-	store adcsra, t		;start ADC
+	store adcsra, t			;start ADC
 
 
 	;--- Read MPU6050 registers while waiting for ADC to complete ---
 
-	ldi t, 0x3B
-	sts TWI_address, t	;read MPU6050 from 0X3B
-	ldi twidata, 14		;read 14 addresses
+	ldi t, 0x3B			;read MPU6050 from 0x3B
+	sts TWI_address, t
+	ldi twidata, 14			;read 14 addresses
 	call i2c_read_adr_d
 
 
 	;--- ADC pt. 2 ---
 	
-	load xl, adcl		;X = ADC
+	load xl, adcl			;X = ADC
 	load xh, adch
+
+	lds yh, BatteryVoltageOffset	;add offset
+	lds yl, BatteryVoltageOffset + 1
+	add xl, yl
+	adc xh, yh
+
 	clr yh
 	b16store BatteryVoltage
-	b16add BatteryVoltage, BatteryVoltage, BatteryVoltageOffset
 	ret
 
 
@@ -58,13 +63,13 @@ ReadSensors:
 	rjmp bo2
 
 bo1:	b16mov Temp, GyroRoll				;90 degrees
-	b16neg GyroPitch
-	b16mov GyroRoll, GyroPitch
+//	b16neg GyroPitch
+	b16nmov GyroRoll, GyroPitch
 	b16mov GyroPitch, Temp
 
 	b16mov Temp, AccX
-	b16neg AccY
-	b16mov AccX, AccY
+//	b16neg AccY
+	b16nmov AccX, AccY
 	b16mov AccY, Temp
 	ret
 
@@ -85,13 +90,13 @@ bo4:	cpi t, 3
 	ret
 
 bo5:	b16mov Temp, GyroPitch				;270 degrees
-	b16neg GyroRoll
-	b16mov GyroPitch, GyroRoll
+//	b16neg GyroRoll
+	b16nmov GyroPitch, GyroRoll
 	b16mov GyroRoll, Temp
 
 	b16mov Temp, AccY
-	b16neg AccX
-	b16mov AccY, AccX
+//	b16neg AccX
+	b16nmov AccY, AccX
 	b16mov AccX, Temp
 	ret
 

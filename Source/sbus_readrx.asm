@@ -284,6 +284,8 @@ gsc58:	lsr xh
 	rcall AdjustSBusValue
 	call DeadZone
 	b16store RxRoll
+	call IsChannelCentered
+	sts flagAileronCentered, yl
 
 
 	;--- Pitch ---
@@ -293,6 +295,8 @@ gsc58:	lsr xh
 	rcall AdjustSBusValue
 	call DeadZone
 	b16store RxPitch
+	call IsChannelCentered
+	sts flagElevatorCentered, yl
 
 
 	;--- Throttle ---

@@ -1,7 +1,7 @@
-KK2.1++ All-in-One R4 firmware by RC911
+KK2.1++ All-in-One R5 firmware by RC911
 
 
-Features (Revision 4)
+Features (Revision 5)
 =====================
 This custom firmware is based on the original KK2.0 1V6 firmware by Rolf Bakke. It has the following additional features:
 - Supports traditional receivers, CPPM (aka. PPM), Futaba S.Bus and Spektrum Satellite (DSM2/DSMX) units.
@@ -11,11 +11,11 @@ This custom firmware is based on the original KK2.0 1V6 firmware by Rolf Bakke. 
 - Supports boards with reversed button order.
 - Multiple user profiles selectable from the SAFE screen allow separate settings for aerobatics, aerial photo, battery types and more. Read the instructions below.
 - Customizable AUX switch functions with support for 5 switch positions. Read the instructions below.
-- Remote tuning of PI gains, ACC trims and gimbal gains using AUX2 and AUX3. PS: This feature is available for CPPM, S.Bus and Satellite only.
+- Remote tuning of PI gains, ACC trim and gimbal gains using AUX2 and AUX3. PS: This feature is available for CPPM, S.Bus and Satellite only.
 - Quick Tuning lets you edit several settings on an alternative "SAFE" screen. You can arm and test-fly your settings from the TUNING screen. PS: This feature is available for traditional receivers only and it even supports remote tuning if you map the AUX channel to AUX2.
 - Channel mapping configurable for 8 input channels (in all RX modes). This enables receivers with less than 8 channels to access AUX2, AUX3 and AUX4 features.
 - In S.Bus mode a switch assigned to DG2 (aka. channel 18) can control additional functions (i.e. Stay armed/spin motors and set digital output).
-- Quiet ESCs while browsing the KK2 menu and editing settings. This feature can be switched on/off from the Mode Settings screen.
+- Quiet ESCs while browsing the KK2 menu and editing settings.
 - Servo jitter has been reduced on M7 and M8 and motor layouts for Dualcopter and Tricopter were changed to take advantage of this.
 - PWM output resolution has increased from 555 to 625 steps on M1 - M6 and from 555 to 2500 steps on M7 and M8. You may have to increase all Stick Scaling values by 10 - 15% because of this.
 - Motors and ESCs can be easily checked for correct wiring. Read more about the 'Check Motor Outputs' feature below.
@@ -51,7 +51,15 @@ The correct RX mode must be selected to match your receiver's output mode. Selec
 
 Satellite binding
 =================
-Binding will be necessary if you see a "Sat protocol error" message on the 'SAFE' screen or strange behavior on the Receiver Test screen. Hold down button 2 and 3 on your KK2 board while connecting the flight battery. This should configure the Satellite unit to use the correct protocol for the selected RX mode (i.e. DSM2 or DSMX).
+Binding (TX and Satellite unit linking) will be necessary if you see a "No satellite input" or "Sat protocol error" message on the 'SAFE' screen with your satellite unit connected. The following procedure should work for most Spektrum equipment, but you might want to check your TX/Sat manual as well:
+
+1. Make sure your transmitter (TX) is powered OFF and that your Satellite unit is connected via a converter cable to the KK2 Throttle input pin.
+2. Hold down button 2 and 3 on your KK2 board while connecting the flight battery.
+3. The Satellite LED will blink rapidly to indicate that it is in bind mode so you should release the KK2 buttons now.
+4. Power ON your TX in binding mode (as described in your TX manual). You may need to engage a Bind switch/button on your TX for several seconds.
+5. Binding is done when the Satellite LED stops flashing.
+
+This should bind/link the satellite unit to your transmitter and configure it to output the correct serial data format for the selected RX mode (i.e. 10 bit DSM2 or 11 bit DSMX).
 
 
 Initial setup
@@ -110,7 +118,6 @@ Observe:
 - Servos are not affected by this feature.
 - For the "V-Tail Hunter" motor layout the motors should spin up in a "Z" pattern.
 - For motor layouts, like "Y6", having motors on two levels (top and bottom) all motors on the first level should spin up before any motor on the next level starts spinning.
-- If the ESC connected to the M1 output has problems spinning up, try activating the Quiet ESC feature. Some ESCs simply need extra time to spin up when the PWM signal has been absent for a while.
 
 
 User profiles
@@ -151,7 +158,7 @@ SL Mix mode can be activated from a switch assigned to the AUX input channel and
 
 The Stick Scaling parameter called "SL Mixing" lets you adjust the stick input sensitivity for SL Mix mode relative to Acro or normal SL mode. If you feel that SL Mix mode is less responsive compared to Acro mode you can increase this value. To make SL Mix mode act more like normal SL mode you should lower this value. In any case you should adjust the stick scaling parameters to suit your flying style in Acro or Normal SL mode before adjusting the "SL Mixing" parameter. Leave it at 100% (default) if you only use SL Mix mode.
 
-I use this mode all the time now and found that it is great for practicing aerobatics. If you get in trouble (e.g. lose orientation) you can just center the aileron/elevator stick and the model will level itself. Another advantage is that you don't have to ramp up your 'Stick Scaling' values or mess with PI limits for flying around (compared to the original Self-level mode).
+I use this mode all the time now and found that it is great for practicing aerobatics. If you get in trouble (e.g. lose orientation) you can just center the aileron/elevator stick and the model will level itself. Another advantage is that you don't have to ramp up your 'Stick Scaling' values or mess with PI limits for flying around (compared to Normal Self-level mode).
 
 Observe:
 - A 3-way switch should be assigned to the AUX channel to select flight mode - Acro, SL Mix or Normal SL. The selected flight mode will be displayed on the SAFE screen.
@@ -378,7 +385,33 @@ Observe:
 - The error code will be cleared (and the Error Log window closed) when you push the CLEAR button so you might want to take a picture or write down the information shown on this screen first.
 
 
+Default settings
+================
+These are the default parameter values that will be set initially and during a user profile reset:
+
+PI gains/limits:  50, 100, 25, 20 (for aileron and elevator) and 50, 20, 50, 10 (for rudder)
+Self-level:       60, 20, 0, 0, 10
+Stick scaling:    30, 30, 50, 90, 100
+Mode settings:    Yes, Yes, Yes, Yes
+Misc. settings:   10, 0, 0, 0, 50
+Channel mapping:  1, 2, 3, 4, 5, 6, 7, 8 (for std. RX, CPPM and S.Bus) and 2, 3, 1, 4, 5, 6, 7, 8 (for DSM2 and DSMX)
+MPU Settings:     256 Hz, 500 deg/s, 4 g
+Gimbal settings:  0, 0, 0, 0, None, 0, 0
+AUX switch setup: Acro SS +0, Alarm SS +0, SL Mix SS +0, Alarm SS +0, Normal SL SS +0
+DG2 switch setup: No, No (for S.Bus only)
+Tuning rate:      Medium
+
+For user profile #1 a few other settings are reset as well:
+
+Battery offset:   2 (default value for KK2.1.5, HC and Mini)
+LCD contrast:     36
+RX mode:          Standard RX
+Controller mode:  Normal (Stand-alone gimbal mode is disabled)
+Board offset:     0 degrees
+Error logging:    Enabled
+
+
 Have fun! 
 =========
 Please read the information above carefully before using this firmware.
-Remember to write down your settings, for this firmware update will erase them all!
+Upgrading from revision 4 (R4) won't erase your settings, but I still recommend writing them down first.

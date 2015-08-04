@@ -40,7 +40,7 @@ el11:	LedToggle
 	call GetEeVariable8
 	mov yl, xl
 	call GetEeVariable8
-	call PrintTime
+	call PrintTimer
 
 	;footer
 	lrv X1, 96

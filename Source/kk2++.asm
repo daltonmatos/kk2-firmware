@@ -97,6 +97,7 @@ init3:	jmp SatelliteMain	;Spektrum Satellite (DSM2 and DSMX)
 .include "serial_readrx.asm"
 .include "serial_rxtest.asm"
 .include "serial_checkrx.asm"
+.include "serial_debug.asm"
 
 .include "cppm_main.asm"
 .include "cppm_hwsetup.asm"

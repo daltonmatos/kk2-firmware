@@ -226,7 +226,7 @@ iup8:	movw z, y
 	call StoreEePVariable8		;eeMpuFilter (set to 256 Hz)
 	ldi xl, 0x08
 	call StoreEePVariable8		;eeMpuGyroCfg (set to 500 deg/s)
-	call StoreEePVariable8		;eeMpuAccCfg (set to 4g)
+	call StoreEePVariable8		;eeMpuAccCfg (set to 4 g)
 
 
 	clr xl
@@ -347,8 +347,8 @@ eei7:	.dw 30, 30, 50, 90, 100		;default stick scaling values
 eew1:	.db "REMINDER", 0, 0
 eew2:	.db "YOU USE THIS FIRMWARE", 0
 eew3:	.db "AT YOUR OWN RISK!", 0
-eew4:	.db "Read the instructions", 0
-eew5:	.db "carefully.", 0, 0
+eew4:	.db "Read all included", 0
+eew5:	.db "documents carefully.", 0, 0
 
 eew10:	.dw eew2*2, eew3*2, eew4*2, eew5*2
 
@@ -375,6 +375,8 @@ isp10:	.dw isp2*2, isp3*2, isp4*2, isp5*2
 InitialSetup:
 
 	clr Counter
+	sts LoadMenuListYposSave, Counter
+	sts LoadMenuCursorYposSave, Counter
 
 isp11:	call LcdClear12x16
 

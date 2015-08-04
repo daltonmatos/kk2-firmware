@@ -49,21 +49,36 @@ SatelliteMain:
 	sts Aux4SwitchPosition, xl
 	sts AuxFunctionOld, xl
 
+	sts flagAileronCentered, t	;set to false
+	sts flagElevatorCentered, t
+
 	ldi xl, 16
 	sts RxFrameLength, xl
 
 	sts RxFrameValid, t
 	sts TimeoutCounter, t
 
-	sts Channel17, t		;Channel17 (used in S.Bus mode) must be cleared to avoid problems with the "Alarm" indicator
-
 	sts RxBufferIndex, t
 	sts RxBufferIndexOld, t
 	sts RxBufferState, t
-	sts RxBuffer2, t
 	ldz RxBuffer0
 	sts RxBufferAddressL, zl
 	sts RxBufferAddressH, zh
+
+	sts Channel1L, t
+	sts Channel1H, t
+	sts Channel2L, t
+	sts Channel2H, t
+	sts Channel3L, t
+	sts Channel3H, t
+	sts Channel4L, t
+	sts Channel4H, t
+	sts Channel5L, t
+	sts Channel5H, t
+	sts Channel6L, t
+	sts Channel6H, t
+	sts Channel7L, t
+	sts Channel7H, t
 
 	ldi t, NoSatelliteInput
 	sts StatusBits, t

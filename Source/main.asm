@@ -52,6 +52,9 @@ Main:
 	sts Aux4SwitchPosition, xl
 	sts AuxFunctionOld, xl
 
+	sts flagAileronCentered, t	;set to false
+	sts flagElevatorCentered, t
+
 	sts Channel1L, t
 	sts Channel1H, t
 	sts Channel2L, t
@@ -68,7 +71,6 @@ Main:
 	sts Channel7H, t
 	sts Channel8L, t
 	sts Channel8H, t
-	sts Channel17, t		;Channel17 (used in S.Bus mode) must be cleared to avoid problems with the "Alarm" indicator
 
 	sts RudderRxPinState, t
 	sts AuxRxPinState, t

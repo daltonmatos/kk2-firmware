@@ -52,10 +52,7 @@ gm1:	call PwmStart			;runtime between PwmStart and B interrupt (in PwmEnd) must 
 	rvsetflagfalse flagLcdUpdate
 	call UpdateFlightDisplay
 
-gm3:	rvbrflagfalse flagArmed, gm7	;skip buttonreading if armed
-	rjmp gm1
-
-gm7:	load t, pinb			;read buttons
+gm3:	load t, pinb			;read buttons
 	com t
 	swap t
 	andi t, 0x0F			;any button pushed?
@@ -95,6 +92,7 @@ gm9:	;--- Menu ---
 
 	call Beep
 	BuzzerOff			;will prevent constant beeping in menu when 'Button Beep' is disabled
+	call LvaOutputOff		;will avoid constant high level on external LVA output pin
 	call StartLedSeq		;the LED flashing sequence will indicate current user profile selection
 	call StartPwmQuiet
 	call GimbalMainMenu

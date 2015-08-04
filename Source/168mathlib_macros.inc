@@ -66,6 +66,42 @@
 .endmacro
 
 
+.macro b16nmov
+
+.def	Op1_2=r19
+.def	Op1_1=r20
+.def	Op1_0=r21
+
+.def	Op2_2=r22
+.def	Op2_1=r23
+.def	Op2_0=r24
+
+	lds Op2_2, @1 + 0
+	lds Op2_1, @1 + 1
+	lds Op2_0, @1 + 2
+
+	clr Op1_0
+	clr Op1_1
+	clr Op1_2
+	sub Op1_0, Op2_0
+	sbc Op1_1, Op2_1
+	sbc Op1_2, Op2_2
+
+	sts @0 + 0, Op1_2
+	sts @0 + 1, Op1_1
+	sts @0 + 2, Op1_0
+
+.undef	Op1_2
+.undef	Op1_1
+.undef	Op1_0
+
+.undef	Op2_2
+.undef	Op2_1
+.undef	Op2_0
+
+.endmacro
+
+
 .macro b16store			;X:Y  -> 16.8 register
 
 	sts @0 + 0, xh
@@ -390,6 +426,21 @@
 	sts @0 + 1, t
 	lds t, @1 + 2
 	sts @0 + 2, t
+
+.endmacro
+
+
+.macro b16mov2
+
+	lds t, @2 + 0
+	sts @0 + 0, t
+	sts @1 + 0, t
+	lds t, @2 + 1
+	sts @0 + 1, t
+	sts @1 + 1, t
+	lds t, @2 + 2
+	sts @0 + 2, t
+	sts @1 + 2, t
 
 .endmacro
 

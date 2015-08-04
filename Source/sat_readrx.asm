@@ -124,6 +124,9 @@ sat3:	ldz Channel1L			;set Channel Array to 1st location
 	ld yh, x+			;get MSB from the satelite array
 	ld yl, x+			;get LSB from the satelite array
 
+	cpi yh, 0xFF			;ignore non-existent channel
+	breq sat6
+
 	or r20, yh			;protocol detection
 
 	mov t, yh			;the channel ID is used to store the channel value at the correct index in the Channel array
@@ -147,7 +150,7 @@ sat2:	and yh, r19			;data mask for MSB
 	sbiw z, 1
 	st z, yl			;store D0 to D7
 
-	inc r17				;continue the loop until all 7 channel values have been copied
+sat6:	inc r17				;continue the loop until all 7 channel values have been copied
 	inc r17
 	cpi r17, 16
 	brlt sat3
@@ -190,6 +193,8 @@ sat31:	;--- Virtual channels ---
 	rcall AdjustSatValue
 	call DeadZone
 	b16store RxRoll
+	call IsChannelCentered
+	sts flagAileronCentered, yl
 
 	
 	;--- Pitch ---
@@ -199,6 +204,8 @@ sat31:	;--- Virtual channels ---
 	rcall AdjustSatValue
 	call DeadZone
 	b16store RxPitch
+	call IsChannelCentered
+	sts flagElevatorCentered, yl
 
 
 	;--- Throttle ---

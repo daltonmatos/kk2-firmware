@@ -205,6 +205,7 @@ im60:	;--- Roll Axis Self-level P ---
 	;--- SL Stick Mixing, Pt. 3 ---
 
 	rvbrflagfalse flagSlStickMixing, im30
+
 	b16add RxRoll, RxRoll, CommandRoll	;final SL stick mixing
 	b16add RxPitch, RxPitch, CommandPitch
 

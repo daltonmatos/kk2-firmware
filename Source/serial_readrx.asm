@@ -40,3 +40,17 @@ isr20:	sts RxBufferIndex, tt
 	reti
 
 
+
+	;--- Clear buffer ---
+
+ClearSerialBuffer:
+
+	ldi t, 25
+	ldi xl, 0
+	ldz RxBuffer0
+
+csb1:	st z+, xl
+	dec t
+	brne csb1
+
+	ret

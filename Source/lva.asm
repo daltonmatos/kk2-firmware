@@ -31,7 +31,7 @@ lva2:	b16add LvaDdsAcc, LvaDdsAcc, Error				;DDS
 
 	lds t, LvaDdsOn							;limit the buzzer "on" time
 	tst t
-	breq lva5
+	breq LvaOutputOff
 
 	dec t
 	sts LvaDdsOn, t
@@ -49,14 +49,18 @@ lva6:	ret
 lva1:	ldi t, 100
 	sts LvaDdsOn, t
 
-lva5:	rvsetflagfalse flagLvaBuzzerOn
+
+LvaOutputOff:
+
+	rvsetflagfalse flagLvaBuzzerOn
 
 	lds t, RxMode							;clear digital output when not in standard RX mode
 	cpi t, RxModeStandard
-	breq lva6
+	breq loo1
 
 	cbi LvaOutputPin
-	ret
+
+loo1:	ret
 
 
 

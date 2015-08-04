@@ -13,7 +13,7 @@ ef11:	call LcdClear12x16
 	call PrintHeader
 
 	;menu items
-	ldi t, 2
+	ldi t, 3
 	ldz ef10*2
 	call PrintStringArray
 
@@ -46,10 +46,10 @@ ef20:	cpi t, 0x02			;NEXT?
 	brne ef25
 
 	inc Item
-	cpi Item, 2
+	cpi Item, 3
 	brlt ef11
 
-	ldi Item, 1
+	ldi Item, 2
 	rjmp ef11
 
 ef25:	cpi t, 0x01			;SELECT?
@@ -63,7 +63,13 @@ ef25:	cpi t, 0x01			;SELECT?
 	call MotorCheck			;check motor outputs
 	rjmp ef40
 
-ef26:	call GimbalMode			;gimbal controller mode
+ef26:	cpi Item, 1
+	brne ef27
+
+	call GimbalMode			;stand-alone gimbal controller mode
+	rjmp ef40
+
+ef27:	call SerialDebug		;view/debug serial RX data
 
 ef40:	pop Item
 	rjmp ef11
@@ -73,8 +79,9 @@ ef40:	pop Item
 ef1:	.db "EXTRA", 0
 ef2:	.db "Check Motor Outputs", 0
 ef3:	.db "Gimbal Controller", 0
+ef4:	.db "View Serial RX Data", 0
 
-ef10:	.dw ef2*2, ef3*2
+ef10:	.dw ef2*2, ef3*2, ef4*2
 
 
 .undef Item

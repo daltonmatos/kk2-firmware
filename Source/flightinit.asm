@@ -39,13 +39,11 @@ fli8:	b16store_array FilteredOut1, Temp
 	ldz eeStickScaleRoll
 	rcall fli2
 	rcall TempDiv16
-	b16mov StickScaleRoll, Temp
-	b16mov StickScaleRollOrg, Temp
+	b16mov2 StickScaleRoll, StickScaleRollOrg, Temp
 
 	rcall fli2				;eeStickScalePitch
 	rcall TempDiv16
-	b16mov StickScalePitch, Temp
-	b16mov StickScalePitchOrg, Temp
+	b16mov2 StickScalePitch, StickScalePitchOrg, Temp
 
 	rcall fli2				;eeStickScaleYaw
 	rcall TempDiv16
@@ -252,17 +250,9 @@ fli5:	b16ldi Temper, 128.0			;most limit values (0-100%) are scaled with 128.0 t
 
 
 
-mad1:	.db "One or more settings", 0, 0
-mad2:	.db "are out of limits!", 0, 0
-
+mad1:	.db "Data out of limits:", 0
 mad5:	.db "Sensor calibration", 0, 0
-mad6:	.db "data out of limits!", 0
-
 mad7:	.db "Sensor raw data", 0
-
-san10:	.dw mad1*2, mad2*2
-san11:	.dw mad5*2, mad6*2
-san12:	.dw mad7*2, mad2*2
 
 
 
@@ -273,22 +263,8 @@ SanityCheck:
 	call LcdClear6x8
 
 	lrv X1, 0
-	lrv Y1, 17
+	lrv Y1, 26
 
-;	CheckLimit SelflevelPgain, 0, 501, san1
-;	CheckLimit SelflevelPlimit, 0, 3411, san1			;30%
-
-	CheckLimit EscLowLimit, 0, 1001, san1				;20%
-
-	CheckLimit GyroRollZero, GyroLowLimit, GyroHighLimit, san2
-	CheckLimit GyroPitchZero, GyroLowLimit, GyroHighLimit, san2
-	CheckLimit GyroYawZero, GyroLowLimit, GyroHighLimit, san2
-
-	CheckLimit AccXZero, AccLowLimit, AccHighLimit, san2
-	CheckLimit AccYZero, AccLowLimit, AccHighLimit, san2
-	CheckLimit AccZZero, AccLowLimit, AccZHighLimit, san2
-
-	call AdcRead
 	call AdcRead
 
 	CheckLimit GyroRoll, -400, 400, san3
@@ -299,21 +275,31 @@ SanityCheck:
 	CheckLimit AccY, -400, 400, san3
 	CheckLimit AccZ, -400, 400, san3
 
+	CheckLimit GyroRollZero, GyroLowLimit, GyroHighLimit, san2
+	CheckLimit GyroPitchZero, GyroLowLimit, GyroHighLimit, san2
+	CheckLimit GyroYawZero, GyroLowLimit, GyroHighLimit, san2
+
+	CheckLimit AccXZero, AccLowLimit, AccHighLimit, san2
+	CheckLimit AccYZero, AccLowLimit, AccHighLimit, san2
+	CheckLimit AccZZero, AccLowLimit, AccZHighLimit, san2
+
+;	CheckLimit SelflevelPgain, 0, 501, san1
+;	CheckLimit SelflevelPlimit, 0, 3411, san1			;30%
+
+	CheckLimit EscLowLimit, 0, 1001, san1				;20%
+
 	ret 				;no errors, return
 
-san1:	ldi t, 2			;print "One or more settings are out of limits."
-	ldz san10*2
-	call PrintStringArray
+san1:	ldz stt1*2			;print "Minimum Throttle"
+	call PrintString
 	rjmp san4
 
-san2:	ldi t, 2			;print "Sensor calibration data out of limits."
-	ldz san11*2
-	call PrintStringArray
+san2:	ldz mad5*2			;print "Sensor calibration"
+	call PrintString
 	rjmp san4
 
-san3:	ldi t, 2			;print "Sensor raw data are out of limits."
-	ldz san12*2
-	call PrintStringArray
+san3:	ldz mad7*2			;print "Sensor raw data"
+	call PrintString
 
 san4:	setstatusbit SanityCheckFailed
 
@@ -325,23 +311,13 @@ san4:	setstatusbit SanityCheckFailed
 	lrv FontSelector, f12x16
 	call PrintWarningHeader
 
+	lrv X1, 0			;print "Data out of limits:"
+	ldz mad1*2
+	call PrintString
+
 	call LcdUpdate
 
-	BuzzerOn
-	ldi yh, 39
-
-san5:	ldi yl, 0
-	call wms
-	dec yh
-	brne san5
-
-	BuzzerOff
-
-san6:	call GetButtonsBlocking
-	cpi t, 0x01			;CONTINUE?
-	brne san6
-
-	call ReleaseButtons		;make sure all buttons are released
+	call WaitForOkButton		;CONTINUE?
 	ret
 
 
@@ -390,8 +366,7 @@ LoadParameterTable:
 
 	ldz EeParameterTable
 	rcall fli2
-	b16mov PgainRoll, Temp
-	b16mov PgainRollOrg, Temp
+	b16mov2 PgainRoll, PgainRollOrg, Temp
 
 	rcall fli2
 	rcall fli5
@@ -411,8 +386,7 @@ LoadParameterTable:
 	ldz EeParameterTable
 
 lpt1:	rcall fli2
-	b16mov PgainPitch, Temp
-	b16mov PgainPitchOrg, Temp
+	b16mov2 PgainPitch, PgainPitchOrg, Temp
 
 	rcall fli2
 	rcall fli5
@@ -429,8 +403,7 @@ lpt1:	rcall fli2
 
 	ldz 0x0054
 	rcall fli2
-	b16mov PgainYaw, Temp
-	b16mov PgainYawOrg, Temp
+	b16mov2 PgainYaw, PgainYawOrg, Temp
 
 	rcall fli2
 	rcall fli5
@@ -454,8 +427,7 @@ LoadSelfLevelSettings:
 
 	ldz eeSelflevelPgain
 	rcall fli2
-	b16mov SelflevelPgain, Temp
-	b16mov SelfLevelPgainOrg, Temp
+	b16mov2 SelflevelPgain, SelfLevelPgainOrg, Temp
 
 	rcall fli2				;eeSelflevelPlimit
 	b16ldi Temper, 10

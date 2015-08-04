@@ -313,9 +313,9 @@ RamVariableEnumerate8 flagAuxValid
 
 RamVariableEnumerate8 RxTimeoutLimit
 
-RamVariableEnumerate8 OutputRateBitmask	;for each output channel: 0=slow rate  1=fast rate
-RamVariableEnumerate8 OutputTypeBitmask	;for each output channel: 0=servo 1=ESC
-RamVariableEnumerate8 OutputRateDivider	;
+RamVariableEnumerate8 OutputRateBitmask		;for each output channel: 0=slow rate  1=fast rate
+RamVariableEnumerate8 OutputTypeBitmask		;for each output channel: 0=servo 1=ESC
+RamVariableEnumerate8 OutputRateDivider
 RamVariableEnumerate8 OutputRateDividerCounter
 
 RamVariableEnumerate8 flagRollPitchLink
@@ -326,8 +326,11 @@ RamVariableEnumerate8 flagPwmState
 
 RamVariableEnumerate8 flagArmed
 RamVariableEnumerate8 flagArmedOldState
-RamVariableEnumerate8 flagThrottleZero
 RamVariableEnumerate8 ArmingDelay
+
+RamVariableEnumerate8 flagThrottleZero
+RamVariableEnumerate8 flagAileronCentered
+RamVariableEnumerate8 flagElevatorCentered
 
 RamVariableEnumerate8 FlashingLEDCounter
 RamVariableEnumerate8 FlashingLEDCount

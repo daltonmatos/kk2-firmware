@@ -92,8 +92,10 @@ GetCppmChannels:
 	call Sanitize
 	call DeadZone
 
-	clr yh				;store in register
+	clr yh
 	b16store RxRoll
+	call IsChannelCentered
+	sts flagAileronCentered, yl
 
 	
 	;--- Pitch ---
@@ -103,8 +105,10 @@ GetCppmChannels:
 	call Sanitize
 	call DeadZone
 
-	clr yh				;store in register
+	clr yh
 	b16store RxPitch
+	call IsChannelCentered
+	sts flagElevatorCentered, yl
 
 
 	;--- Throttle ---
@@ -135,7 +139,7 @@ gcc8:	ldz 3125			;X > 3125? (1.25ms)
 gcc30:	ldx 0				;yes, set to zero
 	rvsetflagtrue flagThrottleZero
 
-gcc2:	clr yh				;store in register
+gcc2:	clr yh
 	b16store RxThrottle
 
 
@@ -146,7 +150,7 @@ gcc2:	clr yh				;store in register
 	call Sanitize
 	call DeadZone
 
-	clr yh				;store in register
+	clr yh
 	b16store RxYaw
 
 	
@@ -184,7 +188,7 @@ gcc2:	clr yh				;store in register
 
 gcc35:	sts AuxSwitchPosition, yl
 
-	clr yh				;store in register
+	clr yh
 	b16store RxAux
 
 
@@ -194,7 +198,7 @@ gcc35:	sts AuxSwitchPosition, yl
 	call GetSafeChannelValue
 	call Sanitize
 
-	clr yh				;store in register
+	clr yh
 	b16store RxAux2
 
 
@@ -204,7 +208,7 @@ gcc35:	sts AuxSwitchPosition, yl
 	call GetSafeChannelValue
 	call Sanitize
 
-	clr yh				;store in register
+	clr yh
 	b16store RxAux3
 
 
@@ -230,7 +234,7 @@ gcc35:	sts AuxSwitchPosition, yl
 
 gcc38:	sts Aux4SwitchPosition, yl
 
-	clr yh				;store in register
+	clr yh
 	b16store RxAux4
 
 

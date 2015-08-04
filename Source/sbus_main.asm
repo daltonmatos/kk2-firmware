@@ -51,6 +51,9 @@ SBusMain:
 	sts Aux4SwitchPosition, xl
 	sts AuxFunctionOld, xl
 
+	sts flagAileronCentered, t	;set to false
+	sts flagElevatorCentered, t
+
 	ldi xl, 25
 	sts RxFrameLength, xl
 

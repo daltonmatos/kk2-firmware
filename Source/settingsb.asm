@@ -21,7 +21,11 @@ stt11:	call LcdClear6x8
 	ldz eeBattAlarmVoltage
 	ldi t, 2
 
-	lsr Item
+	;item selection
+	subi Item, 2
+	brpl stt21
+
+	clr Item
 	rjmp stt21
 
 stt22:	;labels				;normal mode
@@ -45,7 +49,7 @@ stt21:	push t
 	;footer
 	call PrintStdFooter
 
-	;print selector
+	;selector
 	ldzarray stt7*2, 4, Item
 	call PrintSelector
 
@@ -108,7 +112,7 @@ stt2:	.db "Stick Dead Zone : ", 0, 0
 stt5:	.db "Alarm 1/10 Volts: ", 0, 0
 stt6:	.db "Servo Filter    : ", 0, 0
 
-stt20:	.dw stt1*2, stt2*2, stt5*2, stt6*2
+stt20:	.dw stt1*2, stt2*2
 stt23:	.dw stt5*2, stt6*2
 
 

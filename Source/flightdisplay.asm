@@ -53,8 +53,8 @@ udp3:	lrv X1, 38				;Safe
 
 	rvbrflagfalse flagGimbalMode, udp4
 
-	lrv Y1, 17				;gimbal controller mode is active
-	ldi t, 3
+	lrv Y1, 17				;stand-alone gimbal controller mode
+	ldi t, 2
 	ldz gblmode*2
 	call PrintStringArray
 
@@ -65,7 +65,8 @@ udp3:	lrv X1, 38				;Safe
 	call PrintChar
 	lrv FontSelector, f6x8
 
-	rjmp udp20				;skip ahead to the footer
+	lrv Y1, 44				;LVA setting and footer
+	rjmp udp20
 
 
 udp4:	;--- Flight timer ---
@@ -73,7 +74,7 @@ udp4:	;--- Flight timer ---
 	lrv Y1, 1
 	lds xl, Timer1min
 	lds yl, Timer1sec
-	rcall PrintTime
+	rcall PrintTimer
 
 
 	;--- Print status ---
@@ -84,14 +85,9 @@ udp4:	;--- Flight timer ---
 	rcall LoadStatusString
 	call PrintString
 
-	lds t, StatusBits			;display the selected tuning mode if status is OK, throttle is idle and Tuning Mode is active
-	cbr t, LvaWarning			;ignore the LVA warning bit
-	lds xl, flagThrottleZero
-	com xl					;the throttle zero flag must be inverted
-	or t, xl
-	brne udp25
+	brts udp25				;skip ahead if status bits are set (T flag is set in LoadStatusString)
 
-	lds t, TuningMode
+	lds t, TuningMode			;display the selected tuning mode
 	tst t
 	breq udp51
 
@@ -151,39 +147,16 @@ udp54:	;--- Print battery voltages ---
 	lrv X1, 84				;lowest battery voltage logged
 	b16mov Temper, BatteryVoltageLogged
 	rcall PrintVoltage
-
-
-	;--- Print MPU temperature ---
-
-	lrv X1, 0				;temperature in Celcius = MPU register value / 340 + 36.53
 	call LineFeed
-	ldz mputemp*2
+
+udp20:	lrv X1, 0				;LVA setting
+	ldz lvalbl*2
 	call PrintString
-
-	b16ldi Temp, 12420.2			; = 36.53 * 340
-	b16add Temp, MpuTemperature, Temp
-	b16ldi Temper, 1.50588			; = 512 / 340
-	b16mul Temp, Temp, Temper
-	b16fdiv Temp, 9
-	b16load Temp
-	call Print16Signed
-	rcall PrintDecimal
-	ldz degc*2
-	call PrintString
-
-	lrv X1, 84				;temperature in Fahrenheit = Temperature in Celsius * 1.8 + 32
-	b16ldi Temper, 1.8
-	b16mul Temp, Temp, Temper
-	b16load Temp
-	ldi t, 32
-	add xl, t				;temperature won't exceed 255 degrees Fahrenheit so we can safely ignore register XH
-	call Print16Signed
-	rcall PrintDecimal
-	ldz degf*2
-	call PrintString
+	b16mov Temper, BattAlarmVoltage
+	rcall PrintVoltage
 
 
-udp20:	;--- Print footer ---
+	;--- Print footer ---
 
 	lrv X1, 36				;footer
 	lrv Y1, 57
@@ -241,7 +214,7 @@ PrintDecimal:
 
 	;--- Print timer value ---
 
-PrintTime:
+PrintTimer:
 
 	cpi xl, 10				;minutes
 	brge ptim1
@@ -293,11 +266,10 @@ upd1:	.db "<PROFILE>  MENU", 0
 safe:	.db "SAFE", 0, 0
 armed:	.db "ARMED", 0
 
-upd2:	.db "Gimbal Controller", 0
-upd3:	.db "mode is active.", 0
-noarm:	.db "Arming is disabled.", 0
+upd2:	.db "Stand-alone Gimbal", 0, 0
+upd3:	.db "Controller mode.", 0, 0
 
-gblmode:.dw upd2*2, upd3*2, noarm*2
+gblmode:.dw upd2*2, upd3*2
 
 udp6:	.db ". Tuning ", 0
 
@@ -306,10 +278,7 @@ udp8:	.db 0, 16, 127, 25
 
 flmode:	.db "Mode: ", 0, 0
 batt:	.db "Batt: ", 0, 0
-mputemp:.db "Temp: ", 0, 0
-
-degc:	.db "*C", 0, 0
-degf:	.db "*F", 0, 0
+lvalbl:	.db "LVA : ", 0, 0
 
 sta1:	.db "ACC not calibrated.", 0
 sta2:	.db "No aileron input.", 0
@@ -321,9 +290,12 @@ sta7:	.db "No motor layout!", 0, 0
 sta8:	.db "Check throttle level.", 0
 sta9:	.db "RX signal was lost!", 0
 
+sta11:	.db "Check aileron level.", 0, 0
+sta12:	.db "Check elevator level.", 0
+
 sta21:	.db "No CPPM input!", 0, 0
 
-sta31:	.db "No S.Bus data!", 0, 0
+sta31:	.db "No S.Bus input!", 0
 sta32:	.db "FAILSAFE!", 0
 
 sta41:	.db "No Satellite input!", 0
@@ -335,17 +307,31 @@ sta45:	.db "Sat protocol error!", 0
 
 LoadStatusString:
 
+	set					;set the T flag to indicate error/warning (assuming that one or more status bits are set)
+
 	lds t, StatusBits
 	cbr t, LvaWarning			;no error message displayed for LVA warning
-	brne lss10
+	brne lss11
 
 	rvbrflagtrue flagThrottleZero, lss8	;no critical flags are set so we'll display a warning if throttle is above idle
 
 	ldz sta8*2				;check throttle level
+	ret
 
-lss8:	ret
+lss8:	rvbrflagtrue flagAileronCentered, lss9
 
-lss10:	lds t, StatusBits
+	ldz sta11*2				;check aileron level
+	ret
+
+lss9:	rvbrflagtrue flagElevatorCentered, lss10
+
+	ldz sta12*2				;check elevator level
+	ret
+
+lss10:	clt					;no errors/warnings (clear the T flag)
+	ret
+
+lss11:	lds t, StatusBits
 	andi t, RxSignalLost
 	cpi t, RxSignalLost
 	brne lss1

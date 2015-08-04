@@ -1,9 +1,15 @@
 
 CalibrateSensors:
 
-	call LcdClear6x8
+	call LcdClear12x16
 
-	ldi t, 6
+	;header
+	lrv X1, 46
+	ldz cel1*2
+	call PrintHeader
+
+	;instructions
+	ldi t, 4
 	ldz cel10*2
 	call PrintStringArray
 
@@ -12,9 +18,7 @@ CalibrateSensors:
 
 	call LcdUpdate
 
-cel5:	call GetButtonsBlocking
-	cpi t, 0x01			;CONTINUE?
-	brne cel5
+	call WaitForOkButton		;CONTINUE?
 
 	rcall Countdown
 
@@ -88,7 +92,7 @@ cel22:	ldi yl, 0
 
 	rvbrflagfalse flagSensorsOk, cel35
 
-	ldz EeSensorCalData		;save calibration data if passed.		
+	ldz EeSensorCalData		;save calibration data if passed
 	b16load AccXZero
 	call StoreEePVariable168
 	b16load AccYZero
@@ -106,16 +110,14 @@ cel35:	ldz eeSensorsCalibrated		;Failed
 	call WriteEepromP
 	setstatusbit AccNotCalibrated
 
-cel23:	call GetButtonsBlocking
-	cpi t, 0x01			;CONTINUE?
-	brne cel23
+cel23:	call WaitForOkButton		;CONTINUE?
 
 	call LcdClear6x8		;print result (failed or succeeded)
 	lrv Y1, 25
 
 	lds t, flagSensorsOk
 	andi t, 0x01
-	ldz cal*2
+	ldz calres*2
 	call PrintFromStringArray
 
 cel30:	;footer
@@ -123,10 +125,7 @@ cel30:	;footer
 
 	call LcdUpdate
 
-cel32:	call GetButtonsBlocking
-	cpi t, 0x01			;CONTINUE?
-	brne cel32
-
+	call WaitForOkButton		;CONTINUE?
 	ret
 
 
@@ -134,7 +133,6 @@ cel32:	call GetButtonsBlocking
 GyroCal:
 
 	ldi zl, 16					;calibrate gyros, average of 16 readings
-
 	b16clr GyroRollZero
 	b16set GyroPitchZero
 	b16set GyroYawZero
@@ -160,21 +158,19 @@ cna2:	b16fdiv GyroRollZero, 4
 
 
 
-
+cel1:	.db "ACC", 0
 cel2:	.db "Place the aircraft on", 0
-cel3:   .db "a level surface and",0
-cel4:	.db "press CONTINUE.",0
-cel6:	.db "The FC will then wait", 0
-cel7:	.db "a few sec to let the", 0, 0
-cel8:	.db "aircraft settle down.", 0
+cel3:   .db "a level surface now.",0, 0
+cel6:	.db "Calibration begins", 0, 0
+cel7:	.db "after the countdown.", 0, 0
 
-cel10:	.dw cel2*2, cel3*2, cel4*2, cel6*2, cel7*2, cel8*2
+cel10:	.dw cel2*2, cel3*2, cel6*2, cel7*2
 
 cel19:	.db "Calibrating...", 0, 0
 cel24:	.db "Calibration failed.", 0
 cel31:	.db "Calibration succeeded", 0
 
-cal:	.dw cel24*2, cel31*2				;failed, succeeded
+calres:	.dw cel24*2, cel31*2				;failed, succeeded
 
 accxyz:	.dw sen5*2, sen6*2, sen7*2			;ACC X, Y and Z
 

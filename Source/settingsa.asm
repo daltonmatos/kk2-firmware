@@ -7,7 +7,8 @@ StickScaling:
 
 set11:	call LcdClear6x8
 
-	clr t			;print text labels and values
+	;labels and values
+	clr t
 	ldz eeStickScaleRoll
 
 set16:	push t
@@ -34,7 +35,7 @@ set16:	push t
 	;footer
 	call PrintStdFooter
 
-	;print selector
+	;selector
 	ldzarray set7*2, 4, Item
 	call PrintSelector
 

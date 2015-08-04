@@ -742,7 +742,6 @@ qq1:	ldi yl, 0x81		;set contrast
 
 	;Transfer image data
 
-
 	ldi xl, 0xb0	
 
 	ldi zl, low(LcdBuffer)
@@ -877,7 +876,11 @@ se6:	dec t
 	ret
 
 
+
+	;--- Confirmation dialogue ---
+
 ShowConfirmationDlg:
+
 	pushz			;input parameter (text pointer)
 	rcall LcdClear12x16
 

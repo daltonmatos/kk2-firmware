@@ -78,3 +78,19 @@ Revision 4:
 * On the Sensor Test screen the "OK" and "Not OK" texts will no longer be displayed. Texts for ACC tilt directions will be displayed as before.
 * The on-screen instructions for board orientation were changed to avoid confusion.
 * Bug fixed: An incorrect battery offset value was shown when "Adjust Offset Value" was selected immediately after a firmware update (i.e. during the setup process).
+
+
+Revision 5:
+-----------
+
+* RX serial data (for S.Bus and Satellite modes) can be viewed for debugging purposes. See the 'Extra Features' menu item.
+* Selected battery alarm voltage (LVA setting) is now displayed on the SAFE screen, replacing the MPU temperature.
+* Arming is refused unless aileron and elevator channels are centred.
+* New status message: "Check aileron level." will be displayed if the aileron channel is more than 2.5% off-center.
+* New status message: "Check elevator level." will be displayed if the elevator channel is more than 2.5% off-center.
+* Miscellaneous GUI changes and code optimizations.
+* Added default values for most parameters to the readme.txt file.
+* Bug fixed: Non-existent channels could trigger a "Sat protocol error" message.
+* Bug fixed: Uninitialized values could sometimes mess up the motor layout list on first use (i.e. immediately after a firmware upgrade).
+* Bug fixed: Stand-alone gimbal mode had a problem with item selection on the Misc. Settings screen.
+* Bug fixed: Digital output for LVA could get "stuck" when entering the menu in Stand-alone Gimbal Mode.
