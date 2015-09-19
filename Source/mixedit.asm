@@ -229,11 +229,7 @@ ShowNoAccessDlg:
 
 	call LcdUpdate
 
-nad10:	call GetButtonsBlocking
-
-	cpi t, 0x01			;OK?
-	brne nad10
-
+	call WaitForOkButton
 	ret
 
 

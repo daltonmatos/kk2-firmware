@@ -154,18 +154,20 @@ pwm58:	;loop setup
 
 pwm50:	b16load_array PwmOutput, Out1
 
-
 	lds t, OutputTypeBitmaskCopy		;ESC or SERVO?
 	lsr t
 	sts OutputTypeBitmaskCopy, t
 	brcc pwm51fix
+
 	rjmp pwm51
+
 pwm51fix:
 
 	;---
 
 	rvbrflagfalse flagInactive, pwm52fix	;SERVO, active or inactive?
 	rjmp pwm52
+
 pwm52fix:
 	b16load_array Temp, FilteredOut1 	;servo active, apply low pass filter
 	b16sub Error, PwmOutput, Temp
@@ -427,14 +429,7 @@ StartPwmQuiet:
 	clr t				;all PWM outputs are low
 	sts flagPwmState, t
 
-	ldz eeQuietESCs			;abort if this feature is switched off
-	call GetEePVariable8
-	tst xl
-	brne pms1
-
-	ret
-
-pms1:	call LoadMixerTable		;load the mixer table in case some settings were changed
+	call LoadMixerTable		;load the mixer table in case some settings were changed
 	call UpdateOutputTypeAndRate
 	lds t, OutputTypeBitmask
 	clr xh

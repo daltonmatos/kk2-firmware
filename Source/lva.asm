@@ -51,6 +51,8 @@ lva5:	rvsetflagfalse flagLvaBuzzerOn
 
 CheckLvaSetting:
 
+	rvbrflagfalse flagArmed, cls1		;skip the LVA check when disarming
+
 	b16ldi Temper, 1.22			;LVA value set too low?
 	b16mul Temp, BattAlarmVoltage, Temper
 	b16cmp Temp, BatteryVoltage

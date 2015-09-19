@@ -56,7 +56,7 @@ men5:	lpm t, z+
 	dec Counter
 	brne men6
 
-	ldi t,8			;highligth the choosen line
+	ldi t, 8		;highligth the chosen line
 	mul t, CursorYpos
 	mov t, r0
 	subi t, -7

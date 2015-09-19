@@ -1,5 +1,5 @@
 
-Imu:	;--- SL Stick Mixing ---
+Imu:	;--- SL mixing ---
 
 	rvbrflagtrue flagSlStickMixing, im50		;skip this section if SL Stick Mixing is off
 	rjmp im55
@@ -10,6 +10,7 @@ im50:	b16clr Temp					;is the roll stick value positive?
 	brge im51
 
 	b16neg Temper					;no, make it positive
+
 im51:	b16cmp RxPitch, Temp				;is the pitch stick value positive?
 	brlt im52
 
@@ -31,7 +32,7 @@ im54:	b16mul Temp, Temper, SelflevelPgainRate
 im55:
 
 
-	;--- Get Sensor Data ---
+	;--- Get sensor data ---
 
 	call AdcRead					;Calculate gyro output
 	b16sub GyroRoll, GyroRoll, GyroRollZero
@@ -42,12 +43,32 @@ im55:
 	b16sub AccY, AccY, AccYZero
 	b16sub AccZ, AccZ, AccZZero
 
+
+	;-- Board offset ---
+
+	rvbrflagtrue flagBoardOffset90, bo1
+
+	rjmp bo2					;no board offset
+
+bo1:	b16mov Temp, GyroRoll				;90 degrees
+//	b16neg GyroPitch
+	b16nmov GyroRoll, GyroPitch
+	b16mov GyroPitch, Temp
+
+	b16mov Temp, AccX
+//	b16neg AccY
+	b16nmov AccX, AccY
+	b16mov AccY, Temp
+bo2:
+
+
+	;--- ACC trim ---
+
 	b16add AccX, AccX, AccTrimPitch			;add trim
 	b16add AccY, AccY, AccTrimRoll
 
 
 	b16ldi Temper, 0.03				;SF LP filter the accelerometers
-
 	b16sub Error, AccX, AccXfilter
 	b16mul Error, Error, Temper
 	b16add AccXfilter, AccXfilter, Error
@@ -120,11 +141,11 @@ im41:
 	b16set IntegralPitch
 	b16set IntegralYaw
 
-im7:	b16fdiv RxRoll, 4			;Right align to the 16.4 multiply usable bit limit.
+im7:	b16fdiv RxRoll, 4			;right align to the 16.4 multiply usable bit limit
 	b16fdiv RxPitch, 4
 	b16fdiv RxYaw, 4
 
-	b16mul RxRoll, RxRoll, StickScaleRoll	;scale Stick input. 
+	b16mul RxRoll, RxRoll, StickScaleRoll	;scale stick inputs
 	b16mul RxPitch, RxPitch, StickScalePitch
 	b16mul RxYaw, RxYaw, StickScaleYaw
 	b16mul RxThrottle, RxThrottle, StickScaleThrottle
@@ -139,8 +160,8 @@ im7:	b16fdiv RxRoll, 4			;Right align to the 16.4 multiply usable bit limit.
 
 im31:	;--- SL Stick Mixing, Pt. 2 ---
 
-	b16mul CommandRoll, RxRoll, MixFactor	;manipulate pitch and roll inputs using the special "Stick Scaling" factor (1.0 = 100%)
-	b16mul CommandPitch, RxPitch, MixFactor
+	b16mov CommandRoll, RxRoll		;save pitch and roll input for use in SL Stick Mixing Pt. 3
+	b16mov CommandPitch, RxPitch
 
 
 im60:	;--- Roll Axis Self-level P ---
@@ -182,6 +203,7 @@ im60:	;--- Roll Axis Self-level P ---
 	;--- SL Stick Mixing, Pt. 3 ---
 
 	rvbrflagfalse flagSlStickMixing, im30
+
 	b16add RxRoll, RxRoll, CommandRoll	;final SL stick mixing
 	b16add RxPitch, RxPitch, CommandPitch
 

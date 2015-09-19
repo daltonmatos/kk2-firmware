@@ -1,7 +1,9 @@
 
+
 IsrRoll:
 
 	in SregSaver, sreg
+
 	sbis pind,3			;rising or falling?
 	rjmp rx1
 
@@ -199,19 +201,25 @@ GetRxChannels:
 	lds r0, MappedChannel1		;get aileron channel value
 	rcall GetSafeChannelValue
 	rcall Sanitize
+	rcall DeadZone
 
-	clr yh				;store in register
+	clr yh
 	b16store RxRoll
+	rcall IsChannelCentered
+	sts flagAileronCentered, yl
 
-	
+
 	;--- Pitch ---
 
 	lds r0, MappedChannel2		;get elevator channel value
 	rcall GetSafeChannelValue
 	rcall Sanitize
+	rcall DeadZone
 
-	clr yh				;store in register
+	clr yh
 	b16store RxPitch
+	rcall IsChannelCentered
+	sts flagElevatorCentered, yl
 
 
 	;--- Throttle ---
@@ -242,7 +250,7 @@ rx32:	ldz 3125			;X > 3125? (1.25ms)
 rx30:	ldx 0				;yes, set to zero
 	rvsetflagtrue flagThrottleZero
 
-rx33:	clr yh				;store in register
+rx33:	clr yh
 	b16store RxThrottle
 
 
@@ -251,8 +259,9 @@ rx33:	clr yh				;store in register
 	lds r0, MappedChannel4		;get rudder channel value
 	rcall GetSafeChannelValue
 	rcall Sanitize
+	rcall DeadZone
 
-	clr yh				;store in register
+	clr yh
 	b16store RxYaw
 
 
@@ -291,7 +300,7 @@ rx33:	clr yh				;store in register
 rx35:	rvbrflagfalse flagAuxValid, rx24;won't update aux switch position while the input is invalid
 
 	sts AuxSwitchPosition, yl
-	clr yh				;store in register
+	clr yh
 	b16store RxAux
 
 
@@ -301,7 +310,7 @@ rx24:	;--- AUX2 ---
 	rcall GetSafeChannelValue
 	rcall Sanitize
 
-	clr yh				;store in register
+	clr yh
 	b16store RxAux2
 
 
@@ -311,25 +320,25 @@ rx24:	;--- AUX2 ---
 	rcall GetSafeChannelValue
 	rcall Sanitize
 
-	clr yh				;store in register
+	clr yh
 	b16store RxAux3
 
 
 	;--- AUX4 ---
 
 	lds r0, MappedChannel8		;get aux4 channel value
-	call GetSafeChannelValue
-	call Sanitize
+	rcall GetSafeChannelValue
+	rcall Sanitize
 
 	clr yl				;position #1
 	ldz -400
-	cp  xl, zl
+	cp xl, zl
 	cpc xh, zh
 	brlt rx38
 
 	inc yl				;position #2
 	ldz 400
-	cp  xl, zl
+	cp xl, zl
 	cpc xh, zh
 	brlt rx38
 
@@ -337,7 +346,7 @@ rx24:	;--- AUX2 ---
 
 rx38:	sts Aux4SwitchPosition, yl
 
-	clr yh				;store in register
+	clr yh
 	b16store RxAux4
 
 
@@ -502,7 +511,57 @@ xa1:	ret
 
 
 
-	;--- Scale AUX inputs (divide by 10) ---
+	;--- Dead zone adjustment ---
+
+DeadZone:
+
+	b16loadz StickDeadZone
+
+	tst xh
+	brpl dz1
+
+	add xl, zl		;stick input is negative
+	adc xh, zh
+	brpl dz2
+
+	ret
+
+dz1:	sub xl, zl		;stick input is positive
+	sbc xh, zh
+	brmi dz2
+
+	ret
+
+dz2:	clr xl			;set stick input to zero
+	clr xh
+	clr yh
+	ret
+
+
+
+	;--- Check if input channel is centered ---
+
+IsChannelCentered:
+
+	ldz 25
+	cp xl, zl
+	cpc xh, zh
+	brge icc1
+
+	ldz -25
+	cp xl, zl
+	cpc xh, zh
+	brlt icc1
+
+	ser yl		;centered
+	ret
+
+icc1:	clr yl		;not centered
+	ret
+
+
+
+	;--- Scale AUX input values (divide by 10) ---
 
 ScaleAuxInputValues:
 
@@ -510,7 +569,6 @@ ScaleAuxInputValues:
 	b16mul RxAux2, RxAux2, Temp
 	b16mul RxAux3, RxAux3, Temp
 	ret
-
 
 
 

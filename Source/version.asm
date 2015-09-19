@@ -25,7 +25,7 @@ ver12:	call GetButtonsBlocking
 
 ver1:	.db 74, 61, 70, 71, 64, 68, 67, 0	;the text 'VERSION' in the mangled 12x16 font
 
-ver2:	.db "KK2.0 v1.6++ R4", 0
+ver2:	.db "KK2.0 v1.6++ R5", 0
 ver3:	.db "for standard RX only.", 0
 
 ver10:	.dw ver2*2, ver3*2, null*2, motto*2

@@ -11,7 +11,7 @@ ModeSettings:
 sux11:	call LcdClear6x8
 
 	;labels
-	ldi t, 5
+	ldi t, 4
 	ldz sux20*2
 	call PrintStringArray
 
@@ -22,7 +22,6 @@ sux11:	call LcdClear6x8
 	rcall PrintYesNoValue			;eeAutoDisarm
 	rcall PrintYesNoValue			;eeButtonBeep
 	rcall PrintYesNoValue			;eeArmingBeeps
-	rcall PrintYesNoValue			;eeQuietESCs
 
 	;footer
 	call PrintStdFooter
@@ -62,36 +61,23 @@ sux8:	cpi t, 0x04				;PREV?
 	brne sux9
 		
 	dec Item
-	brlt sux17
 
-sux10:	rjmp sux11
-
-sux17:	ldi Item, 4
+sux10:	andi Item, 0x03
 	rjmp sux11
 
 sux9:	cpi t, 0x02				;NEXT?
 	brne sux12
 
 	inc Item
-	cpi Item, 5
-	breq sux16
-
-sux13:	rjmp sux11
-
-sux16:	clr Item
-	rjmp sux11
+	rjmp sux10
 
 sux12:	cpi t, 0x01				;CHANGE?
 	brne sux14
-
-	call StopPwmQuiet			;stop PWM output while settings are changing
 
 	ldzarray eeLinkRollPitch, 1, Item	;toggle flag
 	call ReadEepromP
 	com t
 	call WriteEepromP
-
-	call StartPwmQuiet			;enable PWM output again
 
 sux14:	rjmp sux11
 
@@ -119,15 +105,13 @@ sux1:	.db "Link Roll Pitch", 0
 sux2:	.db "Auto Disarm", 0
 sux3:	.db "Button Beep", 0
 sux4:	.db "Arming Beeps", 0, 0
-sux5:	.db "Quiet ESCs", 0, 0
 
-sux20:	.dw sux1*2, sux2*2, sux3*2, sux4*2, sux5*2
+sux20:	.dw sux1*2, sux2*2, sux3*2, sux4*2
 
 sux7:	.db 100, 0, 122, 9
 	.db 100, 9, 122, 18
 	.db 100, 18, 122, 27
 	.db 100, 27, 122, 36
-	.db 100, 36, 122, 45
 
 
 .undef Item

@@ -83,3 +83,26 @@ Revision 4:
 * Bug fixed: Setting the Minimum Throttle value to 20 (maximum) will no longer produce a "One or more settings are out of limits" warning.
 * Bug fixed: AUX switch settings appeared to be unaffected by a profile reset (when visiting the AUX Switch Setup screen before the SAFE screen).
 * Bug fixed: The User Profile screen had a problem with selection highlighting after importing profile data.
+
+
+Revision 5:
+-----------
+
+* Flight mode is automatically selected on the Quick Tuning screen. Pay attention to this as you select parameters to be tuned.
+* Board offset can be set to 90 degrees (buttons to the left). This setting is accessed from the Initial Setup sub-menu.
+* A 'dead zone' can now be set for aileron, elevator and yaw input channels.
+* A stick scaling offset can be assigned to each Aux switch position. You can add zero (default), 20, 30 or 50 to the normal aileron and elevator stick scaling values.
+* Selected stick scaling offset is displayed on the SAFE screen as "SS +20", 30 or 50.
+* Alarm status is no longer displayed on the SAFE screen.
+* Selected LVA voltage is displayed on the SAFE screen. The SAFE screen had to be re-arranged a bit because of this.
+* Factors for voltage calculation were adjusted (slightly) to make the LVA voltage display correctly on the SAFE screen.
+* The Quiet ESC feature will always be active while browsing the KK2 menus. The configurable setting has been removed.
+* Arming is refused unless aileron and elevator channels are centred.
+* New status message: "Check aileron level." will be displayed if the aileron channel is more than 2.5% off-center.
+* New status message: "Check elevator level." will be displayed if the elevator channel is more than 2.5% off-center.
+* Height dampening feature removed.
+* Removed the SL Mixing parameter from the Stick Scaling screen. I recommend using the AUX switch stick scaling feature instead.
+* Miscellaneous GUI changes and code optimizations.
+* Added default values for most parameters to the readme.txt file.
+* Bug fixed: Default user profile was set to 5 instead of 1 at factory reset. This affected only the value displayed on the User Profile screen though.
+* Bug fixed: Uninitialized values could sometimes mess up the motor layout list on first use (i.e. immediately after a firmware upgrade).

@@ -1,10 +1,12 @@
-Tips 'n' tricks using KK2.0 v1.6++ firmware by RC911
+Tips 'n' tricks using KK2.0 v1.6++ R5 firmware by RC911
 
 
 Accurate RX input adjustments
 =============================
 The KK2 tuning guides tell you to use sub-trim on your transmitter to make center position show as zero on the KK2 Receiver Test screen. What they don't tell you is that the displayed value is quite inaccurate (zero can mean anything from 0 to 1%) and that can be enough to make your model drift off. I therefore recommend that you keep adjusting the sub-trims until you see the text "Center" displayed behind the channel value on the Receiver Test screen (or until the value keeps changing between 0 and -1).
 The lower throttle endpoint should be adjusted until you see the text "Idle" displayed. Arming will otherwise be refused.
+
+Remember to set Stick Dead Zone (on the Misc. Settings scree) to zero before adjusting sub-trims on your TX for maximum accuracy.
 
 
 RX input pin gone bad
@@ -25,6 +27,6 @@ Watching your model fall out of the sky for no obvious reason can be very frustr
 
 1. Status text: If the status text on the SAFE screen reads "RX signal was lost!" this means the radio signal reception was interrupted. Avoid flying out of range or in noisy (e.g. WiFi) areas.
 
-2. Battery voltages: If the logged battery voltage on the SAFE screen is very low this could mean that one or more ESCs shut down due to low battery voltage or intermittent connection. This won't work unless the the flight battery is connected to the KK2 battery monitor connector (BEWARE! Pay attention to the pin arrangement and battery polarity!). Also remember to set your Low Voltage Alarm.
+2. Battery voltages: If the logged battery voltage (displayed on the SAFE screen) is very low this could mean that one or more ESCs shut down due to low battery voltage or intermittent connection. This won't work unless the the flight battery is connected to the KK2 battery monitor connector though (BEWARE! Pay attention to the pin arrangement and battery polarity!). Also remember to set your Low Voltage Alarm.
 
 3. Flight timer: If the timer value in the upper left corner of the SAFE screen reads zero (i.e. 00:00) when you arrive at the crash site then this means that the board was reset due to an intermittent power failure or brown-out, so check your wiring, connectors and BEC/ESCs. Avoid powering servos from the 5V supply used by the KK2 controller (M1 or the receiver side).

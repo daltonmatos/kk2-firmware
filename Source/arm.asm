@@ -13,12 +13,12 @@ Arming:
 	b16clr AutoDisarmDelay					;if throttle is non-zero or auto disarm is off, clear counter
 	rjmp arm12
 
-arm10:	b16inc AutoDisarmDelay					;if throttle is zero and autodisarm is on, inc counter
+arm10:	b16inc AutoDisarmDelay					;if throttle is zero and auto disarm is on, inc counter
 	b16ldi Temp, 400 * 20
 	b16cmp AutoDisarmDelay, Temp				;counter = 20 sec?
 	brne arm12
 
-	b16clr AutoDisarmDelay					;Yes, disarm
+	b16clr AutoDisarmDelay					;yes, disarm
 	rvsetflagfalse flagArmed
 	rvsetflagtrue flagLcdUpdate
 
@@ -55,9 +55,12 @@ arm9:	b16load RxYaw
 	cbr t, LvaWarning			;ignore Low Voltage Alarm warning
 	breq arm5
 
-	ret
+arm7:	ret
 
-arm5:	rvsetflagtrue flagArmed			;arm
+arm5:	rvbrflagfalse flagAileronCentered, arm7	;skip arming if the aileron/elevator stick isn't centered
+	rvbrflagfalse flagElevatorCentered, arm7
+
+	rvsetflagtrue flagArmed			;arm
 	b16ldi BeeperDelay, 300
 	call GyroCal				;calibrate gyros
 	call Initialize3dVector			;set 3d vector to point straigth up

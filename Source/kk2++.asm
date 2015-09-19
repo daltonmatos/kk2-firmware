@@ -111,6 +111,9 @@ reset:
 	sts Aux4SwitchPosition, xl
 	sts AuxFunctionOld, xl
 
+	sts flagAileronCentered, t	;set to false
+	sts flagElevatorCentered, t
+
 	sts flagAlarmOverride, t
 
 	sts Channel1L, t
@@ -199,8 +202,8 @@ ma1:	call PwmStart			;runtime between PwmStart and B interrupt (in PwmEnd) must 
 	call GetRxChannels
 	call Arming
 	call Logic
+	call AddAuxStickScaling
 	call Imu
-	call HeightDampening
 	call Mixer
 	call GimbalStab
 	call Beeper
@@ -276,6 +279,7 @@ ma9:	;--- Menu ---
 .include "userprofile.asm"
 .include "trigonometry.asm"
 .include "channelmapping.asm"
+.include "boardorientation.asm"
 .include "setuphw.asm"
 .include "version.asm"
 .include "beeper.asm"
@@ -284,7 +288,6 @@ ma9:	;--- Menu ---
 .include "logic.asm"
 .include "contrast.asm"
 .include "auxsettings.asm"
-.include "heightdamp.asm"
 .include "loader.asm"
 .include "selflevel.asm"
 .include "layout.asm"

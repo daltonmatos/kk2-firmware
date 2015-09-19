@@ -80,7 +80,7 @@ con20:	rjmp con11
 
 
 con1:	.db 65, 59, 60, 0		;the text "LCD" in the mangled 12x16 font
-con2:	.db "LCD contrast: ", 0, 0
+con2:	.db "LCD Contrast: ", 0, 0
 con6:	.db "BACK  UP   DOWN  SAVE", 0
 
 

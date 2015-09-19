@@ -54,14 +54,10 @@ esc6:	ldi t, 2			;step 1
 	rvsetflagfalse flagThrottleZero
 
 esc2:	call PwmStart
-	b16mov Out1, Temp
-	b16mov Out2, Temp
-	b16mov Out3, Temp
-	b16mov Out4, Temp
-	b16mov Out5, Temp
-	b16mov Out6, Temp
-	b16mov Out7, Temp
-	b16mov Out8, Temp
+	b16mov2 Out1, Out2, Temp
+	b16mov2 Out3, Out4, Temp
+	b16mov2 Out5, Out6, Temp
+	b16mov2 Out7, Out8, Temp
 	call PwmEnd
 
 	load t, pinb			;read buttons. Cannot use 'GetButtons' here because of delay

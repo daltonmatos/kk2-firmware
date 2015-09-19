@@ -130,10 +130,7 @@ ChannelMappingError:
 
 	call LcdUpdate
 
-cme11:	call GetButtonsBlocking
-	cpi t, 0x01			;OK?
-	brne cme11
-
+	call WaitForOkButton
 	ret
 
 

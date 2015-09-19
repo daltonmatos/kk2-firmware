@@ -46,7 +46,7 @@ udp3:	lrv X1, 38				;Safe
 	lrv Y1, 1
 	lds xl, Timer1min
 	lds yl, Timer1sec
-	rcall PrintTime
+	rcall PrintTimer
 
 
 	;--- Print status ---
@@ -57,12 +57,7 @@ udp3:	lrv X1, 38				;Safe
 	rcall LoadStatusString
 	call PrintString
 
-	lds t, StatusBits			;check status
-	cbr t, LvaWarning			;ignore the LVA warning bit
-	lds xl, flagThrottleZero
-	com xl					;the throttle zero flag must be inverted
-	or t, xl
-	breq udp51
+	brtc udp51				;skip ahead if no status bits are set (T flag is set in LoadStatusString)
 
 	lds t, StatusCounter			;flashing status text banner
 	inc t
@@ -74,32 +69,40 @@ udp3:	lrv X1, 38				;Safe
 	call PrintSelector
 
 
-udp51:	;--- Print flight mode and alarm status ---
+udp51:	;--- Print flight mode and stick scaling offset ---
 
 	lrv X1, 0				;flight mode
 	lrv Y1, 27
 	ldz flmode*2
-	call PrintString
 	rcall PrintFlightMode
 
-	rvbrflagfalse flagAlarmOn, udp53	;alarm status
+	lrv X1, 84				;stick scaling offset selected from AUX switch position
+	lds t, AuxStickScaling
+	tst t					;skip printing when zero
+	breq udp54
 
-	ldi t, '+'				;alarm is active
-	call PrintChar
-	ldz alarm*2
-	call PrintString
+	ldz auxss*2
+	call PrintFromStringArray
 
 
-udp53:	;--- Print battery voltages ---
+udp54:	;--- Print battery voltages ---
 
-	call LineFeed				;live battery voltage
+	lrv X1, 0				;live battery voltage
+	call LineFeed
 	ldz batt*2
+	call PrintString
 	b16mov Temper, BatteryVoltage
 	rcall PrintVoltage
 
-	call LineFeed				;lowest battery voltage logged
-	ldz ublog*2
+	lrv X1, 84				;lowest battery voltage logged
 	b16mov Temper, BatteryVoltageLogged
+	rcall PrintVoltage
+	call LineFeed
+
+	lrv X1, 0				;LVA setting
+	ldz lvalbl*2
+	call PrintString
+	b16mov Temper, BattAlarmVoltage
 	rcall PrintVoltage
 
 
@@ -121,10 +124,7 @@ udp21:	call LcdUpdate
 
 PrintVoltage:
 
-	lrv X1, 0				;label
-	call PrintString
-
-	b16ldi Temp, 6.875067139		;calculate value
+	b16ldi Temp, 6.87109375			;calculate value
 	b16mul Temp, Temper, Temp
 	b16fdiv Temp, 8
 
@@ -151,7 +151,7 @@ PrintVoltage:
 
 	;--- Print timer value ---
 
-PrintTime:
+PrintTimer:
 
 	cpi xl, 10				;minutes
 	brge ptim1
@@ -180,6 +180,7 @@ ptim2:	call Print16Signed
 
 PrintFlightMode:
 
+	call PrintString			;register Z (input parameter) points to the label
 	rvbrflagfalse flagSlOn, pfm1
 
 	ldz normsl*2				;normal SL
@@ -205,9 +206,9 @@ armed:	.db 58, 70, 66, 61, 60, 0		;the text "ARMED" in the mangled 12x16 font
 udp7:	.db 0, 19, 127, 40
 udp8:	.db 0, 16, 127, 25
 
-flmode:	.db "Mode   : ", 0
-batt:	.db "Battery: ", 0
-ublog:	.db "Logged : ", 0
+flmode:	.db "Mode: ", 0, 0
+batt:	.db "Batt: ", 0, 0
+lvalbl:	.db "LVA : ", 0, 0
 
 sta1:	.db "ACC not calibrated.", 0
 sta2:	.db "No aileron input.", 0
@@ -218,6 +219,8 @@ sta6:	.db "Sanity check failed.", 0, 0
 sta7:	.db "No motor layout!", 0, 0
 sta8:	.db "Check throttle level.", 0
 sta9:	.db "RX signal was lost!", 0
+sta11:	.db "Check aileron level.", 0, 0
+sta12:	.db "Check elevator level.", 0
 
 
 
@@ -225,17 +228,31 @@ sta9:	.db "RX signal was lost!", 0
 
 LoadStatusString:
 
+	set					;set the T flag to indicate error/warning (assuming that one or more status bits are set)
+
 	lds t, StatusBits
 	cbr t, LvaWarning			;no error message displayed for LVA warning
-	brne lss10
+	brne lss11
 
 	rvbrflagtrue flagThrottleZero, lss8	;no critical flags are set so we'll display a warning if throttle is above idle
 
 	ldz sta8*2				;check throttle level
+	ret
 
-lss8:	ret
+lss8:	rvbrflagtrue flagAileronCentered, lss9
 
-lss10:	lds t, StatusBits
+	ldz sta11*2				;check aileron level
+	ret
+
+lss9:	rvbrflagtrue flagElevatorCentered, lss10
+
+	ldz sta12*2				;check elevator level
+	ret
+
+lss10:	clt					;no errors/warnings (clear the T flag)
+	ret
+
+lss11:	lds t, StatusBits
 	andi t, RxSignalLost
 	cpi t, RxSignalLost
 	brne lss1

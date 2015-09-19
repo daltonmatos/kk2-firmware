@@ -6,7 +6,7 @@ WaitXms:ldi yl, 10
 	ret
 		
 
-wms:	ldi t,250		;wait yl *0.1 ms at 20MHz
+wms:	ldi t, 250		;wait yl *0.1 ms at 20MHz
 wm1:	dec t
 	nop
 	nop
@@ -31,7 +31,7 @@ GetButtons:
 	load t, pinb	;read buttons
 	com t
 	swap t
-	andi t, 0x0f
+	andi t, 0x0F
 	breq get1	;any buttons pressed?
 	
 	ldi yl, 100	;yes, wait 10ms
@@ -48,7 +48,7 @@ get1:	pop yl		;no, exit
 
 
 ReleaseButtons:
-	rcall GetButtons	;wait until button released
+	rcall GetButtons		;wait for button to be released
 	cpi t, 0x00
 	brne ReleaseButtons
 	ret
@@ -64,6 +64,16 @@ WaitForKeypress:
 	
 	call Beep
 
+	ret
+
+
+
+WaitForOkButton:
+	rcall GetButtonsBlocking
+	cpi t, 0x01			;OK?
+	brne WaitForOkButton
+
+	rcall ReleaseButtons
 	ret
 
 

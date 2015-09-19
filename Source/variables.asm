@@ -93,7 +93,11 @@ FixedPointVariableEnumerate168 StickScaleRoll
 FixedPointVariableEnumerate168 StickScalePitch
 FixedPointVariableEnumerate168 StickScaleYaw
 FixedPointVariableEnumerate168 StickScaleThrottle
-FixedPointVariableEnumerate168 MixFactor
+
+FixedPointVariableEnumerate168 StickScaleRollOrg	;variables used for stick scaling offset
+FixedPointVariableEnumerate168 StickScalePitchOrg
+
+FixedPointVariableEnumerate168 StickDeadZone
 
 FixedPointVariableEnumerate168 MixValue
 FixedPointVariableEnumerate168 MixValueFactor
@@ -129,9 +133,6 @@ FixedPointVariableEnumerate168 SelflevelPgain
 FixedPointVariableEnumerate168 SelflevelPgainOrg
 FixedPointVariableEnumerate168 SelflevelPgainRate
 FixedPointVariableEnumerate168 SelflevelPlimit
-
-FixedPointVariableEnumerate168 HeightDampeningGain
-FixedPointVariableEnumerate168 HeightDampeningLimit
 
 FixedPointVariableEnumerate168 BattAlarmVoltage
 
@@ -275,8 +276,11 @@ RamVariableEnumerate8 PwmOutputMask
 
 RamVariableEnumerate8 flagArmed
 RamVariableEnumerate8 flagArmedOldState
-RamVariableEnumerate8 flagThrottleZero
 RamVariableEnumerate8 ArmingDelay
+
+RamVariableEnumerate8 flagThrottleZero
+RamVariableEnumerate8 flagAileronCentered
+RamVariableEnumerate8 flagElevatorCentered
 
 RamVariableEnumerate8 FlashingLEDCounter
 RamVariableEnumerate8 FlashingLEDCount
@@ -299,7 +303,13 @@ RamVariableEnumerate8 AuxPos2Function
 RamVariableEnumerate8 AuxPos3Function
 RamVariableEnumerate8 AuxPos4Function
 RamVariableEnumerate8 AuxPos5Function
+RamVariableEnumerate8 AuxPos1SS
+RamVariableEnumerate8 AuxPos2SS
+RamVariableEnumerate8 AuxPos3SS
+RamVariableEnumerate8 AuxPos4SS
+RamVariableEnumerate8 AuxPos5SS
 RamVariableEnumerate8 Aux4SwitchPosition
+RamVariableEnumerate8 AuxStickScaling
 
 RamVariableEnumerate8 ButtonDelay
 
@@ -332,6 +342,8 @@ RamVariableEnumerate8 flagMutePwm
 RamVariableEnumerate8 flagDebugBuzzerOn
 
 RamVariableEnumerate8 CamServoMixing
+
+RamVariableEnumerate8 flagBoardOffset90
 
 RamVariableEnumerate8 LcdContrast
 
@@ -385,15 +397,14 @@ RamVariableEnumerate8 LedState
 
 EEVariableEnumerate8 eeUserProfile
 EEVariableEnumerate8 eeUserAccepted
+EEVariableEnumerate8 eeBoardOffset90
 EEVariableEnumerate8 eeLcdContrast
 EEVariableEnumerate8 eeEscCalibration
-EEVariableEnumerate8 eeGimbalMode
 
 EEVariableEnumerate16 eeStickScaleRoll
 EEVariableEnumerate16 eeStickScalePitch
 EEVariableEnumerate16 eeStickScaleYaw
 EEVariableEnumerate16 eeStickScaleThrottle
-EEVariableEnumerate16 eeStickScaleSlMixing
 
 EEVariableEnumerate16 eeSelflevelPgain
 EEVariableEnumerate16 eeSelflevelPlimit
@@ -402,8 +413,7 @@ EEVariableEnumerate16 eeAccTrimPitch
 EEVariableEnumerate16 eeSlMixRate
 
 EEVariableEnumerate16 eeEscLowLimit
-EEVariableEnumerate16 eeHeightDampeningGain
-EEVariableEnumerate16 eeHeightDampeningLimit
+EEVariableEnumerate16 eeStickDeadZone
 EEVariableEnumerate16 eeBattAlarmVoltage
 EEVariableEnumerate16 eeServoFilter
 
@@ -411,8 +421,6 @@ EEVariableEnumerate8 eeLinkRollPitch		;true=on  false=off
 EEVariableEnumerate8 eeAutoDisarm		;true=on  false=off
 EEVariableEnumerate8 eeButtonBeep		;true=on  false=off
 EEVariableEnumerate8 eeArmingBeeps		;true=on  false=off
-EEVariableEnumerate8 eeQuietESCs		;true=on  false=off
-EEVariableEnumerate8 eePadding1
 
 EEVariableEnumerate16 eeCamRollGain
 EEVariableEnumerate16 eeCamRollOffset
@@ -429,7 +437,11 @@ EEVariableEnumerate8 eeAuxPos2Function
 EEVariableEnumerate8 eeAuxPos3Function
 EEVariableEnumerate8 eeAuxPos4Function
 EEVariableEnumerate8 eeAuxPos5Function
-EEVariableEnumerate8 eePadding3
+EEVariableEnumerate8 eeAuxPos1SS
+EEVariableEnumerate8 eeAuxPos2SS
+EEVariableEnumerate8 eeAuxPos3SS
+EEVariableEnumerate8 eeAuxPos4SS
+EEVariableEnumerate8 eeAuxPos5SS
 
 EEVariableEnumerate8 eeChannelRoll
 EEVariableEnumerate8 eeChannelPitch
@@ -442,7 +454,6 @@ EEVariableEnumerate8 eeChannelAux4
 
 EEVariableEnumerate8 eeSensorsCalibrated
 EEVariableEnumerate8 eeMotorLayoutOk
-EEVariableEnumerate8 eePadding4
 
 
 

@@ -101,7 +101,7 @@ ups21:	ldz ups5*2			;reset the active user profile
 	ldi Item, 2			;CANCEL was pressed
 	rjmp ups10
 
-ups18:	call InitUserProfile		;YES was pressed
+ups18:	call InitUserProfile		;YES was pressed. Resetting parameters
 	call InitialSetup		;display initial setup menu
 	ret
 
@@ -149,11 +149,7 @@ scs14:	push xh
 
 	call LcdUpdate
 
-scs15:	call GetButtonsBlocking
-	cpi t, 0x01				;OK?
-	brne scs15
-
-	call ReleaseButtons
+	call WaitForOkButton
 	ret
 
 
@@ -197,7 +193,7 @@ CopyUserProfile:
 	tst t
 	brne cup7
 
-	ldi xl, 4
+	ldi xl, 4			;XL=4 means that profile #1 was selected as target
 	rjmp cup8
 
 cup7:	ldi xl, 1			;select user profile to copy EEPROM data from
@@ -212,9 +208,9 @@ cup7:	ldi xl, 1			;select user profile to copy EEPROM data from
 	cp t, xl
 	brne cup9
 
-	ldi xl, 2
+	ldi xl, 2			;yes, display error message and exit
 
-cup8:	rcall ShowCopyStatus		;yes, display error message and exit
+cup8:	rcall ShowCopyStatus
 	ret
 
 cup9:	push xl				;no, ask for confirmation
@@ -237,8 +233,8 @@ cup11:	mov zh, yl
 	tst zl				;256 bytes written?
 	brne cup11
 
-	BuzzerOff
-	clr xl				;yes, show status dialogue (Success)
+	BuzzerOff			;yes
+	clr xl				;show status dialogue (XL=0 means Success)
 	rjmp cup8
 
 

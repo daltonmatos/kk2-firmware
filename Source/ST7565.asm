@@ -742,7 +742,6 @@ qq1:	ldi yl, 0x81		;set contrast
 
 	;Transfer image data
 
-
 	ldi xl, 0xb0	
 
 	ldi zl, low(LcdBuffer)
@@ -877,7 +876,11 @@ se6:	dec t
 	ret
 
 
+
+	;--- Confirmation dialogue ---
+
 ShowConfirmationDlg:
+
 	pushz			;input parameter (text pointer)
 	rcall LcdClear12x16
 
@@ -918,6 +921,7 @@ scd3:	ret
 confirm:.db 59, 68, 67, 62, 64, 70, 66, 0	;the text "CONFIRM" in the mangled 12x16 font
 warning:.db 75, 58, 70, 67, 64, 67, 63, 0	;the text "WARNING" in the mangled 12x16 font
 cerror:	.db 61, 70, 70, 68, 70, 0		;the test "ERROR" in the mangled 12x16 font
+saved:	.db 71, 58, 74, 61, 60, 0		;the text "SAVED" in the mangled 12x16 font
 
 	;footers
 footer:	.db "BACK PREV NEXT CHANGE", 0
@@ -961,10 +965,15 @@ pos2:	.db "Pos 2", 0
 pos3:	.db "Pos 3", 0
 pos4:	.db "Pos 4", 0
 pos5:	.db "Pos 5", 0
+ss0:	.db "SS +0", 0
+ss20:	.db "SS +20", 0, 0
+ss30:	.db "SS +30", 0, 0
+ss50:	.db "SS +50", 0, 0
 
 	;arrays
 yesno:	.dw no*2, yes*2
 auxtxt:	.dw pos1*2, pos2*2, pos3*2, pos4*2, pos5*2
 auxfn:	.dw acro*2, slmix*2, normsl*2, alarm*2
+auxss:	.dw ss0*2, ss20*2, ss30*2, ss50*2
 aux4txt:.dw locked*2, off*2, home*2
 rxch:	.dw ail*2, ele*2, thr*2, rudd*2, aux*2
