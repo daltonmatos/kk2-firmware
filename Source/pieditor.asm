@@ -151,7 +151,7 @@ StoreParameter:
 	call WriteEepromP
 	ret
 
-paradd:	ldz EeParameterTable	;Z = *EeParameterTable + Axis * 8 + ParameterIndex * 2
+paradd:	no_offset_ldz EeParameterTable	;Z = *EeParameterTable + Axis * 8 + ParameterIndex * 2
 	mov t, Axis
 	lsl t
 	lsl t

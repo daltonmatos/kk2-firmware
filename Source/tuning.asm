@@ -417,7 +417,7 @@ sav7:	b16store CamPitchGainOrg		;gimbal gains
 
 SaveParameter:
 
-	ldz EeParameterTable			;Z = *EeParameterTable + Axis * 8 + ParameterIndex * 2
+	no_offset_ldz EeParameterTable			;Z = *EeParameterTable + Axis * 8 + ParameterIndex * 2
 	lsl t					;Axis
 	lsl t
 	lsl t

@@ -253,7 +253,7 @@ StoreMixerValue:
 
 Mixc:
 
-	ldz EeMixerTable		;Z = *EeMixerTable + Channel * 8 + MixvalueIndex
+	no_offset_ldz EeMixerTable		;Z = *EeMixerTable + Channel * 8 + MixvalueIndex
 	mov t, Channel
 	lsl t
 	lsl t
