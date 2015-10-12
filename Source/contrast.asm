@@ -68,7 +68,7 @@ con18:	cpi t, 0x01			;SAVE?
 	brne con20
 
 	lds xl, LcdContrast
-	ldz eeLcdContrast
+	no_offset_ldz eeLcdContrast
 	call StoreEeVariable8		;save in profile #1 only
 	ret
 
@@ -89,7 +89,7 @@ con6:	.db "BACK  UP   DOWN  SAVE", 0
 
 LoadLcdContrast:
 
-	ldz eeLcdContrast
+	no_offset_ldz eeLcdContrast
 	call ReadEeprom			;read from profile #1 only
 	sts LcdContrast, t
 	ret
@@ -102,7 +102,7 @@ SetDefaultLcdContrast:
 
 	ldi t, 0x24
 	sts LcdContrast, t
-	ldz eeLcdContrast
+	no_offset_ldz eeLcdContrast
 	call WriteEeprom		;save in profile #1 only
 	ret
 

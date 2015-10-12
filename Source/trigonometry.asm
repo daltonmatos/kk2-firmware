@@ -76,7 +76,7 @@ Rotate3dVector:
 	sbc xh, zh
 	brpl trig1
 
-	ldz 0				;X = ABS(X)
+	no_offset_ldz 0				;X = ABS(X)
 	sub zl, xl
 	sbc zh, xh
 	movw x, z

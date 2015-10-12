@@ -7,7 +7,7 @@
 
 MotorCheck:
 
-	ldz eeMotorLayoutOK			;refuse access if no motor layout is loaded
+	no_offset_ldz eeMotorLayoutOK			;refuse access if no motor layout is loaded
 	call ReadEeprom				;read from user profile #1
 	brflagtrue t, mch10
 

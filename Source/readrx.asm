@@ -272,18 +272,18 @@ GetStdRxChannels:
 
 	rcall Xabs			;X = ABS(X)
 
-	ldz 2875			;X = X - 2875 (1.15ms)
+	no_offset_ldz 2875			;X = X - 2875 (1.15ms)
 	sub xl, zl
 	sbc xh, zh
 
-	ldz 0				;X < 0 ?
+	no_offset_ldz 0				;X < 0 ?
 	cp xl, zl
 	cpc xh, zh
 	brge rx32
 
 	rjmp rx30			;yes, set to zero
 
-rx32:	ldz 3125			;X > 3125? (1.25ms)
+rx32:	no_offset_ldz 3125			;X > 3125? (1.25ms)
 	cp xl, zl
 	cpc xh, zh
 	brlt rx33
@@ -313,25 +313,25 @@ rx33:	clr yh
 	rcall Sanitize
 
 	clr yl				;position #1
-	ldz -600
+	no_offset_ldz -600
 	cp xl, zl
 	cpc xh, zh
 	brlt rx35
 
 	inc yl				;position #2
-	ldz -200
+	no_offset_ldz -200
 	cp xl, zl
 	cpc xh, zh
 	brlt rx35
 
 	inc yl				;position #3
-	ldz 200
+	no_offset_ldz 200
 	cp xl, zl
 	cpc xh, zh
 	brlt rx35
 
 	inc yl				;position #4
-	ldz 600
+	no_offset_ldz 600
 	cp xl, zl
 	cpc xh, zh
 	brlt rx35
@@ -372,13 +372,13 @@ rx24:	;--- AUX2 ---
 	call Sanitize
 
 	clr yl				;position #1
-	ldz -400
+	no_offset_ldz -400
 	cp  xl, zl
 	cpc xh, zh
 	brlt rx38
 
 	inc yl				;position #2
-	ldz 400
+	no_offset_ldz 400
 	cp  xl, zl
 	cpc xh, zh
 	brlt rx38
@@ -500,7 +500,7 @@ rto2:	ser xh					;no timeout. Set the "valid" flag (output value) and save timer
 
 GetSafeChannelValue:
 
-	ldzarray Channel1L, 2, r0		;register R0 (input parameter) holds the mapped channel ID
+	no_offset_ldzarray Channel1L, 2, r0		;register R0 (input parameter) holds the mapped channel ID
 	cli
 	ld xl, z+
 	ld xh, z
@@ -516,16 +516,16 @@ Sanitize:
 
 	rcall Xabs	;X = ABS(X)
 
-	ldz 3750	;X = X - 3750 (1.5ms)
+	no_offset_ldz 3750	;X = X - 3750 (1.5ms)
 	sub xl, zl
 	sbc xh, zh
 
-	ldz -1750	;X < -1750?  (0.7ms)
+	no_offset_ldz -1750	;X < -1750?  (0.7ms)
 	cp xl, zl
 	cpc xh, zh
 	brlt sa2
 
-	ldz 1750	;X > 1750?
+	no_offset_ldz 1750	;X > 1750?
 	cp xl, zl
 	cpc xh, zh
 	brge sa2
@@ -588,12 +588,12 @@ dz2:	clr xl			;set stick input to zero
 
 IsChannelCentered:
 
-	ldz 25
+	no_offset_ldz 25
 	cp xl, zl
 	cpc xh, zh
 	brge icc1
 
-	ldz -25
+	no_offset_ldz -25
 	cp xl, zl
 	cpc xh, zh
 	brlt icc1

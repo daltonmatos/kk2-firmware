@@ -92,7 +92,7 @@ cel22:	ldi yl, 0
 
 	rvbrflagfalse flagSensorsOk, cel35
 
-	ldz EeSensorCalData		;save calibration data if passed
+	no_offset_ldz EeSensorCalData		;save calibration data if passed
 	b16load AccXZero
 	call StoreEePVariable168
 	b16load AccYZero
@@ -100,12 +100,12 @@ cel22:	ldi yl, 0
 	b16load AccZZero
 	call StoreEePVariable168
 
-	ldz eeSensorsCalibrated		;OK
+	no_offset_ldz eeSensorsCalibrated		;OK
 	setflagtrue t
 	call WriteEepromP
 	rjmp cel23
 
-cel35:	ldz eeSensorsCalibrated		;Failed
+cel35:	no_offset_ldz eeSensorsCalibrated		;Failed
 	setflagfalse t
 	call WriteEepromP
 	setstatusbit AccNotCalibrated

@@ -278,7 +278,7 @@ tune4:	.dw 0, 900				;aileron P-gain
 
 LoadEeTuningAddress:
 
-	ldzarray tune3, 1, yl
+	no_offset_ldzarray tune3, 1, yl
 	lsl zl
 	rol zh
 	lpm xl, z+

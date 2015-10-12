@@ -56,7 +56,7 @@ srt8:	call ScaleInputValues			;divide RX values by 10
 	clr xl					;idle
 	rjmp srt6
 
-srt4:	ldz 90
+srt4:	no_offset_ldz 90
 	call CompareXZ
 	brge srt5
 

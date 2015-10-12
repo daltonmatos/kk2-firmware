@@ -89,7 +89,7 @@ srm13:	cpi t, 0x02			;NEXT?
 
 srm14:	ldi Lock, 1			;SAVE
 	mov xl, Item
-	ldz eeRxMode
+	no_offset_ldz eeRxMode
 	call StoreEeVariable8		;save in user profile #1 only
 
 srm20:	rjmp srm11
@@ -120,7 +120,7 @@ ResetRxMode:
 
 	ldi t, RxModeStandard		;set RX mode to 'Standard Receiver'
 	sts RxMode, t
-	ldz eeRxMode
+	no_offset_ldz eeRxMode
 	call WriteEeprom
 	ret
 

@@ -17,7 +17,7 @@ sqz11:	call LcdClear6x8
 
 	;values
 	lrv Y1, 1
-	ldz  eeSelflevelPgain
+	no_offset_ldz  eeSelflevelPgain
 	ldi t, 5
 
 sqz16:	push t
@@ -68,7 +68,7 @@ sqz13:	rjmp sqz11
 sqz12:	cpi t, 0x01			;CHANGE?
 	brne sqz14
 
-	ldzarray eeSelflevelPgain, 2, Item
+	no_offset_ldzarray eeSelflevelPgain, 2, Item
 	push zl
 	push zh
 	call GetEePVariable16

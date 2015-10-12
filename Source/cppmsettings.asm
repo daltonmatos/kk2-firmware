@@ -15,7 +15,7 @@ cpp11:	call LcdClear
 	lrv X1,0
 	lrv Y1,1
 	mPrintString cpp1
-	ldz eeCppmRoll
+	no_offset_ldz eeCppmRoll
 	call GetEeVariable8 
 	clr xh
  	call Print16Signed 
@@ -91,15 +91,15 @@ cpp13:	rjmp cpp11
 cpp12:	cpi t, 0x01		;CHANGE?
 	brne cpp14
 
-	ldzarray eeCppmRoll, 1, Item
+	no_offset_ldzarray eeCppmRoll, 1, Item
 	call GetEeVariable8
 	ldy 1			;lower limit
-	ldz 8			;upper limit
+	no_offset_ldz 8			;upper limit
 	ldi xh, 0
 	call NumberEdit
 	mov xl, r0
 	mov xh, r1
-	ldzarray eeCppmRoll, 1, Item
+	no_offset_ldzarray eeCppmRoll, 1, Item
 	call StoreEeVariable8
 
 cpp14:	rjmp cpp11

@@ -64,7 +64,7 @@ art3:	push t
 	clr t				;idle
 	rjmp art6
 
-art4:	ldz 90
+art4:	no_offset_ldz 90
 	call CompareXZ
 	brge art5
 

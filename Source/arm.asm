@@ -77,7 +77,7 @@ arm6:	rvsetflagfalse flagArmed		;disarm
 
 arm11:	rvsetflagfalse flagAlarmOverride	;arming/disarming will stop the Lost Model Alarm if overridden
 
-	ldz eeArmingBeeps			;check beep setting
+	no_offset_ldz eeArmingBeeps			;check beep setting
 	call GetEePVariable8
 	brflagfalse xl, arm4
 

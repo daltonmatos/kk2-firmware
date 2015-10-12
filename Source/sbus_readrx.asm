@@ -72,20 +72,20 @@ gsc3:	lds xl, RxBufferIndex		;is the buffer full?
 	cli
 	sts RxBufferIndex, t
 	sts RxBuffer0, t
-	ldz RxBuffer0
+	no_offset_ldz RxBuffer0
 	sts RxBufferAddressL, zl
 	sts RxBufferAddressH, zh
 	sei
 	rjmp ClearInputChannels
 
-gsc4:	ldz RxBuffer0			;yes, check start byte
+gsc4:	no_offset_ldz RxBuffer0			;yes, check start byte
 	ld t, z
 	cpi t, 0x0F			;OBSERVE! Bit order is reversed when read from the USART buffer
 	breq gsc6
 
 gsc5:	rjmp ClearInputChannels		;invalid value found
 
-gsc6:	ldz RxBuffer24			;check end byte
+gsc6:	no_offset_ldz RxBuffer24			;check end byte
 	ld t, z
 	tst t				;FASST
 	breq gsc7
@@ -105,7 +105,7 @@ gsc7:	;S.Bus frame appears to be valid
 	sts SBusFlags, t
 
 	;Data bytes
-	ldz RxBuffer1
+	no_offset_ldz RxBuffer1
 	ldx SBusByte0
 	ldi yl, 10
 
@@ -306,12 +306,12 @@ gsc58:	lsr xh
 
 	rvsetflagfalse flagThrottleZero
 
-	ldz 400				;X = X - 400
+	no_offset_ldz 400				;X = X - 400
 	sub xl, zl
 	sbc xh, zh
 	rcall Add50Percent		;X = X * 1.5
 
-	ldz 0				;X < 0 ?
+	no_offset_ldz 0				;X < 0 ?
 	cp  xl, zl
 	cpc xh, zh
 	brge gsc30
@@ -339,25 +339,25 @@ gsc30:	b16store RxThrottle
 	b16store RxAux
 
 	clr yl				;AUX switch position #1
-	ldz -600
+	no_offset_ldz -600
 	cp  xl, zl
 	cpc xh, zh
 	brlt gsc35
 
 	inc yl				;AUX switch position #2
-	ldz -200
+	no_offset_ldz -200
 	cp  xl, zl
 	cpc xh, zh
 	brlt gsc35
 
 	inc yl				;AUX switch position #3
-	ldz 200
+	no_offset_ldz 200
 	cp  xl, zl
 	cpc xh, zh
 	brlt gsc35
 
 	inc yl				;AUX switch position #4
-	ldz 600
+	no_offset_ldz 600
 	cp  xl, zl
 	cpc xh, zh
 	brlt gsc35
@@ -391,13 +391,13 @@ gsc35:	sts AuxSwitchPosition, yl
 	b16store RxAux4
 
 	clr yl				;AUX4 switch position #1
-	ldz -400
+	no_offset_ldz -400
 	cp  xl, zl
 	cpc xh, zh
 	brlt gsc38
 
 	inc yl				;AUX4 switch position #2
-	ldz 400
+	no_offset_ldz 400
 	cp  xl, zl
 	cpc xh, zh
 	brlt gsc38
@@ -464,7 +464,7 @@ cic2:	ret
 
 GetChannelValue:
 
-	ldzarray Channel1L, 2, r0	;register R0 (input parameter) holds the mapped channel ID
+	no_offset_ldzarray Channel1L, 2, r0	;register R0 (input parameter) holds the mapped channel ID
 	ld xl, z+
 	ld xh, z
 	clr yh
@@ -476,7 +476,7 @@ GetChannelValue:
 
 AdjustSBusValue:	;Subtract Futaba S.Bus offset (1024) and multiply by 1.5
 
-	ldz 1024	;X = X - 1024
+	no_offset_ldz 1024	;X = X - 1024
 	sub xl, zl
 	sbc xh, zh
 

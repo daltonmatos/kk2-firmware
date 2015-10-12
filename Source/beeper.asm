@@ -106,7 +106,7 @@ Beep:
 
 	push t				;check beep setting
 	pushz
-	ldz eeButtonBeep
+	no_offset_ldz eeButtonBeep
 	call ReadEepromP
 	popz
 	brflagtrue t, beep1

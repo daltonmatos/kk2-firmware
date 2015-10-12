@@ -58,7 +58,7 @@ rxt14:	b16load RxThrottle
 	clr xl					;idle
 	rjmp rxt6
 
-rxt4:	ldz 90
+rxt4:	no_offset_ldz 90
 	rcall CompareXZ
 	brge rxt5
 
@@ -300,12 +300,12 @@ PrintRxColon:
 
 CompareXZminus10:
 
-	ldz -10
+	no_offset_ldz -10
 	rjmp CompareXZ
 
 CompareXZplus10:
 
-	ldz 10
+	no_offset_ldz 10
 
 CompareXZ:
 

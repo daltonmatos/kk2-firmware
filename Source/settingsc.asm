@@ -14,7 +14,7 @@ sux11:	call LcdClear6x8
 
 	ldz sux3*2				;will only be able to edit button beep setting in gimbal controller mode
 	call PrintString
-	ldz eeButtonBeep
+	no_offset_ldz eeButtonBeep
 	rcall PrintYesNoValue
 	call PrintBackFooter
 	call PrintChangeFooter
@@ -28,7 +28,7 @@ sux22:	;labels
 
 	;values
 	lrv Y1, 1
-	ldz eeLinkRollPitch
+	no_offset_ldz eeLinkRollPitch
 	rcall PrintYesNoValue			;eeLinkRollPitch
 	rcall PrintYesNoValue			;eeAutoDisarm
 	rcall PrintYesNoValue			;eeButtonBeep
@@ -53,7 +53,7 @@ sux23:	;print selector
 	cp OldLinkFlag, t			;changed from linked to unlinked?
 	brge sux15
 
-	ldz EeParameterTable			;yes, make elevator parameter values similar to aileron
+	no_offset_ldz EeParameterTable			;yes, make elevator parameter values similar to aileron
 	ldy 0x004C
 	ldi Item, 4				;copy 4 words
 
@@ -100,7 +100,7 @@ sux24:	ldi Item, 2				;for gimbal mode only
 sux12:	cpi t, 0x01				;CHANGE?
 	brne sux14
 
-	ldzarray eeLinkRollPitch, 1, Item	;toggle flag
+	no_offset_ldzarray eeLinkRollPitch, 1, Item	;toggle flag
 	call ReadEepromP
 	com t
 	call WriteEepromP

@@ -67,7 +67,7 @@ srt3:	push t
 	clr t				;idle
 	rjmp srt6
 
-srt4:	ldz 90
+srt4:	no_offset_ldz 90
 	call CompareXZ
 	brge srt5
 

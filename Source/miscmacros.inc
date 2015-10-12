@@ -87,6 +87,11 @@
 	ldi yl, low(@0)
 	ldi yh, high(@0)
 .endmacro
+.macro no_offset_ldz
+	ldi zl, low(@0)
+	ldi zh, high(@0)
+.endmacro
+
 .macro ldz
 	ldi zl, low(@0)
 	ldi zh, high(@0)
@@ -298,16 +303,23 @@
 
 
 
-.macro ldzarray			;calculate array address.    @0=array name  @1=cell size  @2=index
+.macro no_offset_ldzarray			;calculate array address.    @0=array name  @1=cell size  @2=index
 	;ldi zl, low(@0)
 	;ldi zh, high(@0)
-  ldz @0
+  no_offset_ldz @0
 	ldi t, @1
 	mul t, @2
 	add zl, r0
 	adc zh, r1
 .endmacro
 
+.macro ldzarray			;calculate array address.    @0=array name  @1=cell size  @2=index
+  ldz @0
+	ldi t, @1
+	mul t, @2
+	add zl, r0
+	adc zh, r1
+.endmacro
 
 
 .macro debug16
@@ -321,7 +333,7 @@
 .macro CheckLimit
 	b16load @0
 	ldy @1
-	ldz @2
+	no_offset_ldz @2
 	call Limit
 	brcc pc + 2
 	rjmp @3

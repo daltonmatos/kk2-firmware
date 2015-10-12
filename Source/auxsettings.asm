@@ -111,7 +111,7 @@ aux18:	call GetButtons
 	breq aux17
 
 	lds xl, AuxPos1Function		;save AUX functions to EEPROM
-	ldz eeAuxPos1Function
+	no_offset_ldz eeAuxPos1Function
 	call StoreEePVariable8
 
 	lds xl, AuxPos2Function
@@ -130,7 +130,7 @@ aux17:	andi Changes, 0x02
 	breq aux24
 
 	lds xl, AuxPos1SS		;save AUX stick scaling offsets to EEPROM
-	ldz eeAuxPos1SS
+	no_offset_ldz eeAuxPos1SS
 	call StoreEePVariable8
 
 	lds xl, AuxPos2SS
@@ -237,7 +237,7 @@ PrintAuxSSValue:
 
 LoadAuxSwitchSetup:
 
-	ldz eeAuxPos1SS
+	no_offset_ldz eeAuxPos1SS
 	call GetEePVariable8
 	sts AuxPos1SS, xl
 

@@ -7,7 +7,7 @@
 
 EeInit:
 
-	ldz 0				;check EEPROM signature for user profile #1
+	no_offset_ldz 0				;check EEPROM signature for user profile #1
 	rcall CheckEeSignature
 	sts Init, xl
 	tst xl
@@ -18,7 +18,7 @@ EeInit:
 	rcall InitUserProfile
 
 	clr t				;not accepted yet
-	ldz eeUserAccepted
+	no_offset_ldz eeUserAccepted
 	call WriteEeprom
 
 	call DisableEscCalibration	;initialize variables that are used in profile #1 only
@@ -30,7 +30,7 @@ EeInit:
 	rcall InitialSetup		;display initial setup menu
 	rjmp eei3
 
-eei1:	ldz eeUserAccepted		;show the disclaimer if not yet accepted
+eei1:	no_offset_ldz eeUserAccepted		;show the disclaimer if not yet accepted
 	call ReadEeprom
 	brflagtrue t, eei2
 
@@ -47,7 +47,7 @@ eei2:	lds zh, UserProfile		;check EEPROM signature for the current user profile 
 
 	rcall InitUserProfile		;initialize current user profile
 
-eei3:	ldz eeButtonsReversed		;normal or reversed buttons
+eei3:	no_offset_ldz eeButtonsReversed		;normal or reversed buttons
 	call ReadEeprom
 	sts BtnReversed, t
 	ret
@@ -86,14 +86,14 @@ ces1:	ser xl				;bad signature
 
 InitUserProfile:
 
-	ldz EeMixerTable		;mixer table
+	no_offset_ldz EeMixerTable		;mixer table
 	ldx 0
 	ldi Counter, 64
 iup3:	call StoreEePVariable8
 	dec Counter
 	brne iup3
 
-	ldz EeSensorCalData		;sensor calibration data
+	no_offset_ldz EeSensorCalData		;sensor calibration data
 	ldi Counter, 18
 iup4:	call StoreEePVariable8
 	dec Counter
@@ -125,7 +125,7 @@ iup8:	movw z, y
 
 
 	ldx 60
-	ldz eeSelflevelPgain
+	no_offset_ldz eeSelflevelPgain
 	call StoreEePVariable16		;eeSelflevelPgain
 	ldx 20
 	call StoreEePVariable16		;eeSelflevelPlimit
@@ -234,7 +234,7 @@ iup8:	movw z, y
 	call StoreEePVariable8		;eeDG2Functions
 
 
-	ldz 0				;EEPROM signature
+	no_offset_ldz 0				;EEPROM signature
 	ldi xl, 0x21
 	call StoreEePVariable8
 	ldi xl, 0x05
@@ -251,11 +251,11 @@ iup8:	movw z, y
 	tst t
 	brne iup7
 
-	ldz eeUserProfile		;set user profile #1 to be used as default
+	no_offset_ldz eeUserProfile		;set user profile #1 to be used as default
 	call WriteEeprom
 
 	clr t				;set board orientation back to normal (0 degrees)
-	ldz eeBoardOrientation
+	no_offset_ldz eeBoardOrientation
 	call WriteEeprom
 
 	call SetDefaultLcdContrast
@@ -323,11 +323,11 @@ eew12:	cpi t, 0x08			;OK (reversed buttons)?
 	ser t				;reversed
 
 eew14:	sts BtnReversed, t
-	ldz eeButtonsReversed
+	no_offset_ldz eeButtonsReversed
 	call WriteEeprom
 
 eew13:	ser t				;set flag to indicate that the user has accepted the disclaimer
-	ldz eeUserAccepted
+	no_offset_ldz eeUserAccepted
 	call WriteEeprom
 
 	call ReleaseButtons		;make sure buttons are released

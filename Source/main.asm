@@ -108,7 +108,7 @@ ma10:	;--- ESC calibration ----
 
 	sei				;global interrupts must be enabled here for PWM output in EscThrottleCalibration
 
-	ldz eeEscCalibration		;check ESC calibration setting
+	no_offset_ldz eeEscCalibration		;check ESC calibration setting
 	call ReadEeprom
 	tst t
 	breq ma5			;jump if ESC calibration is disabled

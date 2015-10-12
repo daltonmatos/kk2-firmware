@@ -8,7 +8,7 @@ CppmSettings:
 cpp11:	call LcdClear6x8
 
 	clr t				;print all text labels and values
-	ldz eeCppmRoll
+	no_offset_ldz eeCppmRoll
 
 cpp15:	push t
 	pushz
@@ -64,15 +64,15 @@ cpp13:	rjmp cpp11
 cpp12:	cpi t, 0x01			;CHANGE?
 	brne cpp14
 
-	ldzarray eeCppmRoll, 1, Item
+	no_offset_ldzarray eeCppmRoll, 1, Item
 	call GetEePVariable8
 	ldy 1				;lower limit
-	ldz 5				;upper limit
+	no_offset_ldz 5				;upper limit
 	ldi xh, 0
 	call NumberEdit
 	mov xl, r0
 	mov xh, r1
-	ldzarray eeCppmRoll, 1, Item
+	no_offset_ldzarray eeCppmRoll, 1, Item
 	call StoreEePVariable8
 
 cpp14:	rjmp cpp11

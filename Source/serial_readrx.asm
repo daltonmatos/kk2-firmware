@@ -24,7 +24,7 @@ IsrSerialRx:
 	cp tt, treg
 	brlt isr20
 
-	ldz RxBuffer0
+	no_offset_ldz RxBuffer0
 	clr tt
 
 isr20:	sts RxBufferIndex, tt
@@ -47,7 +47,7 @@ ClearSerialBuffer:
 
 	ldi t, 25
 	ldi xl, 0
-	ldz RxBuffer0
+	no_offset_ldz RxBuffer0
 
 csb1:	st z+, xl
 	dec t

@@ -108,7 +108,7 @@ sat13:	lds xl, RxBufferIndex		;is the communication synchronized?
 	sts RxBufferIndexOld, t
 	cli
 	sts RxBufferIndex, t
-	ldz RxBuffer0
+	no_offset_ldz RxBuffer0
 	sts RxBufferAddressL, zl
 	sts RxBufferAddressH, zh
 	sei
@@ -120,7 +120,7 @@ sat14:	ser t				;the data frame appears to be valid
 	ldx RxBuffer2			;skip first 2 bytes
 	ldi r17, 2			;using register R17 as Byte Index
 
-sat3:	ldz Channel1L			;set Channel Array to 1st location
+sat3:	no_offset_ldz Channel1L			;set Channel Array to 1st location
 	ld yh, x+			;get MSB from the satelite array
 	ld yl, x+			;get LSB from the satelite array
 
@@ -220,7 +220,7 @@ sat31:	;--- Virtual channels ---
 	sbc xh, zh
 	rcall AdjustSatValue2
 
-	ldz 0				;X < 0 ?
+	no_offset_ldz 0				;X < 0 ?
 	cp  xl, zl
 	cpc xh, zh
 	brge sat30
@@ -248,25 +248,25 @@ sat30:	b16store RxThrottle
 	b16store RxAux
 
 	clr yl				;AUX switch position #1
-	ldz -600
+	no_offset_ldz -600
 	cp  xl, zl
 	cpc xh, zh
 	brlt sat35
 
 	inc yl				;AUX switch position #2
-	ldz -200
+	no_offset_ldz -200
 	cp  xl, zl
 	cpc xh, zh
 	brlt sat35
 
 	inc yl				;AUX switch position #3
-	ldz 200
+	no_offset_ldz 200
 	cp  xl, zl
 	cpc xh, zh
 	brlt sat35
 
 	inc yl				;AUX switch position #4
-	ldz 600
+	no_offset_ldz 600
 	cp  xl, zl
 	cpc xh, zh
 	brlt sat35
@@ -300,13 +300,13 @@ sat35:	sts AuxSwitchPosition, yl
 	b16store RxAux4
 
 	clr yl				;AUX4 switch position #1
-	ldz -400
+	no_offset_ldz -400
 	cp  xl, zl
 	cpc xh, zh
 	brlt sat38
 
 	inc yl				;AUX4 switch position #2
-	ldz 400
+	no_offset_ldz 400
 	cp  xl, zl
 	cpc xh, zh
 	brlt sat38
@@ -342,7 +342,7 @@ sat24:	jmp ClearInputChannels		;will tag the received frame as invalid and clear
 
 GetSatChannelValue:
 
-	ldzarray Channel1L, 2, r0	;register R0 (input parameter) holds the mapped channel ID
+	no_offset_ldzarray Channel1L, 2, r0	;register R0 (input parameter) holds the mapped channel ID
 	ld xl, z+
 	ld xh, z
 	clr yh

@@ -5,7 +5,7 @@
 
 MixerEditor:
 
-	ldz eeMotorLayoutOK	;refuse access if no motor layout is loaded
+	no_offset_ldz eeMotorLayoutOK	;refuse access if no motor layout is loaded
 	call ReadEeprom
 	brflagtrue t, med2
 
@@ -130,7 +130,7 @@ med40:	cpi Item, 1		;edit mixer value
 	rcall GetMixerValue
 	rcall Extend
 	ldy -127		;lower limit
-	ldz 127			;upper limit
+	no_offset_ldz 127			;upper limit
 	call NumberEdit
 	mov t, r0
 	rcall StoreMixerValue

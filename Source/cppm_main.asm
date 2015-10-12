@@ -76,7 +76,7 @@ CppmMain:
 	sts CppmChannelCount, t
 	sts ChannelCount, t
 
-	ldz Channel1L
+	no_offset_ldz Channel1L
 	sts CppmPulseArrayAddressL, zl
 	sts CppmPulseArrayAddressH, zh
 
@@ -103,7 +103,7 @@ cm10:	;--- ESC calibration ----
 
 	sei				;global interrupts must be enabled here for PWM output in EscThrottleCalibration
 
-	ldz eeEscCalibration		;check ESC calibration setting
+	no_offset_ldz eeEscCalibration		;check ESC calibration setting
 	call ReadEeprom
 	tst t
 	breq cm5			;jump if ESC calibration is disabled

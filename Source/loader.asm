@@ -102,7 +102,7 @@ loa23:	mov t, MixerValue		;save mixer value
 	brlt loa19			;outer loop
 
 	setflagtrue xl			;set flag to indicate that a motor layout has been selected
-	ldz eeMotorLayoutOK
+	no_offset_ldz eeMotorLayoutOK
 	call StoreEeVariable8		;for user profile #1 only
 
 	BuzzerOff

@@ -5,7 +5,7 @@
 
 ErrorLog:
 
-	ldz eeErrorCode
+	no_offset_ldz eeErrorCode
 	call ReadEeprom
 	tst t
 	brne el11
@@ -36,7 +36,7 @@ el11:	LedToggle
 	lrv X1, 0
 	ldz time*2
 	call PrintString
-	ldz eeErrorTimeSec
+	no_offset_ldz eeErrorTimeSec
 	call GetEeVariable8
 	mov yl, xl
 	call GetEeVariable8
@@ -66,7 +66,7 @@ ErrorLogSetup:
 	lrv X1, 0
 	ldz status*2
 	call PrintString
-	ldz eeErrorLogState
+	no_offset_ldz eeErrorLogState
 	call ReadEeprom
 	andi t, 0x01
 	ldz estate*2
@@ -109,11 +109,11 @@ ecode:	.dw csl1*2, sta9*2, sta32*2, sta45*2
 
 LogError:
 
-	ldz eeErrorLogState			;skip logging if disabled
+	no_offset_ldz eeErrorLogState			;skip logging if disabled
 	call ReadEeprom
 	brflagfalse t, le1
 
-	ldz eeErrorCode				;will save the error code only if no error has been logged earlier
+	no_offset_ldz eeErrorCode				;will save the error code only if no error has been logged earlier
 	call ReadEeprom
 	tst t
 	brne le1
@@ -133,7 +133,7 @@ le1:	ret
 
 ClearLoggedError:
 
-	ldz eeErrorCode				;check for existing error
+	no_offset_ldz eeErrorCode				;check for existing error
 	call ReadEeprom
 	tst t
 	brne cle1
@@ -144,7 +144,7 @@ ClearLoggedError:
 	ret
 
 cle1:	clr t					;clear error
-	ldz eeErrorCode
+	no_offset_ldz eeErrorCode
 	call WriteEeprom
 
 cle2:	rvsetflagfalse flagErrorLogSetup
@@ -160,7 +160,7 @@ ToggleErrorLogState:
 
 	rvbrflagfalse flagErrorLogSetup, tel10
 
-	ldz eeErrorLogState			;setup screen is active so we'll toggle the EEPROM setting
+	no_offset_ldz eeErrorLogState			;setup screen is active so we'll toggle the EEPROM setting
 	call ReadEeprom
 	com t
 	call WriteEeprom
@@ -176,7 +176,7 @@ tel10:	ret
 ResetErrorLogging:
 
 	ser t					;set the EEPROM setting to ENABLED
-	ldz eeErrorLogState
+	no_offset_ldz eeErrorLogState
 	call WriteEeprom
 	rcall ClearLoggedError
 	ret

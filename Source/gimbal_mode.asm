@@ -6,7 +6,7 @@
 
 GimbalMode:
 
-	ldz eeGimbalMode		;get current setting
+	no_offset_ldz eeGimbalMode		;get current setting
 	call ReadEeprom
 	mov OldSetting, t
 
@@ -46,7 +46,7 @@ gbm13:	cpi t, 0x02			;NO?
 gbm15:	cp t, OldSetting		;save setting, but only if it has changed
 	breq gbm16
 
-	ldz eeGimbalMode
+	no_offset_ldz eeGimbalMode
 	call WriteEeprom
 
 	jmp EnforceRestart		;enforce restart
@@ -68,7 +68,7 @@ gbm10:	.dw gbm2*2, gbm3*2, gbm4*2
 
 GetGimbalControllerMode:
 
-	ldz eeGimbalMode
+	no_offset_ldz eeGimbalMode
 	call ReadEeprom			;read from profile #1 only
 	sts flagGimbalMode, t
 	ret
@@ -80,7 +80,7 @@ GetGimbalControllerMode:
 ResetGimbalControllerMode:
 
 	clr t
-	ldz eeGimbalMode
+	no_offset_ldz eeGimbalMode
 	call WriteEeprom		;save in profile #1 only
 	ret
 

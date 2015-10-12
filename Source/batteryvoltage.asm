@@ -98,7 +98,7 @@ abv32:	cpi Item, 2
 
 	rcall LoadBatteryVoltageOffset	;adjust offset value
 	ldy -1023			;lower limit
-	ldz 1023			;upper limit
+	no_offset_ldz 1023			;upper limit
 	call NumberEdit
 	mov xl, r0
 	mov xh, r1
@@ -110,7 +110,7 @@ abv33:	b16mov Temp, BatteryVoltage	;modify voltage
 	b16fdiv Temp, 2
 	b16load Temp
 	ldy 20				;lower limit
-	ldz 260				;upper limit
+	no_offset_ldz 260				;upper limit
 	call NumberEdit
 	mov xl, r0
 	mov xh, r1
@@ -122,7 +122,7 @@ abv33:	b16mov Temp, BatteryVoltage	;modify voltage
 	b16add BatteryVoltageOffset, BatteryVoltageOffset, Temp
 	b16load BatteryVoltageOffset
 
-abv34:	ldz eeBatteryVoltageOffset	;save in EEPROM for profile #1 only
+abv34:	no_offset_ldz eeBatteryVoltageOffset	;save in EEPROM for profile #1 only
 	call StoreEeVariable16
 	rjmp abv24
 
@@ -156,7 +156,7 @@ svo8:	.dw svo1*2, svo2*2, svo3*2, svo4*2
 
 LoadBatteryVoltageOffset:
 
-	ldz eeBatteryVoltageOffset
+	no_offset_ldz eeBatteryVoltageOffset
 	call GetEeVariable16		;load from profile #1 only
 	clr yh
 	b16store BatteryVoltageOffset
@@ -172,7 +172,7 @@ SaveBatteryVoltageOffset:
 	clr yh
 	b16store BatteryVoltageOffset
 
-	ldz eeBatteryVoltageOffset	;store in EEPROM for profile #1 only
+	no_offset_ldz eeBatteryVoltageOffset	;store in EEPROM for profile #1 only
 	call StoreEeVariable16
 
 	call LcdClear12x16
@@ -202,7 +202,7 @@ SaveBatteryVoltageOffset:
 ResetBatteryVoltageOffset:
 
 	ldx 2				;offset for KK2.1.5 = 2
-	ldz eeBatteryVoltageOffset
+	no_offset_ldz eeBatteryVoltageOffset
 	call StoreEeVariable16		;save in profile #1 only
 	ret
 

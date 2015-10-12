@@ -18,7 +18,7 @@ stt11:	call LcdClear6x8
 
 	;values
 	lrv Y1, 1
-	ldz eeBattAlarmVoltage
+	no_offset_ldz eeBattAlarmVoltage
 	ldi t, 2
 
 	;item selection
@@ -35,7 +35,7 @@ stt22:	;labels				;normal mode
 
 	;values
 	lrv Y1, 1
-	ldz eeEscLowLimit
+	no_offset_ldz eeEscLowLimit
 	ldi t, 4
 
 stt21:	push t
@@ -86,7 +86,7 @@ stt24:	cpi t, 0x02			;NEXT?
 stt12:	cpi t, 0x01			;CHANGE?
 	brne stt14
 
-	ldzarray eeEscLowLimit, 2, Item
+	no_offset_ldzarray eeEscLowLimit, 2, Item
 	pushz
 	call GetEePVariable16
 	ldzarray stt15*2, 4, Item

@@ -15,12 +15,12 @@ sgs11:	call LcdClear6x8
 
 	ldz cam1*2			;roll gain
 	call PrintString
-	ldz eeCamRollGain
+	no_offset_ldz eeCamRollGain
 	rcall PrintSatCamStabValue
 
 	ldz cam3*2			;pitch gain
 	call PrintString
-	ldz eeCamPitchGain
+	no_offset_ldz eeCamPitchGain
 	rcall PrintSatCamStabValue
 
 	ldz cam5*2			;mixing (none or differential)
@@ -77,7 +77,7 @@ sgs12:	cpi t, 0x01			;CHANGE?
 	ser t
 	eor xl, t
 	sts CamServoMixing, xl
-	ldz eeCamServoMixing
+	no_offset_ldz eeCamServoMixing
 	call StoreEeVariable8
 	rjmp sgs11
 
@@ -85,14 +85,14 @@ sgs12:	cpi t, 0x01			;CHANGE?
 sgs30:	tst Item
 	brne sgs31
 
-	ldz eeCamRollGain
+	no_offset_ldz eeCamRollGain
 	rjmp sgs32
 
-sgs31:	ldz eeCamPitchGain
+sgs31:	no_offset_ldz eeCamPitchGain
 sgs32:	pushz
 	call GetEePVariable16
 	ldy -32000			;lower limit
-	ldz 32000			;upper limit
+	no_offset_ldz 32000			;upper limit
 	call NumberEdit
 	mov xl, r0
 	mov xh, r1

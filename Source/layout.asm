@@ -11,7 +11,7 @@
 
 MotorLayout:
 
-	ldz eeMotorLayoutOK	;refuse access if no motor layout is loaded
+	no_offset_ldz eeMotorLayoutOK	;refuse access if no motor layout is loaded
 	call ReadEeprom		;read from user profile #1
 	brflagtrue t, ml2
 
@@ -92,7 +92,7 @@ mot25:	rjmp mot1
 
 ShowMotor:
 
-	ldzarray RamMixerTable, 8, Output
+	no_offset_ldzarray RamMixerTable, 8, Output
 
 	lrv PixelType, 1
 

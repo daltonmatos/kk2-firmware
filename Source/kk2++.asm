@@ -61,7 +61,7 @@ reset:
 	ldi t, high(ramend)
 	out sph, t
 
-	ldz eeUserProfile	;user profile
+	no_offset_ldz eeUserProfile	;user profile
 	call ReadEeprom
 	andi t, 0x03
 	sts UserProfile, t
@@ -69,7 +69,7 @@ reset:
 
 	;--- Run specialized setup and main routine based on selected RX mode ---
 
-	ldz eeRxMode
+	no_offset_ldz eeRxMode
 	call ReadEeprom
 	sts RxMode, t
 	cpi t, RxModeStandard

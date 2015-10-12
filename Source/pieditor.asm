@@ -112,7 +112,7 @@ pie40:	mov ParameterIndex, Item;edit parameter
 	dec ParameterIndex
 	rcall GetParameter
 	ldy 0			;lower limit
-	ldz 32000		;upper limit
+	no_offset_ldz 32000		;upper limit
 	call NumberEdit
 	mov xl, r0
 	mov xh, r1

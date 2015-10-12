@@ -42,7 +42,7 @@ dgs11:	call LcdClear6x8
 	cp t, OldValue
 	breq dgs7
 
-	ldz eeDG2Functions
+	no_offset_ldz eeDG2Functions
 	mov xl, t
 	call StoreEePVariable8
 

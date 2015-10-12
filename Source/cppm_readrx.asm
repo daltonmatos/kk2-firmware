@@ -22,17 +22,17 @@ IsrCppm:
 	sbc xh, zh
 	brpl cppm8
 
-	ldz 0				;X = ABS(X)
+	no_offset_ldz 0				;X = ABS(X)
 	sub zl, xl
 	sbc zh, xh
 	movw x, z
 
-cppm8:	ldz 6250			;pulse longer than 2.5ms?
+cppm8:	no_offset_ldz 6250			;pulse longer than 2.5ms?
 	cp  xl, zl
 	cpc xh, zh
 	brlo cppm9
 
-	ldz Channel1L			;yes, reset cppm sequence
+	no_offset_ldz Channel1L			;yes, reset cppm sequence
 
 	lds tt, CppmChannelCount	;CPPM pulse train is considered valid when minimum 4 channels have been detected
 	clr treg
@@ -65,7 +65,7 @@ cppm11:	lds zl, CppmPulseArrayAddressL	;store channel in channel array.
 	brlo cppm10
 	breq cppm10
 
-	ldz Channel9L			;yes, limit
+	no_offset_ldz Channel9L			;yes, limit
 
 cppm10:	sts CppmPulseArrayAddressL, zl	;store array pointer
 	sts CppmPulseArrayAddressH, zh
@@ -120,18 +120,18 @@ GetCppmChannels:
 
 	call Xabs			;X = ABS(X)
 
-	ldz 2875			;X = X - 2875 (1.15ms)
+	no_offset_ldz 2875			;X = X - 2875 (1.15ms)
 	sub xl, zl
 	sbc xh, zh
 
-	ldz 0				;X < 0 ?
+	no_offset_ldz 0				;X < 0 ?
 	cp  xl, zl
 	cpc xh, zh
 	brge gcc8
 
 	rjmp gcc30			;yes, set to zero
 
-gcc8:	ldz 3125			;X > 3125? (1.25ms)
+gcc8:	no_offset_ldz 3125			;X > 3125? (1.25ms)
 	cp  xl, zl
 	cpc xh, zh
 	brlt gcc2
@@ -161,25 +161,25 @@ gcc2:	clr yh
 	call Sanitize
 
 	clr yl				;AUX switch position #1
-	ldz -600
+	no_offset_ldz -600
 	cp  xl, zl
 	cpc xh, zh
 	brlt gcc35
 
 	inc yl				;AUX switch position #2
-	ldz -200
+	no_offset_ldz -200
 	cp  xl, zl
 	cpc xh, zh
 	brlt gcc35
 
 	inc yl				;AUX switch position #3
-	ldz 200
+	no_offset_ldz 200
 	cp  xl, zl
 	cpc xh, zh
 	brlt gcc35
 
 	inc yl				;AUX switch position #4
-	ldz 600
+	no_offset_ldz 600
 	cp  xl, zl
 	cpc xh, zh
 	brlt gcc35
@@ -219,13 +219,13 @@ gcc35:	sts AuxSwitchPosition, yl
 	call Sanitize
 
 	clr yl				;AUX4 switch position #1
-	ldz -400
+	no_offset_ldz -400
 	cp  xl, zl
 	cpc xh, zh
 	brlt gcc38
 
 	inc yl				;AUX4 switch position #2
-	ldz 400
+	no_offset_ldz 400
 	cp  xl, zl
 	cpc xh, zh
 	brlt gcc38

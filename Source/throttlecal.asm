@@ -116,7 +116,7 @@ SetAllOutputValues:
 DisableEscCalibration:
 
 	clr xl
-	ldz eeEscCalibration
+	no_offset_ldz eeEscCalibration
 	call StoreEeVariable8		;save in profile #1 only
 	ret
 
@@ -144,7 +144,7 @@ war13:	call LcdClear12x16
 	call LcdUpdate
 
 	ser xl				;enable ESC calibration for the next start-up only
-	ldz eeEscCalibration
+	no_offset_ldz eeEscCalibration
 	call StoreEeVariable8		;save in profile #1 only
 
 war11:	rjmp war11			;infinite loop. Restart is required

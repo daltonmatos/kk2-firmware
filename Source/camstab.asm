@@ -26,7 +26,7 @@ cam15:	push t
 	brne cam15
 
 	lrv Y1, 1			;roll gain
-	ldz eeCamRollGain
+	no_offset_ldz eeCamRollGain
 	rcall PrintCamStabValue
 
 	rcall PrintCamStabValue		;roll offset
@@ -87,18 +87,18 @@ cam12:	cpi t, 0x01			;CHANGE?
 	ser t
 	eor xl, t
 	sts CamServoMixing, xl
-	ldz eeCamServoMixing
+	no_offset_ldz eeCamServoMixing
 	call StoreEePVariable8
 	rjmp cam11
 
-cam30:	ldzarray eeCamRollGain, 2, Item
+cam30:	no_offset_ldzarray eeCamRollGain, 2, Item
 	call GetEePVariable16
 	ldy -32000			;lower limit
-	ldz 32000			;upper limit
+	no_offset_ldz 32000			;upper limit
 	call NumberEdit
 	mov xl, r0
 	mov xh, r1
-	ldzarray eeCamRollGain, 2, Item
+	no_offset_ldzarray eeCamRollGain, 2, Item
 	call StoreEePVariable16
 cam14:	rjmp cam11
 

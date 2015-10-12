@@ -58,7 +58,7 @@ crt3:	push t
 	clr t				;idle
 	rjmp crt6
 
-crt4:	ldz 90
+crt4:	no_offset_ldz 90
 	call CompareXZ
 	brge crt5
 

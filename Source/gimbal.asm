@@ -22,7 +22,7 @@ gbs11:	call LcdClear6x8
 	;values
 	lrv Y1, 1
 	ldi Xoffset, 72
-	ldz eeCamRollGain
+	no_offset_ldz eeCamRollGain
 	rcall PrintGimbalValue		;roll gain
 	rcall PrintGimbalValue		;roll offset
 	rcall PrintGimbalValue		;pitch gain
@@ -30,7 +30,7 @@ gbs11:	call LcdClear6x8
 
 	sts X1, Xoffset			;mixing (none or differential)
 	call PrintColonAndSpace
-	ldz eeCamServoMixing
+	no_offset_ldz eeCamServoMixing
 	call GetEePVariable8
 	sts CamServoMixing, t
 	andi t, 0x01
@@ -83,11 +83,11 @@ gbs12:	cpi t, 0x01			;CHANGE?
 	lds xl, CamServoMixing		;toggle mixing mode
 	com xl
 	sts CamServoMixing, xl
-	ldz eeCamServoMixing
+	no_offset_ldz eeCamServoMixing
 	call StoreEePVariable8
 	rjmp gbs11
 
-gbs30:	ldzarray eeCamRollGain, 2, Item	;edit gain or offset value
+gbs30:	no_offset_ldzarray eeCamRollGain, 2, Item	;edit gain or offset value
 	ldy -9000			;lower limit
 	ldx 9000			;upper limit
 	rcall EditGimbalValue
@@ -109,7 +109,7 @@ gbs201:	call LcdClear6x8
 	call PrintStringArray
 
 	lrv Y1, 1			;print values
-	ldz eeCamRollHomePos
+	no_offset_ldz eeCamRollHomePos
 	rcall PrintGimbalValue		;roll home position
 	rcall PrintGimbalValue		;pitch home position
 
@@ -144,7 +144,7 @@ gbs223:	cpi t, 0x02			;NEXT?
 	cpi t, 0x01			;CHANGE?
 	brne gbs222
 
-	ldzarray eeCamRollHomePos, 2, Item
+	no_offset_ldzarray eeCamRollHomePos, 2, Item
 	ldy -1000			;lower limit
 	ldx 1000			;upper limit
 	rcall EditGimbalValue

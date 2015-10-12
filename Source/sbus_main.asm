@@ -68,7 +68,7 @@ SBusMain:
 	sts RxBufferIndexOld, t
 	sts RxBufferState, t
 	sts RxBuffer0, t
-	ldz RxBuffer0
+	no_offset_ldz RxBuffer0
 	sts RxBufferAddressL, zl
 	sts RxBufferAddressH, zh
 
@@ -92,7 +92,7 @@ bm10:	;--- ESC calibration ----
 
 	sei				;global interrupts must be enabled here for PWM output in EscThrottleCalibration
 
-	ldz eeEscCalibration		;check ESC calibration setting
+	no_offset_ldz eeEscCalibration		;check ESC calibration setting
 	call ReadEeprom
 	tst t
 	breq bm5			;jump if ESC calibration is disabled

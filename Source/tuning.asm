@@ -249,7 +249,7 @@ sir16:	cpi t, 1				;HIGH?
 
 sir17:	ldi xl, 3				;high rate
 
-sir14:	ldz eeTuningRate			;save tuning rate
+sir14:	no_offset_ldz eeTuningRate			;save tuning rate
 	call StoreEePVariable8
 	rcall LoadTuningRate			;set tuning rate value
 
@@ -262,7 +262,7 @@ sir15:	call ReleaseButtons
 
 LoadTuningRate:
 
-	ldz eeTuningRate
+	no_offset_ldz eeTuningRate
 	call GetEePVariable8
 	andi xl, 0x03
 
@@ -386,7 +386,7 @@ sav4:	cpi t, 4
 	brne sav5
 
 	b16store SelfLevelPgainOrg		;SL P gain
-	ldz eeSelflevelPgain
+	no_offset_ldz eeSelflevelPgain
 	call StoreEePVariable16
 	ret
 
@@ -394,20 +394,20 @@ sav5:	cpi t, 5
 	brne sav7
 
 	b16store AccTrimPitchOrg		;ACC trim
-	ldz eeAccTrimPitch
+	no_offset_ldz eeAccTrimPitch
 	call StoreEePVariable16
 	b16load Tuned7
 	b16store AccTrimRollOrg
-	ldz eeAccTrimRoll
+	no_offset_ldz eeAccTrimRoll
 	call StoreEePVariable16
 	ret
 
 sav7:	b16store CamPitchGainOrg		;gimbal gains
-	ldz eeCamPitchGain
+	no_offset_ldz eeCamPitchGain
 	call StoreEePVariable16
 	b16load Tuned7
 	b16store CamRollGainOrg
-	ldz eeCamRollGain
+	no_offset_ldz eeCamRollGain
 	call StoreEePVariable16
 	ret
 

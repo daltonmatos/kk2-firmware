@@ -9,7 +9,7 @@ set11:	call LcdClear6x8
 
 	;labels and values
 	clr t
-	ldz eeStickScaleRoll
+	no_offset_ldz eeStickScaleRoll
 
 set16:	push t
 	pushz
@@ -72,14 +72,14 @@ set13:	rjmp set11
 set12:	cpi t, 0x01		;CHANGE?
 	brne set14
 
-	ldzarray eeStickScaleRoll, 2, Item
+	no_offset_ldzarray eeStickScaleRoll, 2, Item
 	call GetEePVariable16
 	ldy 0			;lower limit
-	ldz 500			;upper limit
+	no_offset_ldz 500			;upper limit
 	call NumberEdit
 	mov xl, r0
 	mov xh, r1
-	ldzarray eeStickScaleRoll, 2, Item
+	no_offset_ldzarray eeStickScaleRoll, 2, Item
 	call StoreEePVariable16
 
 set14:	rjmp set11

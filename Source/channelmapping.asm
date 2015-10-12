@@ -82,7 +82,7 @@ map12:	cpi t, 0x01			;CHANGE?
 	inc xl
 
 	ldy 1				;lower limit
-	ldz 8				;upper limit
+	no_offset_ldz 8				;upper limit
 	call NumberEdit
 	mov xl, r0
 	popz

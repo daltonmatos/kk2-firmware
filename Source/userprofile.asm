@@ -6,7 +6,7 @@ UserProfileSetup:
 
 	clr Item
 
-ups10:	ldz eeUserProfile		;get default user profile value (from user profile #1)
+ups10:	no_offset_ldz eeUserProfile		;get default user profile value (from user profile #1)
 	call ReadEeprom
 	mov DefaultUserProfile, t
 
@@ -76,12 +76,12 @@ ups17:	cpi t, 0x01			;CHANGE/SELECT?
 	inc xl
 	clr xh
 	ldy 1				;lower limit
-	ldz 4				;upper limit
+	no_offset_ldz 4				;upper limit
 	call NumberEdit
 	mov xl, r0
 	dec xl
 	mov DefaultUserProfile, xl
-	ldz eeUserProfile
+	no_offset_ldz eeUserProfile
 	call StoreEeVariable8		;save in profile #1 only
 	clr Item
 	rjmp ups10
@@ -201,7 +201,7 @@ CopyUserProfile:
 cup7:	ldi xl, 1			;select user profile to copy EEPROM data from
 	clr xh
 	ldy 1				;lower limit
-	ldz 4				;upper limit
+	no_offset_ldz 4				;upper limit
 	call NumberEdit
 	mov xl, r0
 	dec xl

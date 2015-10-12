@@ -60,25 +60,25 @@ sse11:	call LcdClear6x8
 	cp xl, MpuFilterOld
 	breq sse13
 
-	ldz eeMpuFilter
+	no_offset_ldz eeMpuFilter
 	call StoreEePVariable8
 
 sse13:	lds xl, MpuGyroCfg
 	cp xl, MpuGyroOld
 	breq sse14
 
-	ldz eeMpuGyroCfg
+	no_offset_ldz eeMpuGyroCfg
 	call StoreEePVariable8
 
 sse14:	lds xl, MpuAccCfg
 	cp xl, MpuAccOld
 	breq sse15
 
-	ldz eeMpuAccCfg
+	no_offset_ldz eeMpuAccCfg
 	call StoreEePVariable8
 
 	clr xl				;ACC sensors must be re-calibrated
-	ldz eeSensorsCalibrated
+	no_offset_ldz eeSensorsCalibrated
 	call StoreEePVariable8
 
 sse15:	call setup_mpu6050		;update the MPU before leaving

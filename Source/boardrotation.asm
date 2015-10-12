@@ -12,7 +12,7 @@ BoardRotation:
 	call ShowNoAccessDlg
 	ret
 
-brd10:	ldz eeBoardOrientation
+brd10:	no_offset_ldz eeBoardOrientation
 	call ReadEeprom
 	andi t, 0x03
 	mov Item, t
@@ -68,7 +68,7 @@ brd36:	cpi t, 0x01			;SELECT?
 
 	sts BoardOrientation, Item
 	mov t, Item
-	ldz eeBoardOrientation
+	no_offset_ldz eeBoardOrientation
 	call WriteEeprom
 
 

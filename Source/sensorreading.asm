@@ -524,7 +524,7 @@ setup_mpu6050:
 
 	ldi t, 0x1A				
 	sts TWI_address,t		// CONFIG        -- EXT_SYNC_SET 0 (disable input pin for data sync) ; default DLPF_CFG = 0 => ACC bandwidth = 260Hz
-	ldz eeMpuFilter
+	no_offset_ldz eeMpuFilter
 	call ReadEepromP
 	andi t, 0x07
 	sts MpuFilter, t		// save to SRAM for later
@@ -533,7 +533,7 @@ setup_mpu6050:
 
 	ldi t, 0x1B
 	sts TWI_address, t		// GYRO_CONFIG   -- Default FS_SEL = 3: Full scale set to 2000 deg/sec
-	ldz eeMpuGyroCfg
+	no_offset_ldz eeMpuGyroCfg
 	call ReadEepromP
 	andi t, 0x18
 	sts MpuGyroCfg, t		// save to SRAM for later
@@ -542,7 +542,7 @@ setup_mpu6050:
 
 	ldi t,0x1C
 	sts TWI_address,t		// write reg address to sensor  ACCEL_CONFIG
-	ldz eeMpuAccCfg
+	no_offset_ldz eeMpuAccCfg
 	call ReadEepromP
 	andi t, 0x18
 	sts MpuAccCfg, t		// save to SRAM for later

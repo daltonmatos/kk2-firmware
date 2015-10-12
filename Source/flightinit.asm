@@ -15,7 +15,7 @@ fli8:	b16store_array FilteredOut1, Temp
 	brne fli8
 
 
-	ldz eeBoardOrientation			;eeBoardOrientation
+	no_offset_ldz eeBoardOrientation			;eeBoardOrientation
 	call ReadEeprom
 	sts BoardOrientation, t
 
@@ -36,7 +36,7 @@ fli8:	b16store_array FilteredOut1, Temp
 	b16fdiv ServoFilter, 7
 
 
-	ldz eeStickScaleRoll
+	no_offset_ldz eeStickScaleRoll
 	rcall fli2
 	rcall TempDiv16
 	b16mov2 StickScaleRoll, StickScaleRollOrg, Temp
@@ -78,7 +78,7 @@ fli8:	b16store_array FilteredOut1, Temp
 fli3:	rcall LoadGimbalSettings
 
 
-	ldz EeSensorCalData			;load ACC calibration data
+	no_offset_ldz EeSensorCalData			;load ACC calibration data
 	call GetEePVariable168
 	b16store AccXZero
 	call GetEePVariable168
@@ -93,7 +93,7 @@ fli3:	rcall LoadGimbalSettings
 	call LoadBatteryVoltageOffset
 	call LoadDG2Settings
 
-	ldz eeAutoDisarm
+	no_offset_ldz eeAutoDisarm
 	call ReadEepromP
 	sts flagAutoDisarm, t
 
@@ -187,13 +187,13 @@ fli30:	;--- Gyro ---
 	andi t, 0xF0
 	sts StatusBits, t
 
-	ldz eeMotorLayoutOk			;motor layout loaded?
+	no_offset_ldz eeMotorLayoutOk			;motor layout loaded?
 	call ReadEeprom				;check user profile #1 only
 	brflagtrue t, fli4
 
 	setstatusbit NoMotorLayout		;no, will display an error and refuse arming
 
-fli4:	ldz eeSensorsCalibrated			;sensors calibrated?
+fli4:	no_offset_ldz eeSensorsCalibrated			;sensors calibrated?
 	call ReadEepromP
 	brflagtrue t, fli11
 
@@ -348,7 +348,7 @@ LoadMixerTable:
 
 	ldi yl, 64
 	ldx RamMixerTable
-	ldz EeMixerTable
+	no_offset_ldz EeMixerTable
 
 mt1:	call ReadEeprom
 	st x+, t
@@ -364,7 +364,7 @@ mt1:	call ReadEeprom
 
 LoadParameterTable:
 
-	ldz EeParameterTable
+	no_offset_ldz EeParameterTable
 	rcall fli2
 	b16mov2 PgainRoll, PgainRollOrg, Temp
 
@@ -383,7 +383,7 @@ LoadParameterTable:
 
 	rvbrflagfalse flagRollPitchLink, lpt1
 
-	ldz EeParameterTable
+	no_offset_ldz EeParameterTable
 
 lpt1:	rcall fli2
 	b16mov2 PgainPitch, PgainPitchOrg, Temp
@@ -401,7 +401,7 @@ lpt1:	rcall fli2
 	rcall fli5
 	b16mov IlimitPitch, Temp
 
-	ldz 0x0054
+	no_offset_ldz 0x0054
 	rcall fli2
 	b16mov2 PgainYaw, PgainYawOrg, Temp
 
@@ -425,7 +425,7 @@ lpt1:	rcall fli2
 
 LoadSelfLevelSettings:
 
-	ldz eeSelflevelPgain
+	no_offset_ldz eeSelflevelPgain
 	rcall fli2
 	b16mov2 SelflevelPgain, SelfLevelPgainOrg, Temp
 
@@ -454,7 +454,7 @@ LoadSelfLevelSettings:
 
 LoadGimbalSettings:
 
-	ldz eeCamRollGain
+	no_offset_ldz eeCamRollGain
 	rcall fli2
 	b16mov CamRollGainOrg, Temp
 	rcall TempDiv16
@@ -487,7 +487,7 @@ LoadGimbalSettings:
 
 LoadEscLowLimit:
 
-	ldz eeEscLowLimit
+	no_offset_ldz eeEscLowLimit
 	rcall fli2
 	b16ldi Temper, 50.0
 	b16mul EscLowLimit, Temp, Temper
@@ -499,7 +499,7 @@ LoadEscLowLimit:
 
 LoadStickDeadZone:
 
-	ldz eeStickDeadZone
+	no_offset_ldz eeStickDeadZone
 	rcall fli2
 	b16mov StickDeadZone, Temp
 	ret
@@ -511,7 +511,7 @@ LoadStickDeadZone:
 UpdateOutputTypeAndRate:
 
 	ldi yl, 8
-	ldz RamMixerTable
+	no_offset_ldz RamMixerTable
 
 otr1:	ldd t, z + MixvalueFlags
 
@@ -539,7 +539,7 @@ otr1:	ldd t, z + MixvalueFlags
 
 ReadLinkRollPitchFlag:
 
-	ldz eeLinkRollPitch
+	no_offset_ldz eeLinkRollPitch
 	call ReadEepromP
 	sts flagRollPitchLink, t
 	ret
@@ -550,7 +550,7 @@ ReadLinkRollPitchFlag:
 
 LoadDG2Settings:
 
-	ldz eeDG2Functions
+	no_offset_ldz eeDG2Functions
 	call ReadEepromP
 	sts DG2Functions, t
 	ret
@@ -565,10 +565,10 @@ GetEeChannelMapping:
 	cpi t, RxModeSatDSM2
 	brlt ecm1
 
-	ldz eeSatChannelRoll		;channel mapping for Satellite mode
+	no_offset_ldz eeSatChannelRoll		;channel mapping for Satellite mode
 	rjmp ecm2
 
-ecm1:	ldz eeChannelRoll		;normal channel mapping
+ecm1:	no_offset_ldz eeChannelRoll		;normal channel mapping
 
 ecm2:	ret
 
