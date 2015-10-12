@@ -299,8 +299,9 @@
 
 
 .macro ldzarray			;calculate array address.    @0=array name  @1=cell size  @2=index
-	ldi zl, low(@0)
-	ldi zh, high(@0)
+	;ldi zl, low(@0)
+	;ldi zh, high(@0)
+  ldz @0
 	ldi t, @1
 	mul t, @2
 	add zl, r0
