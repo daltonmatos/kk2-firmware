@@ -1,0 +1,7 @@
+
+All ldz calls without a "*2", should use a ldz that does not consider offset
+ack ldz | grep -v "*" | awk -F ':' '{print "sed -e \""$2"s/ldz/no_offset_ldz/\" -i", $1}' | bash -
+
+All this should have "+offset" appended.
+ack "\*2[\,\)]"  | grep "d[wb]"
+
