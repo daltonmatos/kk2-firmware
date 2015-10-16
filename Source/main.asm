@@ -16,6 +16,16 @@ Main:
 	call LcdClear
 	call LcdUpdate
 
+  ;lrv FontSelector, f6x8 
+  ;ldz hello*2
+  ;call PrintString
+  ;call LcdUpdate
+  ;ldx 5000
+  ;call WaitXms
+
+;hello:
+;  .db "hello", 0
+
 
 	;--- Variables init ---
 
