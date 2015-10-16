@@ -651,8 +651,9 @@ SetPixel:				; Destroys: t
 	push xl
 	push xh
 
-	ldi zl, low(LcdBuffer)		;Z = LcdBuffer + int(Ypos/8)*128 + Xpos
-	ldi zh, high(LcdBuffer)
+	;ldi zl, low(LcdBuffer)		;Z = LcdBuffer + int(Ypos/8)*128 + Xpos
+	;ldi zh, high(LcdBuffer)
+  ldz LcdBuffer
 
 	lds xl, Ypos
 	ldi xh, 0
@@ -725,8 +726,9 @@ LcdUpdate:
 	push zl
 	push zh
 
-	ldi zl, low(lcd_cd*2)	;refresh LCD control registers
-	ldi zh, high(lcd_cd*2)
+	;ldi zl, low(lcd_cd*2)	;refresh LCD control registers
+	;ldi zh, high(lcd_cd*2)
+  ldz lcd_cd*2
 
 qq2:	lpm yl, z+
 	cpi yl, 0xff
@@ -744,8 +746,9 @@ qq1:	ldi yl, 0x81		;set contrast
 
 	ldi xl, 0xb0	
 
-	ldi zl, low(LcdBuffer)
-	ldi zh, high(LcdBuffer)
+	;ldi zl, low(LcdBuffer)
+	;ldi zh, high(LcdBuffer)
+  ldz LcdBuffer
 
 qq3:	mov yl, xl		;set page address
 	rcall LcdCommand
