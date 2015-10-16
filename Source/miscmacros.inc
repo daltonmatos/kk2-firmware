@@ -176,6 +176,7 @@
 	push zh
 	ldi zl, low(@0*2)
 	ldi zh, high(@0*2)
+  ;ldz @0*2
 	call PrintString
 	pop zh
 	pop zl

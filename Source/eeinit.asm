@@ -350,7 +350,7 @@ eew3:	.db "AT YOUR OWN RISK!", 0
 eew4:	.db "Read all included", 0
 eew5:	.db "documents carefully.", 0, 0
 
-eew10:	.dw eew2*2, eew3*2, eew4*2, eew5*2
+eew10:	.dw eew2*2+offset, eew3*2+offset, eew4*2+offset, eew5*2+offset
 
 
 isp1:	.db "SETUP", 0
@@ -366,7 +366,7 @@ isp7:	.db 0, 16, 127, 25
 	.db 0, 34, 127, 43
 	.db 0, 43, 127, 52
 
-isp10:	.dw isp2*2, isp3*2, isp4*2, isp5*2
+isp10:	.dw isp2*2+offset, isp3*2+offset, isp4*2+offset, isp5*2+offset
 
 
 

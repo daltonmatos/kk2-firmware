@@ -6,6 +6,9 @@
 
 
 .include "m644Pdef.inc"
+
+.equ offset = 0x00
+
 .include "macros.inc"
 .include "miscmacros.inc"
 .include "variables.asm"

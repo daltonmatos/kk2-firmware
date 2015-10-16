@@ -393,11 +393,11 @@ PrintChar:
 	pop xl
 	ret
 
-TabCh:	.db low(font4x6*2), high(font4x6*2), 4, 6, 4, 0
-	.db low(font6x8*2), high(font6x8*2), 6, 8, 6, 0
-	.db low(font8x12*2), high(font8x12*2), 8, 12, 12, 0
-	.db low(font12x16*2), high(font12x16*2), 12, 16, 24, 0
-	.db low(symbols16x16*2), high(symbols16x16*2), 16, 16, 32, 0
+TabCh:	.db low(font4x6*2+offset), high(font4x6*2+offset), 4, 6, 4, 0
+	.db low(font6x8*2+offset), high(font6x8*2+offset), 6, 8, 6, 0
+	.db low(font8x12*2+offset), high(font8x12*2+offset), 8, 12, 12, 0
+	.db low(font12x16*2+offset), high(font12x16*2+offset), 12, 16, 24, 0
+	.db low(symbols16x16*2+offset), high(symbols16x16*2+offset), 16, 16, 32, 0
 
 
 
@@ -981,11 +981,11 @@ ss30:	.db "SS +30", 0, 0
 ss50:	.db "SS +50", 0, 0
 
 	;arrays
-yesno:	.dw no*2, yes*2
-tunmode:.dw off*2, ail*2, ele*2, rudd*2, slgain*2, sltrim*2, gimbal*2
-lmh:	.dw null*2, rate1*2, rate2*2, rate3*2
-auxtxt:	.dw pos1*2, pos2*2, pos3*2, pos4*2, pos5*2
-auxfn:	.dw acro*2, slmix*2, normsl*2, alarm*2
-auxss:	.dw ss0*2, ss20*2, ss30*2, ss50*2
-aux4txt:.dw locked*2, off*2, home*2
-rxch:	.dw ail*2, ele*2, thr*2, rudd*2, aux*2
+yesno:	.dw no*2+offset, yes*2+offset
+tunmode:.dw off*2+offset, ail*2+offset, ele*2+offset, rudd*2+offset, slgain*2+offset, sltrim*2+offset, gimbal*2+offset
+lmh:	.dw null*2+offset, rate1*2+offset, rate2*2+offset, rate3*2+offset
+auxtxt:	.dw pos1*2+offset, pos2*2+offset, pos3*2+offset, pos4*2+offset, pos5*2+offset
+auxfn:	.dw acro*2+offset, slmix*2+offset, normsl*2+offset, alarm*2+offset
+auxss:	.dw ss0*2+offset, ss20*2+offset, ss30*2+offset, ss50*2+offset
+aux4txt:.dw locked*2+offset, off*2+offset, home*2+offset
+rxch:	.dw ail*2+offset, ele*2+offset, thr*2+offset, rudd*2+offset, aux*2+offset

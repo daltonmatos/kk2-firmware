@@ -6,6 +6,6 @@ All this should have "+offset" appended.
 ack "\*2[\,\)]"  | grep "d[wb]"
 
 Check if all "ldy <var> * 2" are calls preparing to use Z with LPM. If yes,
-mustconsider offset.
+must consider offset. Done. Split in ldy and with_offset_ldy.
 
 For ldx, none of the uses make reference to "<var> * 2", so should be safe.
