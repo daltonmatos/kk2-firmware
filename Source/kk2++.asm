@@ -7,7 +7,7 @@
 
 .include "m644Pdef.inc"
 
-.equ offset = 0x00
+.equ offset = 0x98
 
 .include "macros.inc"
 .include "miscmacros.inc"
@@ -54,6 +54,11 @@
 unused:	reti
 
 
+offset_test:
+  ldz offset_test_data*2
+
+offset_test_data:
+  .db "data"
 
 	;--- Common initialization ---
 
