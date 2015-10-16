@@ -91,8 +91,8 @@
 .endmacro
 
 .macro with_offset_ldy
-	ldi yl, low(@0)
-	ldi yh, high(@0)
+	ldi yl, low(@0+offset)
+	ldi yh, high(@0+offset)
 .endmacro
 
 .macro no_offset_ldz
@@ -101,8 +101,8 @@
 .endmacro
 
 .macro ldz
-	ldi zl, low(@0)
-	ldi zh, high(@0)
+	ldi zl, low(@0+offset)
+	ldi zh, high(@0+offset)
 .endmacro
 
 .macro FixedPointVariableEnumerate168
@@ -324,6 +324,8 @@
 
 .macro ldzarray			;calculate array address.    @0=array name  @1=cell size  @2=index
   ldz @0
+	;ldi zl, low(@0+offset)
+	;ldi zh, high(@0+offset)
 	ldi t, @1
 	mul t, @2
 	add zl, r0
