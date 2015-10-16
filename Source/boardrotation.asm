@@ -109,7 +109,7 @@ brr2:	.db "so that the on-screen", 0
 brr3:	.db "arrow points to the", 0
 brr4:	.db "front of your model.", 0, 0
 
-brr10:	.dw brr1*2, brr2*2, brr3*2, brr4*2
+brr10:	.dw brr1*2+offset, brr2*2+offset, brr3*2+offset, brr4*2+offset
 
 
 

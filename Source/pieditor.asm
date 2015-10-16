@@ -129,8 +129,8 @@ pie7:	.db 52, 0, 103, 9
 	.db 52, 27, 79, 36
 	.db 52, 36, 79, 45
 
-pie10:	.dw pgain*2, plimit*2, igain*2, ilimit*2
-pie11:	.dw ail*2, ele*2, rudd*2
+pie10:	.dw pgain*2+offset, plimit*2+offset, igain*2+offset, ilimit*2+offset
+pie11:	.dw ail*2+offset, ele*2+offset, rudd*2+offset
 
 
 GetParameter:

@@ -88,7 +88,7 @@ set14:	rjmp set11
 
 
 
-set20:	.dw ail*2, ele*2, rudd*2, thr*2, slmix*2
+set20:	.dw ail*2+offset, ele*2+offset, rudd*2+offset, thr*2+offset, slmix*2+offset
 
 
 set7:	.db 65, 0, 92, 9

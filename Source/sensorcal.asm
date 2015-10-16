@@ -164,15 +164,15 @@ cel3:   .db "a level surface now.",0, 0
 cel6:	.db "Calibration begins", 0, 0
 cel7:	.db "after the countdown.", 0, 0
 
-cel10:	.dw cel2*2, cel3*2, cel6*2, cel7*2
+cel10:	.dw cel2*2+offset, cel3*2+offset, cel6*2+offset, cel7*2+offset
 
 cel19:	.db "Calibrating...", 0, 0
 cel24:	.db "Calibration failed.", 0
 cel31:	.db "Calibration succeeded", 0
 
-calres:	.dw cel24*2, cel31*2				;failed, succeeded
+calres:	.dw cel24*2+offset, cel31*2+offset				;failed, succeeded
 
-accxyz:	.dw sen5*2, sen6*2, sen7*2			;ACC X, Y and Z
+accxyz:	.dw sen5*2+offset, sen6*2+offset, sen7*2+offset			;ACC X, Y and Z
 
 
 

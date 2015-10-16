@@ -197,7 +197,7 @@ mod0:
 ;	.db  0  , 0  , 0  , 0  , 0  , 0  , 0  , 0	;m8
 
 	;     M1      M2      M3      M4      M5      M6      M7      M8
-	.dw lmd8*2, lmd7*2, lmd5*2, lmd7*2, lmd5*2, lmd1*2, lmd1*2, lmd1*2
+	.dw lmd8*2+offset, lmd7*2+offset, lmd5*2+offset, lmd7*2+offset, lmd5*2+offset, lmd1*2+offset, lmd1*2+offset, lmd1*2+offset
 	.db 0x00,   0x00,   0x00,   0x40,   0x20,   0x00,   0x00,   0x00
 
 
@@ -214,7 +214,7 @@ mod0:
 ;	.db  0  , 0  , 0  , 0  , 0  , 0  , 0  , 0	;m8
 
 	;     M1      M2      M3      M4      M5      M6      M7      M8
-	.dw lmd9*2, lmd9*2, lmd6*2, lmd3*2, lmd1*2, lmd1*2, lmd1*2, lmd1*2
+	.dw lmd9*2+offset, lmd9*2+offset, lmd6*2+offset, lmd3*2+offset, lmd1*2+offset, lmd1*2+offset, lmd1*2+offset, lmd1*2+offset
 	.db 0x00,   0x10,   0x00,   0x00,   0x00,   0x00,   0x00,   0x00
 
 
@@ -231,7 +231,7 @@ mod0:
 ;	.db  0  , 0  ,-100, 100, 0  , 0  , 0  , 0	;m8
 
 	;     M1       M2       M3      M4      M5      M6      M7      M8
-	.dw lmd26*2, lmd26*2, lmd4*2, lmd4*2, lmd1*2, lmd1*2, lmd4*2, lmd4*2
+	.dw lmd26*2+offset, lmd26*2+offset, lmd4*2+offset, lmd4*2+offset, lmd1*2+offset, lmd1*2+offset, lmd4*2+offset, lmd4*2+offset
 	.db 0x01,    0x40,    0x00,   0x20,   0x00,   0x00,   0x00,   0x20
 
 
@@ -248,7 +248,7 @@ mod0:
 ;	.db  0  , 0  , 0  , 0  , 0  , 0  , 0  , 0	;m8
 
 	;     M1       M2       M3       M4      M5      M6      M7      M8
-	.dw lmd22*2, lmd22*2, lmd10*2, lmd2*2, lmd1*2, lmd1*2, lmd2*2, lmd1*2
+	.dw lmd22*2+offset, lmd22*2+offset, lmd10*2+offset, lmd2*2+offset, lmd1*2+offset, lmd1*2+offset, lmd2*2+offset, lmd1*2+offset
 	.db 0x40,    0x01,    0x20,    0x00,   0x00,   0x00,   0x10,   0x00
 
 
@@ -265,7 +265,7 @@ mod0:
 ;	.db  0  , 0  , 0  , 0  , 0  , 0  , 0  , 0	;m8
 
 	;     M1       M2       M3       M4       M5      M6      M7      M8
-	.dw lmd20*2, lmd20*2, lmd20*2, lmd20*2, lmd1*2, lmd1*2, lmd1*2, lmd1*2
+	.dw lmd20*2+offset, lmd20*2+offset, lmd20*2+offset, lmd20*2+offset, lmd1*2+offset, lmd1*2+offset, lmd1*2+offset, lmd1*2+offset
 	.db 0x40,    0x10,    0x20,    0x70,    0x00,   0x00,   0x00,   0x00
 
 
@@ -282,7 +282,7 @@ mod0:
 ;	.db  0  , 0  , 0  , 0  , 0  , 0  , 0  , 0	;m8
 
 	;     M1       M2       M3       M4       M5      M6      M7      M8
-	.dw lmd11*2, lmd28*2, lmd11*2, lmd28*2, lmd1*2, lmd1*2, lmd1*2, lmd1*2
+	.dw lmd11*2+offset, lmd28*2+offset, lmd11*2+offset, lmd28*2+offset, lmd1*2+offset, lmd1*2+offset, lmd1*2+offset, lmd1*2+offset
 	.db 0x00,    0x10,    0x20,    0x50,    0x00,   0x00,   0x00,   0x00
 
 
@@ -299,7 +299,7 @@ mod0:
 ;	.db  0  , 0  , 0  , 0  , 0  , 0  , 0  , 0	;m8
 
 	;     M1       M2       M3       M4       M5      M6      M7      M8
-	.dw lmd18*2, lmd18*2, lmd30*2, lmd30*2, lmd1*2, lmd1*2, lmd1*2, lmd1*2
+	.dw lmd18*2+offset, lmd18*2+offset, lmd30*2+offset, lmd30*2+offset, lmd1*2+offset, lmd1*2+offset, lmd1*2+offset, lmd1*2+offset
 	.db 0x40,    0x01,    0x20,    0x30,    0x00,   0x00,   0x00,   0x00
 
 
@@ -316,7 +316,7 @@ mod0:
 ;	.db  0  , 0  , 0  , 0  , 0  , 0  , 0  , 0	;m8
 
 	;     M1       M2       M3       M4       M5      M6      M7      M8
-	.dw lmd31*2, lmd31*2, lmd32*2, lmd32*2, lmd1*2, lmd1*2, lmd1*2, lmd1*2
+	.dw lmd31*2+offset, lmd31*2+offset, lmd32*2+offset, lmd32*2+offset, lmd1*2+offset, lmd1*2+offset, lmd1*2+offset, lmd1*2+offset
 	.db 0x50,    0x00,    0x20,    0x30,    0x00,   0x00,   0x00,   0x00
 
 
@@ -333,7 +333,7 @@ mod0:
 ;	.db  0  , 0  , 0  , 0  , 0  , 0  , 0  , 0	;m8
 
 	;     M1       M2       M3       M4       M5      M6      M7      M8
-	.dw lmd20*2, lmd20*2, lmd11*2, lmd11*2, lmd1*2, lmd1*2, lmd1*2, lmd1*2
+	.dw lmd20*2+offset, lmd20*2+offset, lmd11*2+offset, lmd11*2+offset, lmd1*2+offset, lmd1*2+offset, lmd1*2+offset, lmd1*2+offset
 	.db 0x40,    0x10,    0x20,    0x30,    0x00,   0x00,   0x00,   0x00
 
 
@@ -350,7 +350,7 @@ mod0:
 ;	.db  0  , 0  , 0  , 0  , 0  , 0  , 0  , 0	;m8
 
 	;     M1       M2       M3       M4       M5       M6       M7      M8
-	.dw lmd14*2, lmd28*2, lmd14*2, lmd14*2, lmd28*2, lmd14*2, lmd1*2, lmd1*2
+	.dw lmd14*2+offset, lmd28*2+offset, lmd14*2+offset, lmd14*2+offset, lmd28*2+offset, lmd14*2+offset, lmd1*2+offset, lmd1*2+offset
 	.db 0x00,    0x10,    0x20,    0x70,    0x40,    0x50,    0x00,   0x00
 
 
@@ -367,7 +367,7 @@ mod0:
 ;	.db  0  , 0  , 0  , 0  , 0  , 0  , 0  , 0	;m8
 
 	;     M1       M2       M3       M4       M5       M6       M7      M8
-	.dw lmd11*2, lmd24*2, lmd24*2, lmd11*2, lmd24*2, lmd24*2, lmd1*2, lmd1*2
+	.dw lmd11*2+offset, lmd24*2+offset, lmd24*2+offset, lmd11*2+offset, lmd24*2+offset, lmd24*2+offset, lmd1*2+offset, lmd1*2+offset
 	.db 0x00,    0x10,    0x20,    0x30,    0x60,    0x50,    0x00,   0x00
 
 
@@ -384,7 +384,7 @@ mod0:
 ;	.db  0  , 0  , 0  , 0  , 0  , 0  , 0  , 0	;m8
 
 	;     M1       M2       M3       M4       M5       M6       M7      M8
-	.dw lmd20*2, lmd16*2, lmd20*2, lmd20*2, lmd16*2, lmd20*2, lmd1*2, lmd1*2
+	.dw lmd20*2+offset, lmd16*2+offset, lmd20*2+offset, lmd20*2+offset, lmd16*2+offset, lmd20*2+offset, lmd1*2+offset, lmd1*2+offset
 	.db 0x00,    0x10,    0x20,    0x70,    0x40,    0x50,    0x00,   0x00
 
 
@@ -401,7 +401,7 @@ mod0:
 ;	.db  0  , 0  , 0  , 0  , 0  , 0  , 0  , 0	;m8
 
 	;     M1       M2       M3       M4       M5       M6       M7      M8
-	.dw lmd29*2, lmd16*2, lmd13*2, lmd13*2, lmd16*2, lmd29*2, lmd1*2, lmd1*2
+	.dw lmd29*2+offset, lmd16*2+offset, lmd13*2+offset, lmd13*2+offset, lmd16*2+offset, lmd29*2+offset, lmd1*2+offset, lmd1*2+offset
 	.db 0x00,    0x10,    0x20,    0x70,    0x40,    0x50,    0x00,   0x00
 
 
@@ -418,7 +418,7 @@ mod0:
 ;	.db  0  , 0  , 0  , 0  , 0  , 0  , 0  , 0	;m8
 
 	;     M1       M2       M3       M4       M5       M6       M7      M8
-	.dw lmd24*2, lmd24*2, lmd24*2, lmd24*2, lmd11*2, lmd11*2, lmd1*2, lmd1*2
+	.dw lmd24*2+offset, lmd24*2+offset, lmd24*2+offset, lmd24*2+offset, lmd11*2+offset, lmd11*2+offset, lmd1*2+offset, lmd1*2+offset
 	.db 0x40,    0x50,    0x00,    0x10,    0x20,    0x30,    0x00,   0x00
 
 
@@ -435,7 +435,7 @@ mod0:
 ;	.db  100,-38 , 92 ,-100, 0  , 3  , 0  , 0	;m8
 
 	;     M1       M2       M3       M4       M5       M6       M7       M8
-	.dw lmd12*2, lmd25*2, lmd25*2, lmd12*2, lmd12*2, lmd25*2, lmd25*2, lmd12*2
+	.dw lmd12*2+offset, lmd25*2+offset, lmd25*2+offset, lmd12*2+offset, lmd12*2+offset, lmd25*2+offset, lmd25*2+offset, lmd12*2+offset
 	.db 0x00,    0x10,    0x20,    0x30,    0x60,    0x70,    0x40,    0x50
 
 
@@ -452,7 +452,7 @@ mod0:
 ;	.db  100,-71 , 71 ,-100, 0  , 3  , 0  , 0	;m8
 
 	;     M1       M2       M3       M4       M5       M6       M7       M8
-	.dw lmd11*2, lmd20*2, lmd28*2, lmd20*2, lmd11*2, lmd20*2, lmd28*2, lmd20*2
+	.dw lmd11*2+offset, lmd20*2+offset, lmd28*2+offset, lmd20*2+offset, lmd11*2+offset, lmd20*2+offset, lmd28*2+offset, lmd20*2+offset
 	.db 0x00,    0x10,    0x00,    0x30,    0x20,    0x70,    0x40,    0x50
 
 
@@ -469,7 +469,7 @@ mod0:
 ;	.db  100,-71 , 71 ,-100, 0  , 3  , 0  , 0	;m8
 
 	;     M1       M2       M3       M4       M5       M6       M7       M8
-	.dw lmd20*2, lmd17*2, lmd17*2, lmd20*2, lmd20*2, lmd17*2, lmd17*2, lmd20*2
+	.dw lmd20*2+offset, lmd17*2+offset, lmd17*2+offset, lmd20*2+offset, lmd20*2+offset, lmd17*2+offset, lmd17*2+offset, lmd20*2+offset
 	.db 0x00,    0x10,    0x20,    0x30,    0x60,    0x70,    0x40,    0x50
 
 
@@ -486,7 +486,7 @@ mod0:
 ;	.db  100,-100, 71 ,-100, 0  , 3  , 0  , 0	;m8
 
 	;     M1       M2       M3       M4       M5       M6       M7       M8
-	.dw lmd29*2, lmd21*2, lmd15*2, lmd13*2, lmd13*2, lmd15*2, lmd21*2, lmd29*2
+	.dw lmd29*2+offset, lmd21*2+offset, lmd15*2+offset, lmd13*2+offset, lmd13*2+offset, lmd15*2+offset, lmd21*2+offset, lmd29*2+offset
 	.db 0x00,    0x10,    0x20,    0x30,    0x60,    0x70,    0x40,    0x50
 
 
@@ -503,7 +503,7 @@ mod0:
 ;	.db  100,-71 ,-71 ,-100, 0  , 3  , 0  , 0	;m8
 
 	;     M1       M2       M3       M4       M5       M6       M7       M8
-	.dw lmd20*2, lmd20*2, lmd20*2, lmd20*2, lmd20*2, lmd20*2, lmd20*2, lmd20*2
+	.dw lmd20*2+offset, lmd20*2+offset, lmd20*2+offset, lmd20*2+offset, lmd20*2+offset, lmd20*2+offset, lmd20*2+offset, lmd20*2+offset
 	.db 0x40,    0x50,    0x00,    0x10,    0x20,    0x30,    0x60,    0x70
 
 
@@ -520,7 +520,7 @@ mod0:
 ;	.db  100,-100, 0  ,-100, 0  , 3  , 0  , 0	;m8
 
 	;     M1       M2       M3       M4       M5       M6       M7       M8
-	.dw lmd11*2, lmd11*2, lmd28*2, lmd28*2, lmd11*2, lmd11*2, lmd28*2, lmd28*2
+	.dw lmd11*2+offset, lmd11*2+offset, lmd28*2+offset, lmd28*2+offset, lmd11*2+offset, lmd11*2+offset, lmd28*2+offset, lmd28*2+offset
 	.db 0x00,    0x10,    0x00,    0x10,    0x20,    0x30,    0x40,    0x50
 
 

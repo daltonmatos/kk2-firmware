@@ -18,7 +18,7 @@ ncs2:	.db "Please supply a CPPM", 0, 0
 ncs3:	.db "(PPM) signal to the", 0
 ncs4:	.db "throttle input pin.", 0
 
-ncs8:	.dw ncs2*2, ncs3*2, ncs4*2
+ncs8:	.dw ncs2*2+offset, ncs3*2+offset, ncs4*2+offset
 
 
 

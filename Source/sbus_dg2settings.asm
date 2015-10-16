@@ -84,7 +84,7 @@ dgs14:	rjmp dgs11
 dgs1:	.db "Stay Armed/Spin", 0
 dgs2:	.db "Digital Output", 0, 0
 
-dgs10:	.dw dgs1*2, dgs2*2
+dgs10:	.dw dgs1*2+offset, dgs2*2+offset
 
 
 

@@ -253,7 +253,7 @@ mot31:	.db "Direction", 0
 mot32:	.db "seen from", 0
 mot33:	.db "above:", 0, 0
 
-mot34:	.dw mot31*2, mot32*2, mot33*2
+mot34:	.dw mot31*2+offset, mot32*2+offset, mot33*2+offset
 
 
 .undef	Item

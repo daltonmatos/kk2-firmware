@@ -19,7 +19,7 @@ nsa2:	.db "Please supply Sat", 0
 nsa3:	.db "data to the throttle", 0, 0
 nsa4:	.db "input connector.", 0, 0
 
-nsa8:	.dw nsa2*2, nsa3*2, nsa4*2
+nsa8:	.dw nsa2*2+offset, nsa3*2+offset, nsa4*2+offset
 
 
 

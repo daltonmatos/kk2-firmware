@@ -269,7 +269,7 @@ armed:	.db "ARMED", 0
 upd2:	.db "Stand-alone Gimbal", 0, 0
 upd3:	.db "Controller mode.", 0, 0
 
-gblmode:.dw upd2*2, upd3*2
+gblmode:.dw upd2*2+offset, upd3*2+offset
 
 udp6:	.db ". Tuning ", 0
 

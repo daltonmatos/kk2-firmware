@@ -228,10 +228,10 @@ sen6:	.db "Acc Y :", 0
 sen7:	.db "Acc Z :", 0
 sen13:	.db "Not OK", 0, 0
 
-sen19:	.dw sen2*2, sen3*2, sen4*2, sen5*2, sen6*2, sen7*2
-sen20:	.dw sen13*2, ok*2
+sen19:	.dw sen2*2+offset, sen3*2+offset, sen4*2+offset, sen5*2+offset, sen6*2+offset, sen7*2+offset
+sen20:	.dw sen13*2+offset, ok*2+offset
 
-sen21:	.dw fwd*2, rev*2, fwd*2		;normal and reversed tilt directions
-sen22:	.dw left*2, right*2, left*2
+sen21:	.dw fwd*2+offset, rev*2+offset, fwd*2+offset		;normal and reversed tilt directions
+sen22:	.dw left*2+offset, right*2+offset, left*2+offset
 
 

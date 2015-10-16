@@ -158,17 +158,17 @@ cam3:	.db "Pitch Gain", 0, 0
 cam4:	.db "Pitch Offset", 0, 0
 cam5:	.db "Mixing", 0, 0
 
-cam6:	.dw cam1*2, cam2*2, cam3*2, cam4*2, cam5*2
+cam6:	.dw cam1*2+offset, cam2*2+offset, cam3*2+offset, cam4*2+offset, cam5*2+offset
 
 none:	.db "None", 0, 0
 diff:	.db "Diff", 0, 0
 
-mix:	.dw none*2, diff*2
+mix:	.dw none*2+offset, diff*2+offset
 
 gbs1:	.db "Home Pos Roll", 0
 gbs2:	.db "Home Pos Pitch", 0, 0
 
-gbs6:	.dw gbs1*2, gbs2*2
+gbs6:	.dw gbs1*2+offset, gbs2*2+offset
 
 
 gbs7:	.db 83, 0, 115, 9
@@ -185,7 +185,7 @@ sew1:	.db "Output type is set to", 0
 sew2:	.db "ESC for M7 and/or M8.", 0
 sew3:	.db "Check Mixer Editor.", 0
 
-sew10:	.dw sew1*2, sew2*2, sew3*2
+sew10:	.dw sew1*2+offset, sew2*2+offset, sew3*2+offset
 
 
 

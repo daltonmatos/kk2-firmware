@@ -160,8 +160,8 @@ esc20:	.db "Release button at the", 0
 esc21:	.db "ESC confirmation beep", 0
 esc22:	.db "Wait for the final", 0, 0
 
-esc25:	.dw esc20*2, esc21*2
-esc26:	.dw esc22*2, esc21*2
+esc25:	.dw esc20*2+offset, esc21*2+offset
+esc26:	.dw esc22*2+offset, esc21*2+offset
 
 war2:	.db "ESC calibration will", 0, 0
 war3:	.db "be available on the", 0
@@ -170,5 +170,5 @@ war5:	.db "REMOVE PROPS FIRST!", 0
 
 war9:	.db "Do ESC calibration.", 0
 
-war10:	.dw war2*2, war3*2, war4*2, war5*2
+war10:	.dw war2*2+offset, war3*2+offset, war4*2+offset, war5*2+offset
 

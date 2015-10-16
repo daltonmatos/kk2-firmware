@@ -83,7 +83,7 @@ adv3:	.db "Sensor Settings", 0
 adv4:	.db "Mixer Editor", 0, 0
 adv5:	.db "Board Orientation", 0
 
-adv10:	.dw adv2*2, adv3*2, adv4*2, adv5*2
+adv10:	.dw adv2*2+offset, adv3*2+offset, adv4*2+offset, adv5*2+offset
 
 
 .undef Item

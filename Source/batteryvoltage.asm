@@ -141,14 +141,14 @@ abv7:	.db 0, 16, 127, 25
 	.db 0, 34, 127, 43
 	.db 0, 43, 127, 52
 
-abv8:	.dw abv2*2, abv3*2, abv4*2, abv5*2
+abv8:	.dw abv2*2+offset, abv3*2+offset, abv4*2+offset, abv5*2+offset
 
 svo1:	.db "The battery voltage", 0
 svo2:	.db "offset has been set", 0
 svo3:	.db "according to selected", 0
 svo4:	.db "KK2 board version.", 0, 0
 
-svo8:	.dw svo1*2, svo2*2, svo3*2, svo4*2
+svo8:	.dw svo1*2+offset, svo2*2+offset, svo3*2+offset, svo4*2+offset
 
 
 

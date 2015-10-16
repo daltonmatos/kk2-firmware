@@ -81,7 +81,7 @@ ef2:	.db "Check Motor Outputs", 0
 ef3:	.db "Gimbal Controller", 0
 ef4:	.db "View Serial RX Data", 0
 
-ef10:	.dw ef2*2, ef3*2, ef4*2
+ef10:	.dw ef2*2+offset, ef3*2+offset, ef4*2+offset
 
 
 .undef Item

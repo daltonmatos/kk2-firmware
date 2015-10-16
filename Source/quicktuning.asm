@@ -256,8 +256,8 @@ qt7:	.db 0, 25, 127, 34
 roll:	.db "Roll", 0, 0
 pitch:	.db "Pitch", 0
 
-tune1:	.dw ail*2, ail*2, ele*2, ele*2, rudd*2, rudd*2, selflvl*2, sltrim*2, sltrim*2, gimbal*2, gimbal*2
-tune2:	.dw pgain*2, igain*2, pgain*2, igain*2, pgain*2, igain*2, pgain*2, roll*2, pitch*2, roll*2, pitch*2
+tune1:	.dw ail*2+offset, ail*2+offset, ele*2+offset, ele*2+offset, rudd*2+offset, rudd*2+offset, selflvl*2+offset, sltrim*2+offset, sltrim*2+offset, gimbal*2+offset, gimbal*2+offset
+tune2:	.dw pgain*2+offset, igain*2+offset, pgain*2+offset, igain*2+offset, pgain*2+offset, igain*2+offset, pgain*2+offset, roll*2+offset, pitch*2+offset, roll*2+offset, pitch*2+offset
 tune3:	.dw 0x0044, 0x0048, 0x004C, 0x0050, 0x0054, 0x0058, eeSelflevelPgain, eeAccTrimRoll, eeAccTrimPitch, eeCamRollGain, eeCamPitchGain
 
 tune4:	.dw 0, 900				;aileron P-gain

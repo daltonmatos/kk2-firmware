@@ -166,7 +166,7 @@ ups7:	.db 101, 0, 109, 9
 	.db 0, 27, 127, 36
 	.db 0, 36, 127, 45
 
-ups8:	.dw ups1*2, null*2, ups3*2, ups4*2, ups5*2
+ups8:	.dw ups1*2+offset, null*2+offset, ups3*2+offset, ups4*2+offset, ups5*2+offset
 
 scs1:	.db "DONE", 0, 0
 
@@ -179,7 +179,7 @@ scs6:	.db "must be different.", 0, 0
 scs7:	.db "Profile #1 can only", 0
 scs8:	.db "be edited manually.", 0
 
-scs10:	.dw scs3*2, scs4*2, scs5*2, scs6*2, scs7*2, scs8*2
+scs10:	.dw scs3*2+offset, scs4*2+offset, scs5*2+offset, scs6*2+offset, scs7*2+offset, scs8*2+offset
 
 
 .undef DefaultUserProfile

@@ -191,8 +191,8 @@ srt202:	rjmp SerialRxTest2
 dg1:	.db "DG1", 0
 dg2:	.db "DG2", 0
 
-dg1txt:	.dw off*2, alarm*2
-dg2txt:	.dw off*2, on*2
+dg1txt:	.dw off*2+offset, alarm*2+offset
+dg2txt:	.dw off*2+offset, on*2+offset
 
 
 

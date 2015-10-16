@@ -60,7 +60,7 @@ gbm2:	.db "Use this board as a", 0
 gbm3:	.db "stand-alone (servo)", 0
 gbm4:	.db "gimbal controller?", 0, 0
 
-gbm10:	.dw gbm2*2, gbm3*2, gbm4*2
+gbm10:	.dw gbm2*2+offset, gbm3*2+offset, gbm4*2+offset
 
 
 

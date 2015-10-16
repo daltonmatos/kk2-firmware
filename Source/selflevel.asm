@@ -95,7 +95,7 @@ sqz3:	.db "ACC Trim Roll", 0
 sqz4:	.db "ACC Trim Pitch", 0, 0
 sqz5:	.db "SL Mixing Rate", 0, 0
 
-sqz6:	.dw pgain*2, plimit*2, sqz3*2, sqz4*2, sqz5*2
+sqz6:	.dw pgain*2+offset, plimit*2+offset, sqz3*2+offset, sqz4*2+offset, sqz5*2+offset
 
 
 sqz7:	.db 95, 0, 121, 9

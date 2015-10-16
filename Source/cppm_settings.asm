@@ -80,7 +80,7 @@ cpp14:	rjmp cpp11
 
 
 
-cpp6:	.dw ail*2, ele*2, thr*2, rudd*2, aux*2
+cpp6:	.dw ail*2+offset, ele*2+offset, thr*2+offset, rudd*2+offset, aux*2+offset
 
 
 cpp7:	.db 65, 0, 73, 9

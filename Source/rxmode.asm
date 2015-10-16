@@ -106,7 +106,7 @@ sbus:	.db "S.Bus", 0
 dsm2:	.db "Satellite DSM2", 0, 0
 dsmx:	.db "Satellite DSMX", 0, 0
 
-modes:	.dw stdrx*2, cppm*2, sbus*2, dsm2*2, dsmx*2
+modes:	.dw stdrx*2+offset, cppm*2+offset, sbus*2+offset, dsm2*2+offset, dsmx*2+offset
 
 
 .undef Item

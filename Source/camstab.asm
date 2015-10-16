@@ -167,8 +167,8 @@ cam5:	.db "Mixing", 0, 0
 cam5a:	.db "None", 0, 0
 cam5b:	.db "Diff", 0, 0
 
-cam6:	.dw cam1*2, cam2*2, cam3*2, cam4*2, cam5*2
-mix:	.dw cam5a*2, cam5b*2
+cam6:	.dw cam1*2+offset, cam2*2+offset, cam3*2+offset, cam4*2+offset, cam5*2+offset
+mix:	.dw cam5a*2+offset, cam5b*2+offset
 
 
 cam7:	.db 83, 0, 110, 9
@@ -182,7 +182,7 @@ sew1:	.db "Output type is set to", 0
 sew2:	.db "ESC for M7 and/or M8.", 0
 sew3:	.db "Check Mixer Editor.", 0
 
-sew10:	.dw sew1*2, sew2*2, sew3*2
+sew10:	.dw sew1*2+offset, sew2*2+offset, sew3*2+offset
 
 
 .undef Item

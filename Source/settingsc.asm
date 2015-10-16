@@ -132,7 +132,7 @@ sux2:	.db "Auto Disarm", 0
 sux3:	.db "Button Beep", 0
 sux4:	.db "Arming Beeps", 0, 0
 
-sux20:	.dw sux1*2, sux2*2, sux3*2, sux4*2
+sux20:	.dw sux1*2+offset, sux2*2+offset, sux3*2+offset, sux4*2+offset
 
 sux7:	.db 100, 0, 122, 9
 	.db 100, 9, 122, 18

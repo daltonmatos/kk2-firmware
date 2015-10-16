@@ -107,7 +107,7 @@ cmw1:	.db "Channel mapping is", 0, 0
 cmw2:	.db "invalid. Duplicates", 0
 cmw3:	.db "are not allowed.", 0, 0
 
-cmw10:	.dw cmw1*2, cmw2*2, cmw3*2
+cmw10:	.dw cmw1*2+offset, cmw2*2+offset, cmw3*2+offset
 
 
 

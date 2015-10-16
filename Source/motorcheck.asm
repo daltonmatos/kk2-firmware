@@ -184,7 +184,7 @@ dpw2:	.db "sequence M1 - M8", 0, 0
 dpw3:	.db "after the countdown.", 0, 0
 dpw4:	.db "PLEASE BE CAREFUL!", 0, 0
 
-dpw10:	.dw dpw1*2, dpw2*2, dpw3*2, dpw4*2
+dpw10:	.dw dpw1*2+offset, dpw2*2+offset, dpw3*2+offset, dpw4*2+offset
 
 
 

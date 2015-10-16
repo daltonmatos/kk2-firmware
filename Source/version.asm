@@ -32,4 +32,4 @@ ver12:	call GetButtonsBlocking
 ver1:	.db "VERSION", 0
 ver2:	.db "KK2.1++ All-in-One R5", 0
 
-ver10:	.dw ver2*2, srm2*2, null*2, motto*2
+ver10:	.dw ver2*2+offset, srm2*2+offset, null*2+offset, motto*2+offset

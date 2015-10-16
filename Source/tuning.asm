@@ -157,8 +157,8 @@ rgain:	.db "R Gain", 0, 0
 ptrim:	.db "P Trim", 0, 0
 rtrim:	.db "R Trim", 0, 0
 
-aux2lbl:.dw test*2, pgain*2, pgain*2, pgain*2, pgain*2, ptrim*2, pgain*2
-aux3lbl:.dw test*2, igain*2, igain*2, igain*2, null*2, rtrim*2, rgain*2
+aux2lbl:.dw test*2+offset, pgain*2+offset, pgain*2+offset, pgain*2+offset, pgain*2+offset, ptrim*2+offset, pgain*2+offset
+aux3lbl:.dw test*2+offset, igain*2+offset, igain*2+offset, igain*2+offset, null*2+offset, rtrim*2+offset, rgain*2+offset
 
 pst2:	.db "NOT", 0
 
@@ -168,8 +168,8 @@ pst4:	.db "tuning controls now.", 0, 0
 pst5:	.db "A Tuning Mode must be", 0
 pst6:	.db "selected first.", 0
 
-pst9:	.dw pst3*2, pst4*2
-pst10:	.dw pst5*2, pst6*2
+pst9:	.dw pst3*2+offset, pst4*2+offset
+pst10:	.dw pst5*2+offset, pst6*2+offset
 
 sir1:	.db "SET INPUT RATE", 0, 0
 sir2:	.db "Select input rate for", 0
@@ -177,7 +177,7 @@ sir3:	.db "all tuning modes. Use", 0
 sir4:	.db "LOW for fine-tuning.", 0, 0
 sir6:	.db "BACK  LOW MEDIUM HIGH", 0
 
-sir8:	.dw sir2*2, sir3*2, sir4*2
+sir8:	.dw sir2*2+offset, sir3*2+offset, sir4*2+offset
 
 
 

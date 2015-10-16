@@ -187,9 +187,9 @@ med18:	.db "High",0,0
 med19:	.db "Low",0
 
 
-med10:	.dw thr*2, ail*2, ele*2, rudd*2, ofs*2
-type:	.dw med16*2, med17*2			;servo, ESC
-rate:	.dw med19*2, med18*2			;low, high
+med10:	.dw thr*2+offset, ail*2+offset, ele*2+offset, rudd*2+offset, ofs*2+offset
+type:	.dw med16*2+offset, med17*2+offset			;servo, ESC
+rate:	.dw med19*2+offset, med18*2+offset			;low, high
 
 nad1:	.db "NO ACCESS", 0
 nad3:	.db "A Motor Layout must", 0
@@ -198,8 +198,8 @@ nad4:	.db "be loaded first.", 0, 0
 nad5:	.db "User profile #1 must", 0, 0
 nad6:	.db "be selected first.", 0, 0
 
-nadtxt1:.dw nad3*2, nad4*2
-nadtxt2:.dw nad5*2, nad6*2
+nadtxt1:.dw nad3*2+offset, nad4*2+offset
+nadtxt2:.dw nad5*2+offset, nad6*2+offset
 
 
 

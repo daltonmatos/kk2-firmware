@@ -95,13 +95,13 @@ status:	.db "Status: ", 0, 0
 elon:	.db "ENABLED", 0
 eloff:	.db "DISABLED", 0, 0
 
-estate:	.dw eloff*2, elon*2
+estate:	.dw eloff*2+offset, elon*2+offset
 
 csl1:	.db "CPPM sync was lost!", 0
 ;sta9:	.db "RX signal was lost!", 0
 ;sta32:	.db "FAILSAFE!", 0
 ;sta45:	.db "Sat protocol error!", 0
-ecode:	.dw csl1*2, sta9*2, sta32*2, sta45*2
+ecode:	.dw csl1*2+offset, sta9*2+offset, sta32*2+offset, sta45*2+offset
 
 
 

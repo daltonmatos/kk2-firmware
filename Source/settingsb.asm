@@ -112,8 +112,8 @@ stt2:	.db "Stick Dead Zone : ", 0, 0
 stt5:	.db "Alarm 1/10 Volts: ", 0, 0
 stt6:	.db "Servo Filter    : ", 0, 0
 
-stt20:	.dw stt1*2, stt2*2
-stt23:	.dw stt5*2, stt6*2
+stt20:	.dw stt1*2+offset, stt2*2+offset
+stt23:	.dw stt5*2+offset, stt6*2+offset
 
 
 stt7:	.db 107, 0, 127, 9

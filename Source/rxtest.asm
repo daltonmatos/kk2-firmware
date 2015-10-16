@@ -200,11 +200,11 @@ idle:	.db "Idle", 0, 0
 full:	.db "Full", 0, 0
 center:	.db "Center", 0, 0
 
-notext:	.dw null*2, null*2, null*2
-ailtxt:	.dw left*2, null*2, right*2
-eletxt:	.dw fwd*2, null*2, rev*2
-thrtxt:	.dw idle*2, null*2, full*2
-rudtxt:	.dw right*2, null*2, left*2
+notext:	.dw null*2+offset, null*2+offset, null*2+offset
+ailtxt:	.dw left*2+offset, null*2+offset, right*2+offset
+eletxt:	.dw fwd*2+offset, null*2+offset, rev*2+offset
+thrtxt:	.dw idle*2+offset, null*2+offset, full*2+offset
+rudtxt:	.dw right*2+offset, null*2+offset, left*2+offset
 
 
 
