@@ -100,7 +100,7 @@ iup4:	call StoreEePVariable8
 	brne iup4
 
 	ldx EeParameterTable		;parameter table
-	ldy eei4*2
+	with_offset_ldy eei4*2
 	ldi Counter, 24
 iup5:	movw z, y
 	lpm t, z
@@ -112,7 +112,7 @@ iup5:	movw z, y
 	brne iup5
 
 	ldx eeStickScaleRoll		;stick scaling
-	ldy eei7*2
+	with_offset_ldy eei7*2
 	ldi Counter, 10
 iup8:	movw z, y
 	lpm t, z

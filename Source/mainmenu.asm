@@ -2,7 +2,7 @@
 
 MainMenu:
 
-men23:	ldy men1 * 2
+men23:	with_offset_ldy men1 * 2
 
 	lds xl, MainMenuListYposSave
 	lds xh, MainMenuCursorYposSave

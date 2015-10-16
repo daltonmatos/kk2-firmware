@@ -162,12 +162,12 @@ srt204:	call ScaleAuxInputValues		;divide RX values by 10
 
 	lds xl, Channel17			;digital channel 1
 	ldz dg1*2
-	ldy dg1txt*2
+	with_offset_ldy dg1txt*2
 	rcall PrintDigitalChannel
 
 	lds xl, Channel18			;digital channel 2
 	ldz dg2*2
-	ldy dg2txt*2
+	with_offset_ldy dg2txt*2
 	call PrintDigitalChannel
 
 srt205:	;footer

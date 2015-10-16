@@ -2,7 +2,7 @@
 
 SBusMainMenu:
 
-smm23:	ldy smm1 * 2
+smm23:	with_offset_ldy smm1 * 2
 
 	lds xl, MainMenuListYposSave
 	lds xh, MainMenuCursorYposSave

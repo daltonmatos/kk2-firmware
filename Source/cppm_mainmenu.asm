@@ -2,7 +2,7 @@
 
 CppmMainMenu:
 
-cmm23:	ldy cmm1 * 2
+cmm23:	with_offset_ldy cmm1 * 2
 
 	lds xl, MainMenuListYposSave
 	lds xh, MainMenuCursorYposSave

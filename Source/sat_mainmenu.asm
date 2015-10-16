@@ -2,7 +2,7 @@
 
 SatMainMenu:
 
-sam23:	ldy sam1 * 2
+sam23:	with_offset_ldy sam1 * 2
 
 	lds xl, MainMenuListYposSave
 	lds xh, MainMenuCursorYposSave

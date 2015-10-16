@@ -83,10 +83,18 @@
 	ldi xl, low(@0)
 	ldi xh, high(@0)
 .endmacro
+
+
 .macro ldy
 	ldi yl, low(@0)
 	ldi yh, high(@0)
 .endmacro
+
+.macro with_offset_ldy
+	ldi yl, low(@0)
+	ldi yh, high(@0)
+.endmacro
+
 .macro no_offset_ldz
 	ldi zl, low(@0)
 	ldi zh, high(@0)

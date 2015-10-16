@@ -2,7 +2,7 @@
 
 GimbalMainMenu:
 
-gmm23:	ldy gmm1 * 2
+gmm23:	with_offset_ldy gmm1 * 2
 
 	lds xl, MainMenuListYposSave
 	lds xh, MainMenuCursorYposSave

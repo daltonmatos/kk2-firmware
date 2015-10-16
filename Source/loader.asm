@@ -14,7 +14,7 @@ LoadMixer:
 	call ShowNoAccessDlg
 	ret
 
-loa13:	ldy loa10*2
+loa13:	with_offset_ldy loa10*2
 
 	lds xl, LoadMenuListYposSave
 	lds xh, LoadMenuCursorYposSave
