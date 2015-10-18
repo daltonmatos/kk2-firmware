@@ -793,8 +793,9 @@ LcdClear:
 	push zl
 	push zh
 
-	ldi zl, low(LcdBuffer)
-	ldi zh, high(LcdBuffer)
+	;ldi zl, low(LcdBuffer)
+	;ldi zh, high(LcdBuffer)
+  ldz LcdBuffer
 
 	ldi xl, low(0x0400)
 	ldi xh, high(0x0400)
