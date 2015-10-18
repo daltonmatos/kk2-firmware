@@ -7,7 +7,7 @@
 
 .include "m644Pdef.inc"
 
-.equ offset = 0x98
+.equ offset = 0xb8
 
 .include "macros.inc"
 .include "miscmacros.inc"
