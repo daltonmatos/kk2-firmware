@@ -44,41 +44,41 @@ extern void IsrLed();
 extern void IsrSerialRx();
 extern void reset();
 
-//ISR(INT0_vect, ISR_NAKED){
-//  IsrPitch();
-//}
-//
-//ISR(INT1_vect, ISR_NAKED){
-//  IsrRoll();
-//}
-//
-//ISR(PCINT1_vect, ISR_NAKED){
-//  IsrYawAux();
-//}
-//
-//ISR(PCINT3_vect, ISR_NAKED){
-//  IsrThrottleCppm();
-//}
-//
-//ISR(TIMER2_OVF_vect, ISR_NAKED){
-//  IsrPwmQuiet();
-//}
-//
-//ISR(TIMER1_COMPA_vect, ISR_NAKED){
-//  IsrPwmStart();
-//}
-//
+ISR(INT0_vect, ISR_NAKED){
+  IsrPitch();
+}
+
+ISR(INT1_vect, ISR_NAKED){
+  IsrRoll();
+}
+
+ISR(PCINT1_vect, ISR_NAKED){
+  IsrYawAux();
+}
+
+ISR(PCINT3_vect, ISR_NAKED){
+  IsrThrottleCppm();
+}
+
+ISR(TIMER2_OVF_vect, ISR_NAKED){
+  IsrPwmQuiet();
+}
+
+ISR(TIMER1_COMPA_vect, ISR_NAKED){
+  IsrPwmStart();
+}
+
 ISR(TIMER1_COMPB_vect, ISR_NAKED){
   IsrPwmEnd();
 }
-//
-//ISR(TIMER0_OVF_vect, ISR_NAKED){
-//  IsrLed();
-//}
-//
-//ISR(USART0_RX_vect, ISR_NAKED){
-//  IsrSerialRx();
-//}
+
+ISR(TIMER0_OVF_vect, ISR_NAKED){
+  IsrLed();
+}
+
+ISR(USART0_RX_vect, ISR_NAKED){
+  IsrSerialRx();
+}
 
 int main(){
   reset();
