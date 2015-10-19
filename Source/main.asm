@@ -98,10 +98,9 @@ Main:
 	ldi xl, NoAileronInput | NoElevatorInput | NoThrottleInput | NoRudderInput
 	sts StatusBits, xl
 
-	call setup_mpu6050
+	;call setup_mpu6050
 
 	call GyroCal
-
 
 	;--- Gimbal controller mode ---
 
@@ -165,7 +164,8 @@ ma2:	call FlightInit
 
 	;--- Flight loop ---
 
-ma1:	call PwmStart			;runtime between PwmStart and B interrupt (in PwmEnd) must not exeed 1.5ms
+ma1:	
+  ;call PwmStart			;runtime between PwmStart and B interrupt (in PwmEnd) must not exeed 1.5ms
 	call GetStdRxChannels
 	call Arming
 	call Logic
@@ -175,7 +175,7 @@ ma1:	call PwmStart			;runtime between PwmStart and B interrupt (in PwmEnd) must 
 	call GimbalStab
 	call Beeper
 	call Lva
-	call PwmEnd
+	;call PwmEnd
 
 	rvflageor flagA, flagArmed, flagArmedOldState	;flagA == true if flagArmed changes state
 	rvbrflagfalse flagA, ma11
@@ -250,9 +250,9 @@ ma12:	;--- Menu ---
 
 	BuzzerOff			;will prevent constant beeping in menu when 'Button Beep' is disabled
 	call StartLedSeq		;the LED flashing sequence will indicate current user profile selection
-	call StartPwmQuiet
+	;call StartPwmQuiet
 	call MainMenu
-	call StopPwmQuiet
+	;call StopPwmQuiet
 	call StopLedSeq
 	rjmp ma2
 

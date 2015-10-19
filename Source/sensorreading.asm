@@ -20,7 +20,7 @@ ReadBatteryVoltage:
 	ldi t, 0x3B			;read MPU6050 from 0x3B
 	sts TWI_address, t
 	ldi twidata, 14			;read 14 addresses
-	call i2c_read_adr_d
+	;call i2c_read_adr_d
 
 
 	;--- ADC pt. 2 ---
