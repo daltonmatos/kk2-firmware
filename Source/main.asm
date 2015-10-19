@@ -16,20 +16,17 @@ Main:
 	call LcdClear
 	call LcdUpdate
 
-  ;lrv FontSelector, f6x8 
-  ;ldz hello*2
-  ;call PrintString
-  ;call LcdUpdate
-  ;ldx 5000
-  ;call WaitXms
-
-;hello:
-;  .db "hello", 0
-
 
 	;--- Variables init ---
-
 	call EeInit
+
+  ;call ShowDisclaimer
+  ;call LcdUpdate
+  ;call setup_mpu6050
+  ;call AdcRead
+  ;call InitialSetup
+  ;call LcdUpdate
+  ;call MainMenu
 
 	lrv MainMenuCursorYposSave, 0
 	lrv MainMenuListYposSave, 0
