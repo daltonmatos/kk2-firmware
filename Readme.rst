@@ -33,6 +33,4 @@ Of course, each migration setup must leave a code that's able to flya Quad. Curr
 If you like AVR micro controllers and would like to help this project, don't hesitate to get in touch and/or start openning pull requests to help make it happen!
 
 
---
-Dalton Barreto
-http://daltonmatos.com
+Dalton Barreto, http://daltonmatos.com
