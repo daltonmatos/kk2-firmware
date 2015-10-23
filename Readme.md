@@ -1,5 +1,4 @@
-KK2.1.x firmware, based on RC911 code
-=====================================
+# KK2.1.x firmware, based on RC911 code
 
 This is a copy of the code originally written by RC911 for the KK2 flight controller board. In this project you will find one branch for each version of his firmware (All-in-one for KK2.1.x) and each receiver type (for the KK2).
 
@@ -15,8 +14,7 @@ The main script is: ``experiments/build-ihex.sh`` inside this repository.
 
 Below you will find a suggestion on the necessary steps to accomplish this migration.
 
-Possible Migration Roadmap
-==========================
+# Possible Migration Roadmap
 
  * Migrate the interrupt handler vector to C, still keeping all code in AVR Assembly;
  * Rewrite the EEPROM driver in C so it will be possible do read and write config values;
