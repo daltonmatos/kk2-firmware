@@ -8,6 +8,9 @@ AVRASM2 = wine ~/bin/AvrAssembler2/avrasm2.exe
 SOURCES = $(wildcard $(SRC_DIR)/*.c)
 OBJECTS = $(SOURCES:.c=.o)
 
+# Symbols used by the Assembly code but that are implemented in C
+EXTERNAL_SYMBOLS = f_main c_main
+
 kk2++.hex: bindir kk2++.elf $(OBJECTS)
 	avr-gcc -Os -mmcu=atmega644p -DF_CPU=20000000 -nostartfiles -o $(BIN_DIR)/kk2++.elf $(BIN_DIR)/kk2++.asm.hex.bin.elf $(BIN_DIR)/*.c.o
 	avr-objcopy -I elf32-avr -O ihex -j .text -j .data $(BIN_DIR)/kk2++.elf $(BIN_DIR)/kk2++.hex 
@@ -23,7 +26,7 @@ kk2++.elf: kk2++.asm
 	avr-objcopy -j .sec1 -I ihex -O binary $(BIN_DIR)/kk2++.asm.hex $(BIN_DIR)/kk2++.asm.hex.bin
 	avr-objcopy --rename-section .data=.text,contents,alloc,load,readonly,code -I binary -O elf32-avr $(BIN_DIR)/kk2++.asm.hex.bin $(BIN_DIR)/kk2++.asm.hex.bin.elf
 
-	avr-objdump -d $(BIN_DIR)/kk2++.asm.hex.bin.elf | python2 tools/extract-symbols-metadata.py $(BIN_DIR)/kk2++.asm.map > $(BIN_DIR)/kk2++.symtab
+	avr-objdump -d $(BIN_DIR)/kk2++.asm.hex.bin.elf | python2 tools/extract-symbols-metadata.py $(BIN_DIR)/kk2++.asm.map $(EXTERNAL_SYMBOLS) > $(BIN_DIR)/kk2++.symtab
 
 	cat $(BIN_DIR)/kk2++.symtab | tools/elf-add-symbol $(BIN_DIR)/kk2++.asm.hex.bin.elf
 

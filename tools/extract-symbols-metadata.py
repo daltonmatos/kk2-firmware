@@ -42,6 +42,7 @@ OBJDUMP_REGEX = re.compile(r'{}:\s+{}\s+{}\s+({}\s+{}\s+{}\s+{})?.*'.format(RE_I
                             , re.IGNORECASE)
 
 map_file = sys.argv[1]
+external_symbols = sys.argv[2:]
 
 #Dado um simbolo, qual seu endereço?
 symbols_by_name = defaultdict(list)
@@ -98,7 +99,7 @@ for _0_addr_symbols in symbols_not_in_elf:
 # sym_type is I=Internal E=External
 for _s in symbols_addr_in_elf:
     sym_type = "I"
-    if _s in ["call_me_maybe", "flashdata_from_asm", "c_read_flashbyte", "c_main"]:
+    if _s in external_symbols:
         sym_type = "E"
     print  _s, sym_type, "0x%x" % (symbols_addr_in_elf[_s] * 2), " ".join("0x%x" % item for item in instructions_for_symbols.get(_s, []))
 
