@@ -6,6 +6,9 @@
 
 
 .include "m644Pdef.inc"
+
+.equ offset = 0x00
+
 .include "macros.inc"
 .include "miscmacros.inc"
 .include "variables.asm"
@@ -54,6 +57,9 @@ unused:	reti
 
 	;--- Common initialization ---
 
+c_main:
+  ret
+
 reset:
 
 	ldi t, low(ramend)	;initalize stack pointer
@@ -66,30 +72,7 @@ reset:
 	andi t, 0x03
 	sts UserProfile, t
 
-
-	;--- Run specialized setup and main routine based on selected RX mode ---
-
-	ldz eeRxMode
-	call ReadEeprom
-	sts RxMode, t
-	cpi t, RxModeStandard
-	brne init1
-
-	jmp Main		;standard RX
-
-init1:	cpi t, RxModeCppm
-	brne init2
-
-	jmp CppmMain		;CPPM
-
-init2:	cpi t, RxModeSBus
-	brne init3
-
-	jmp SBusMain		;S.Bus
-
-init3:	jmp SatelliteMain	;Spektrum Satellite (DSM2 and DSMX)
-
-
+  call c_main
 
 .include "rxmode.asm"
 .include "batteryvoltage.asm"
