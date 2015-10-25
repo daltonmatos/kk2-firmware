@@ -26,7 +26,7 @@ Below you will find a suggestion on the necessary steps to accomplish this migra
  * ....
 
 
-Of course, each migration setup must leave a code that's able to flya Quad. Currently the migration is still in the first step, migrating the interrupt handler vector and I will be updating this readme as soon as I evolve in this journey.
+Of course, each migration step must leave a code that's able to fly a Quad. Currently the migration is still in the first steps. I will be updating this readme as soon as I evolve in this journey.
 
 If you like AVR micro controllers and would like to help this project, don't hesitate to get in touch and/or start openning pull requests to help make it happen!
 
