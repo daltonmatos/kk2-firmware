@@ -16,9 +16,9 @@ Below you will find a suggestion on the necessary steps to accomplish this migra
 
 # Possible Migration Roadmap
 
- * Migrate the interrupt handler vector to C, still keeping all code in AVR Assembly;
- * Rewrite the EEPROM driver in C so it will be possible do read and write config values;
- * Migrate simple logics do C, for example, the ``reset`` interrupt handler; This handler just reads EEPROM values and call the correct ``main`` routine, based on the Receiver type (Standard, CPPM, S.Bus, Satellite);
+ * ~~Migrate the interrupt handler vector to C, still keeping all code in AVR Assembly;~~ Change of plans: Will keep the assembly code as the main code (compiling with ``-nostartfiles``).
+ * ~~Rewrite the EEPROM driver in C so it will be possible do read and write config values;~~ Not needed, will use <avr/eeprom.h> functions;
+ * ~~Migrate simple logics do C, for example, the ``reset`` interrupt handler; This handler just reads EEPROM values and call the correct ``main`` routine, based on the Receiver type (Standard, CPPM, S.Bus, Satellite);~~ Migrated.
  * Rewrite the LCD display driver and use it from the Assembly code;
  * Stat to migrate each configuration screen to C;
  * Migrate the main loop to C, still calling the routines in Assembly;
