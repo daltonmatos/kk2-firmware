@@ -2,6 +2,8 @@
 SRC_DIR = Source
 BIN_DIR = bin
 
+SRC_GIT_VERSION=$(shell git rev-parse HEAD | cut -c 1-7)
+
 ASM_SOURCES = $(wildcard $(SRC_DIR)/*.asm)
 AVRASM2 = wine ~/bin/AvrAssembler2/avrasm2.exe
 
@@ -20,6 +22,7 @@ bindir:
 	mkdir -p $(BIN_DIR)
 
 kk2++.asm: $(ASM_SOURCES)
+	sed -i -e 's/AiO.*\"/AiO\ $(SRC_GIT_VERSION)\"/' $(SRC_DIR)/version.asm
 	$(AVRASM2) $(SRC_DIR)/$@ -fI -o $(BIN_DIR)/$@.hex -l $(BIN_DIR)/$@.lst -m $(BIN_DIR)/$@.map
 
 kk2++.elf: kk2++.asm
