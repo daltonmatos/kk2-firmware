@@ -67,11 +67,6 @@ reset:
 	ldi t, high(ramend)
 	out sph, t
 
-	ldz eeUserProfile	;user profile
-	call ReadEeprom
-	andi t, 0x03
-	sts UserProfile, t
-
   call c_main
 
 .include "rxmode.asm"
