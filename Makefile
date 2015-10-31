@@ -24,6 +24,7 @@ bindir:
 kk2++.asm: $(ASM_SOURCES)
 	sed -i -e 's/AiO.*\"/AiO\ $(SRC_GIT_VERSION)\"/' $(SRC_DIR)/version.asm
 	$(AVRASM2) $(SRC_DIR)/$@ -fI -o $(BIN_DIR)/$@.hex -l $(BIN_DIR)/$@.lst -m $(BIN_DIR)/$@.map
+	sed -i -e 's/AiO.*\"/AiO\"/' $(SRC_DIR)/version.asm
 
 kk2++.elf: kk2++.asm
 	avr-objcopy -j .sec1 -I ihex -O binary $(BIN_DIR)/kk2++.asm.hex $(BIN_DIR)/kk2++.asm.hex.bin
