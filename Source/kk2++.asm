@@ -16,6 +16,7 @@
 .include "168mathlib_macros.inc"
 .include "832mathlib_macros.inc"
 .include "constants.asm"
+.include "bindwrappers.asm"
 
 .org 0x0000
 
@@ -67,7 +68,7 @@ reset:
 	ldi t, high(ramend)
 	out sph, t
 
-  call c_main
+  safe_call_c c_main
 
 .include "rxmode.asm"
 .include "batteryvoltage.asm"
@@ -159,5 +160,7 @@ symbols16x16:
 font4x6:
 .include "font4x6.asm"
 
+
+.include "callwrappers.asm"
 
 

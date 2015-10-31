@@ -13,10 +13,10 @@
 #define RxMode 0x074D
 #define UserProfile 0x0803
 
-extern void Main();
-extern void CppmMain();
-extern void SBusMain();
-extern void SatelliteMain();
+extern void safe_Main();
+extern void safe_CppmMain();
+extern void safe_SBusMain();
+extern void safe_SatelliteMain();
 
 
 void write_to_ram_address(uint8_t *address, uint8_t data){
@@ -36,17 +36,17 @@ int c_main(){
 
   switch (rx_mode){
     case RxModeStandard:
-      Main();
+      safe_Main();
       break;
     case RxModeCppm:
-      CppmMain();
+      safe_CppmMain();
       break;
     case RxModeSBus:
-      SBusMain();
+      safe_SBusMain();
       break;
     case RxModeSatDSMX:
     case RxModeSatDSM2:
-      SatelliteMain();
+      safe_SatelliteMain();
       break;  
   }
 
