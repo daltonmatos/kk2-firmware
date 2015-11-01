@@ -7,11 +7,11 @@ SRC_GIT_VERSION=$(shell git rev-parse HEAD | cut -c 1-7)
 ASM_SOURCES = $(wildcard $(SRC_DIR)/*.asm)
 AVRASM2 = wine ~/bin/AvrAssembler2/avrasm2.exe
 
-SOURCES = $(wildcard $(SRC_DIR)/*.c)
+SOURCES = $(wildcard $(SRC_DIR)/*.c) $(wildcard $(SRC_DIR)/display/*.c)
 OBJECTS = $(SOURCES:.c=.o)
 
 # Symbols used by the Assembly code but that are implemented in C
-EXTERNAL_SYMBOLS = f_main c_main
+EXTERNAL_SYMBOLS = f_main c_main fill_buffer lcd_clear lcd_command lcd_data
 
 kk2++.hex: bindir kk2++.elf $(OBJECTS)
 	avr-gcc -Os -mmcu=atmega644p -DF_CPU=20000000 -nostartfiles -o $(BIN_DIR)/kk2++.elf $(BIN_DIR)/kk2++.asm.hex.bin.elf $(BIN_DIR)/*.c.o
