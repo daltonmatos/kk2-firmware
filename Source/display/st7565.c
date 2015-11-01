@@ -73,45 +73,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #define CMD_NOP  0xE3
 #define CMD_TEST  0xF0
 
-
-
-
-
-
 #define LCD_BUFFER 0x0100
-
 
 
 void lcd_clear(){
   memset((uint8_t *) LCD_BUFFER, 0, 1024);
 }
 
-
-void fill_buffer(){
-  fillrect((uint8_t *) LCD_BUFFER, 0, 0, 10, 10, 1);
-}
-
-
 void lcd_raw(uint8_t comm){
-/*#define lcd_cs1		portd, 5
-#define lcd_res		portd, 6
-#define lcd_a0		portd, 7
-#define	lcd_scl		portd, 4
-#define	lcd_si		portd, 1
-*/
-  // Clear bit lcd_a0 
-  // Clear bit lcs_cs1
-  // delay 4us
-  // for de 0 a 7, lendo cada bit do byte que será transferido pro display.
-  // Se for bit=1, Set bit lcd_si
-  // Se for bit=0, Clear bit lcd_si
-  // Para transferir esse bit:
-  //    delay 4us
-  //    clear bit lcd_scl
-  //    delay 4us
-  //    set bit lcd_scl
-  // Fora do for:
-  //    set bit lcs_cs1
 
   PORTD &= ~_BV(5);
   _delay_us(4);
@@ -137,87 +106,57 @@ void lcd_command(uint8_t command){
   lcd_raw(command);
 }
 
-/*
-	ldi zl, low(lcd_cd*2)	;refresh LCD control registers
-	ldi zh, high(lcd_cd*2)
-
-qq2:	lpm yl, z+
-	cpi yl, 0xff
-	breq qq1
-	rcall LcdCommand
-	rjmp qq2
-
-qq1:	ldi yl, 0x81		;set contrast
-	rcall LcdCommand
-	lds yl, LcdContrast
-	rcall LcdCommand
-
-
-	;Transfer image data
-
-	ldi xl, 0xb0	
-
-	ldi zl, low(LcdBuffer)
-	ldi zh, high(LcdBuffer)
-
-qq3:	mov yl, xl		;set page address
-	rcall LcdCommand
-
-	ldi yl, 0x10		;set column address
-	rcall LcdCommand
-	ldi yl, 0x00
-	rcall LcdCommand
-
-	ldi xh, 128		;transfer one page
-qq4:	ld yl, z+
-	rcall LcdData
-	dec xh
-	brne qq4
-
-	inc xl
-	cpi xl, 0xb8
-	brne qq3
-
-;	PopAll
-	pop zh
-	pop zl
-	pop yh
-	pop yl
-	pop xh
-	pop xl
-	ret
-
-lcd_cd:
-	.db 0xaf, 0x40		;LCD ON		Display start line set
-	.db 0xa0, 0xa6		;ADC		nor/res
-	.db 0xa4, 0xa2		;disp normal	bias 1/9
-	.db 0xee, 0xc8		;end		COM
-	.db 0x2f, 0x24		;power control	Vreg int res ratio
-	.db 0xac, 0x00		;static off
-	.db 0xf8, 0x00		;booster ratio
-	.db 0xe3, 0xff		;NOP
-*/
-
 void lcd_update(){
-  
-  /*
-	CMD_DISPLAY_ON 0xaf
-  CMD_SET_DISP_START_LINE 0x40		;LCD ON		Display start line set
-	CMD_SET_ADC_NORMAL 0xa0
-  CMD_SET_DISP_NORMAL 0xa6		;ADC		nor/res
-	CMD_SET_ALLPTS_NORMAL 0xa4
-  CMD_SET_BIAS_9 0xa2		;disp normal	bias 1/9
-	CMD_RMW_CLEAR 0xee, 
-  CMD_SET_COM_REVERSE 0xc8		;end		COM
-	0x2f 
-  0x24		;power control	Vreg int res ratio
-	CMD_SET_STATIC_OFF 0xac
-  CMD_SET_COLUMN_LOWER 0x00		;static off
-	CMD_SET_BOOSTER_FIRST 0xf8
-  CMD_SET_COLUMN_LOWER 0x00		;booster ratio
-	CMD_NOP 0xe3 
-  */
 
+  lcd_command(CMD_DISPLAY_ON); // 0xaf
+  lcd_command(CMD_SET_DISP_START_LINE); // 0x40		;LCD ON		Display start line set
+	lcd_command(CMD_SET_ADC_NORMAL); // 0xa0
+  lcd_command(CMD_SET_DISP_NORMAL); // 0xa6		;ADC		nor/res
+	lcd_command(CMD_SET_ALLPTS_NORMAL); // 0xa4
+  lcd_command(CMD_SET_BIAS_9); // 0xa2		;disp normal	bias 1/9
+	lcd_command(CMD_RMW_CLEAR); // 0xee, 
+  lcd_command(CMD_SET_COM_REVERSE); // 0xc8		;end		COM
+	lcd_command(0x2f); // 
+  lcd_command(0x24); //		;power control	Vreg int res ratio
+	lcd_command(CMD_SET_STATIC_OFF); // 0xac
+  lcd_command(CMD_SET_COLUMN_LOWER); // 0x00		;static off
+	lcd_command(CMD_SET_BOOSTER_FIRST); // 0xf8
+  lcd_command(CMD_SET_COLUMN_LOWER); // 0x00		;booster ratio
+	lcd_command(CMD_NOP); // 0xe3 
+  
+  /* Set contrast */
+  lcd_command(0x81);
+  lcd_command(0x24);
+
+	/* Transfer image data */
+  
+  uint8_t *buffer_base = (uint8_t *) LCD_BUFFER;
+
+  for (uint8_t page = 0; page < 8; page++){
+    lcd_command(0xb0 + page); /* set page address */
+    
+    /* Set column address */
+    lcd_command(0x10);
+    lcd_command(0x00);
+
+    /* Transfer one page */
+    for (uint8_t page_bit = 0; page_bit < 128; page_bit++){
+      //uint8_t data = *(buffer_base++ + (page_bit * page));
+      uint8_t data = *buffer_base++;
+      lcd_data(data);
+    }
+  }
+}
+
+extern void safe_LcdUpdate();
+
+void fill_buffer(){
+  lcd_clear();
+  memset((uint8_t *) LCD_BUFFER, 0xff, 1024);
+
+  //safe_LcdUpdate();
+  lcd_update();
+  while (1){}
 }
 
 
