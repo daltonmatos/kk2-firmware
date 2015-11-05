@@ -74,6 +74,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #define CMD_TEST  0xF0
 
 #define LCD_BUFFER 0x0100
+#define LCD_BUFFER_ptr ((uint8_t *) LCD_BUFFER)
+
+
 
 
 void lcd_clear(){
