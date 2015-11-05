@@ -1,28 +1,29 @@
 #include <avr/io.h>
 #include <avr/eeprom.h>
+#include <avr/pgmspace.h>
 
-#define	RxModeStandard 0
-#define	RxModeCppm 1
-#define	RxModeSBus 2
-#define	RxModeSatDSM2 3
-#define	RxModeSatDSMX 4
+#include "constants.h"
+#include "ramvariables.h"
+#include "eepromvariables.h"
 
-#define eeRxMode      0x0071
-#define eeUserProfile 0x0073
+/* These calls do not need any reg saving since until now 
+ * no original assembly code has not run, so we are not
+ * trashing any registers 
+ */ 
+extern void Main();
+extern void CppmMain();
+extern void SBusMain();
+extern void SatelliteMain();
 
-#define RxMode 0x074D
-#define UserProfile 0x0803
-
-extern void safe_Main();
-extern void safe_CppmMain();
-extern void safe_SBusMain();
-extern void safe_SatelliteMain();
-
+/*void safe_call_from_c(){
+  __asm__ ("push r24\n\t"
+           "push r25\n\t");
+  Main();
+}*/
 
 void write_to_ram_address(uint8_t *address, uint8_t data){
   (*(uint8_t *) address) = data;
 }
-
 
 int c_main(){
 
@@ -36,17 +37,17 @@ int c_main(){
 
   switch (rx_mode){
     case RxModeStandard:
-      safe_Main();
+      Main();
       break;
     case RxModeCppm:
-      safe_CppmMain();
+      CppmMain();
       break;
     case RxModeSBus:
-      safe_SBusMain();
+      SBusMain();
       break;
     case RxModeSatDSMX:
     case RxModeSatDSM2:
-      safe_SatelliteMain();
+      SatelliteMain();
       break;  
   }
 
