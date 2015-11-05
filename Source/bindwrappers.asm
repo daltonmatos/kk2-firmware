@@ -95,4 +95,19 @@
   clr r1
 .endmacro
 
+
+
+.macro push_all
+  push r0
+  push r1
+  push_r2_to_r17_r28_r29
+  push_r18_to_r27_r30_r31
+.endmacro
+
+.macro pop_all
+  pop_r18_to_r27_r30_r31
+  pop_r2_to_r17_r28_r29
+  pop r1
+  pop r0
+.endmacro
 #endif
