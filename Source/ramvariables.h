@@ -5,6 +5,11 @@
 #define YPos 0x073E
 #define PixelType 0x0746
 
+#define X1 0x0000
+#define Y1 0x0000
+#define FontSelector 0x0000
+
+
 #define RxMode 0x074D
 #define UserProfile 0x0803
 
