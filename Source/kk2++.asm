@@ -68,7 +68,7 @@ reset:
 	ldi t, high(ramend)
 	out sph, t
 
-  safe_call_c c_main
+  call c_main
 
 .include "rxmode.asm"
 .include "batteryvoltage.asm"
