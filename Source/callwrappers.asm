@@ -13,4 +13,11 @@ asm_PrintString:
 asm_LcdUpdate:
   safe_called_from_c LcdUpdate
   ret
-  
+
+asm_GetButtonsBlocking:
+  push_for_call_return_value
+  call GetButtonsBlocking
+  clr r25
+  mov r24, t
+  pop_for_call_return_value
+  ret

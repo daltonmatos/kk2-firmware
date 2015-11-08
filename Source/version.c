@@ -45,18 +45,6 @@ void show_version(){
 
   asm_LcdUpdate();
 
-//ver12:	call GetButtonsBlocking
-//	cpi t, 0x08				;BACK?
-//	brne ver12
-//	ret
-
-/*  uint8_t button = __get_buttons_blocking();
-  while (button != 0x08){
-    button = __get_buttons_blocking();
-  }
-*/
-
-  while (1){}
-
+  while (asm_GetButtonsBlocking() != BUTTON_BACK){}
 }
 
