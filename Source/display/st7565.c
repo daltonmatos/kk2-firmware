@@ -101,7 +101,7 @@ void lcd_update(){
   }
 }
 
-extern void safe_LcdUpdate();
+
 
 void fill_buffer(){
   lcd_clear();

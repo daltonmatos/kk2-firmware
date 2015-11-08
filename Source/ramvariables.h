@@ -5,9 +5,9 @@
 #define YPos 0x073E
 #define PixelType 0x0746
 
-#define X1 0x0000
-#define Y1 0x0000
-#define FontSelector 0x0000
+#define X1 0x073F
+#define Y1 0x0740
+#define FontSelector 0x0744
 
 
 #define RxMode 0x074D

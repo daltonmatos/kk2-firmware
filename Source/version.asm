@@ -1,5 +1,12 @@
 
+
+show_version:
+  nop
+
 ShowVersion:
+
+  safe_call_c show_version
+  ret
 
 	call LcdClear12x16
 
