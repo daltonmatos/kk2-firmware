@@ -11,10 +11,10 @@ SOURCES = $(wildcard $(SRC_DIR)/*.c) $(wildcard $(SRC_DIR)/display/*.c)
 OBJECTS = $(SOURCES:.c=.o)
 
 # Symbols used by the Assembly code but that are implemented in C
-EXTERNAL_SYMBOLS = f_main c_main fill_buffer lcd_clear lcd_command lcd_data
+EXTERNAL_SYMBOLS = f_main c_main fill_buffer lcd_clear lcd_command lcd_data show_version
 
 kk2++.hex: bindir kk2++.elf $(OBJECTS)
-	avr-gcc -Os -mmcu=atmega644p -DF_CPU=20000000 -nostartfiles -o $(BIN_DIR)/kk2++.elf $(BIN_DIR)/kk2++.asm.hex.bin.elf $(BIN_DIR)/*.c.o
+	avr-gcc -O1 -mmcu=atmega644p -DF_CPU=20000000 -nostartfiles -o $(BIN_DIR)/kk2++.elf $(BIN_DIR)/kk2++.asm.hex.bin.elf $(BIN_DIR)/*.c.o
 	avr-objcopy -I elf32-avr -O ihex -j .text -j .data $(BIN_DIR)/kk2++.elf $(BIN_DIR)/kk2++.hex 
 
 .PHONY: bindir
@@ -35,7 +35,7 @@ kk2++.elf: kk2++.asm
 	cat $(BIN_DIR)/kk2++.symtab | tools/elf-add-symbol $(BIN_DIR)/kk2++.asm.hex.bin.elf
 
 .c.o:
-	avr-gcc -Os -mmcu=atmega644p -DF_CPU=20000000 -c $< -o $(BIN_DIR)/$(<F).o
+	avr-gcc -O1 -mmcu=atmega644p -DF_CPU=20000000 -c $< -o $(BIN_DIR)/$(<F).o
 
 flash: kk2++.hex
 	/usr/share/arduino/hardware/tools/avrdude -C /usr/share/arduino/hardware/tools/avrdude.conf -patmega644p -cusbasp -Uflash:w:$(BIN_DIR)/kk2++.hex:i
