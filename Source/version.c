@@ -7,8 +7,6 @@
 #include "display/st7565.h"
 #include "constants.h"
 
-#define __save__1_param __asm__ ("push r25")
-
 extern void asm_PrintString();
 extern void asm_LcdUpdate();
 
@@ -16,10 +14,10 @@ void show_version(){
 
   //lcd_clear();
   
-  *uint8_t_prt(PixelType) = 1;
-  *uint8_t_prt(FontSelector) = f12x16;
-  *uint8_t_prt(Y1) = 0;
-  *uint8_t_prt(X1) = 22;
+  PixelType = 1;
+  FontSelector = f12x16;
+  Y1 = 0;
+  X1 = 22;
 
   /* Address of uint8_t ver1; */  
   __asm__ ("ldi r31, 0x55");
@@ -28,9 +26,9 @@ void show_version(){
   asm_PrintString();
 
 
-  *uint8_t_prt(Y1) = 17;
-  *uint8_t_prt(FontSelector) = f12x16;
-  *uint8_t_prt(Y1) = 0;
+  Y1 = 17;
+  FontSelector = f12x16;
+  Y1 = 0;
 
   /* Print version info */
 //	ldi t, 4				;print version information
