@@ -9,7 +9,7 @@
 #define __YPos 0x073E
 #define YPos (*(uint8_t_prt(__YPos)))
 
-#define __PixelType 0x0746
+#define __PixelType 0x0743
 #define PixelType (*(uint8_t_prt(__PixelType)))
 
 #define __X1 0x073F
