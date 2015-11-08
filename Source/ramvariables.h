@@ -12,7 +12,7 @@
 #define PixelType RAM_VARIABLE(0x0743)
 #define FontSelector RAM_VARIABLE(0x0744)
 
-#define RxMode 0x074D
-#define UserProfile 0x0803
+#define RxMode RAM_VARIABLE(0x074D)
+#define UserProfile RAM_VARIABLE(0x0803)
 
 #endif

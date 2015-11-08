@@ -15,25 +15,15 @@ extern void CppmMain();
 extern void SBusMain();
 extern void SatelliteMain();
 
-/*void safe_call_from_c(){
-  __asm__ ("push r24\n\t"
-           "push r25\n\t");
-  Main();
-}*/
-
-void write_to_ram_address(uint8_t *address, uint8_t data){
-  (*(uint8_t *) address) = data;
-}
-
 int c_main(){
 
   uint8_t rx_mode;
   rx_mode = eeprom_read_byte((uint8_t *) eeRxMode);
-  write_to_ram_address((uint8_t *) RxMode, rx_mode);
+  RxMode = rx_mode;
 
   uint8_t user_profile = eeprom_read_byte((uint8_t *) eeUserProfile);
   user_profile &= 0x03;
-  write_to_ram_address((uint8_t *) UserProfile, user_profile);
+  UserProfile = user_profile;
 
   switch (rx_mode){
     case RxModeStandard:

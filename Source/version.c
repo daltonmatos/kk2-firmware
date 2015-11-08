@@ -22,7 +22,7 @@ void show_version(){
   print_string(&srm2, 0, 30);
   print_string(&motto, 0, 46);
 
-  switch (*uint8_t_prt(RxMode)){
+  switch (RxMode){
     case RxModeStandard:
       _rxmode = &stdrx;
       break;
