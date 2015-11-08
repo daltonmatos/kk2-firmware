@@ -6,7 +6,6 @@
 #define __XPos 0x073D
 #define XPos (*(uint8_t_prt(__XPos)))
 
-
 #define __YPos 0x073E
 #define YPos (*(uint8_t_prt(__YPos)))
 
@@ -24,10 +23,5 @@
 
 #define RxMode 0x074D
 #define UserProfile 0x0803
-
-
-#define XPos_ptr uint8_t_prt(__XPos)
-#define YPos_prt uint8_t_prt(__YPos)
-
 
 #endif
