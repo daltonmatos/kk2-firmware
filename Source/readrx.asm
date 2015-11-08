@@ -4,6 +4,7 @@
 
 IsrRoll:
 
+  push tt
 	in SregSaver, sreg
 
 	sbis pind,3			;rising or falling?
@@ -17,6 +18,7 @@ IsrRoll:
 	clr tt
 	sts RollDcnt, tt
 
+  pop tt
 	out sreg, SregSaver		;exit	
 	reti
 
@@ -30,6 +32,7 @@ rx1:	lds tt, tcnt1l			;falling, calculate the pulse length
 	sbc tt, treg
 	sts Channel1H, tt
 
+  pop tt
 	out sreg, SregSaver		;exit	
 	reti
 
@@ -37,6 +40,7 @@ rx1:	lds tt, tcnt1l			;falling, calculate the pulse length
 
 IsrPitch:
 
+  push tt
 	in SregSaver, sreg
 
 	sbis pind,2			;rising or falling?
@@ -50,6 +54,7 @@ IsrPitch:
 	clr tt
 	sts PitchDcnt, tt
 	
+  pop tt
 	out sreg, SregSaver		;exit	
 	reti
 
@@ -63,6 +68,7 @@ rx2:	lds tt, tcnt1l			;falling, calculate the pulse length
 	sbc tt, treg
 	sts Channel2H, tt
 
+  pop tt
 	out sreg, SregSaver		;exit	
 	reti
 
@@ -70,6 +76,7 @@ rx2:	lds tt, tcnt1l			;falling, calculate the pulse length
 
 IsrThrottleCppm:
 
+  push tt
 	in SregSaver, sreg
 
 	lds tt, RxMode			;CPPM?
@@ -80,6 +87,7 @@ IsrThrottleCppm:
 
 	jmp IsrCppm
 
+  pop tt
 	out sreg, SregSaver		;falling, exit	
 	reti
 
@@ -98,6 +106,7 @@ IsrThrottle:
 	clr tt
 	sts ThrottleDcnt, tt
 
+  pop tt
 	out sreg, SregSaver		;exit	
 	reti
 
@@ -111,6 +120,7 @@ rx3:	lds tt, tcnt1l			;falling, calculate the pulse length
 	sbc tt, treg
 	sts Channel3H, tt
 
+  pop tt
 	out sreg, SregSaver		;exit	
 	reti
 
@@ -120,6 +130,7 @@ rx3:	lds tt, tcnt1l			;falling, calculate the pulse length
 
 IsrYawAux:
 
+  push tt
 	in SregSaver, sreg
 
 	push xl				;save the current time stamp
@@ -132,6 +143,7 @@ IsrYawAux:
 
 	pop xh				;exit
 	pop xl
+  pop tt
 	out sreg, SregSaver
 	reti
 

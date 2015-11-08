@@ -50,7 +50,7 @@ PwmStart:
 IsrPwmStart:
 
 	;generate the rising edge of servo/esc pulses
-
+  push tt
 	load SregSaver, sreg
 
 	lds tt, flagPwmGen		;check for PWM generator state
@@ -104,7 +104,9 @@ pwm9:	lsr tt
 	brcc pwm12
 	sbi OutputPin8
 
-pwm12:	store sreg, SregSaver
+pwm12:	
+  pop tt
+  store sreg, SregSaver
 	reti
 
 
@@ -113,6 +115,7 @@ pwm12:	store sreg, SregSaver
 
 IsrPwmEnd:
 
+  push tt
 	load SregSaver, sreg
 
 	lds tt, flagPwmGen		;check for PWM generator state
@@ -125,7 +128,9 @@ IsrPwmEnd:
 ipe1:	ldi tt, 0xff
 	sts flagPwmEnd, tt
 
-ipe2:	store sreg, SregSaver
+ipe2:	
+  pop tt
+  store sreg, SregSaver
 	reti
 
 
@@ -473,6 +478,7 @@ StopPwmQuiet:
 
 IsrPwmQuiet:
 
+  push tt
 	load SregSaver, sreg
 
 	lds tt, flagPwmState		;toggle output state
@@ -540,5 +546,7 @@ ipq18:	lsr tt
 
 	sbi OutputPin8
 
-ipq20:	store sreg, SregSaver
+ipq20:	
+  pop tt
+  store sreg, SregSaver
 	reti

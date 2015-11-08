@@ -75,6 +75,7 @@ cppm10:	sts CppmPulseArrayAddressL, zl	;store array pointer
 	pop xh
 	pop xl
 
+  pop tt
 	out sreg, SregSaver		;exit	
 	reti
 

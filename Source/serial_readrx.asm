@@ -7,6 +7,7 @@ IsrSerialRx:
 
 	in SregSaver, sreg
 
+  push tt
 	push zh
 	push zl
 
@@ -36,6 +37,7 @@ isr20:	sts RxBufferIndex, tt
 	;Exit
 	pop zl
 	pop zh
+  pop tt
 	out sreg, SregSaver
 	reti
 

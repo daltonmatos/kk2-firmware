@@ -320,6 +320,7 @@ StopLedSeq:
 
 IsrLed:
 
+  push tt
 	in SregSaver, sreg		;check delay counter
 	lds tt, LedCounter
 	dec tt
@@ -351,6 +352,8 @@ isr13:	lds tt, UserProfile		;reset the LED sequence
 isr12:	com treg			;toggle the LED state
 	sts LedState, treg
 
-isr10:	sts LedCounter, tt
+isr10:	
+  sts LedCounter, tt
+  pop tt
 	out sreg, SregSaver		;exit	
 	reti
