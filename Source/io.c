@@ -1,9 +1,7 @@
-#ifndef IO_H
-#define IO_H
-
 #include <avr/io.h>
-
-
+#include "io.h"
+#include "ramvariables.h"
+#include "display/st7565.h"
 
 uint8_t __get_buttons(){
   return PINB;
@@ -40,5 +38,10 @@ uint8_t __get_buttons_blocking(){
 
 }
 
-#endif
+
+void print_string(uint8_t *str_addr, uint8_t x, uint8_t y){
+  X1 = x;
+  Y1 = y;
+  asm_PrintString(str_addr);
+}
 

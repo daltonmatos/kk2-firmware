@@ -6,45 +6,43 @@
 #include "flashvariables.h"
 #include "display/st7565.h"
 #include "constants.h"
-
-extern void asm_PrintString();
-extern void asm_LcdUpdate();
+#include "io.h"
 
 void show_version(){
 
   //lcd_clear();
-  
+  uint8_t *_rxmode;
+
   PixelType = 1;
   FontSelector = f12x16;
-  Y1 = 0;
-  X1 = 22;
+  print_string(&ver1, 22, 0);
 
-  /* Address of uint8_t ver1; */  
-  __asm__ ("ldi r31, 0x55");
-  __asm__ ("ldi r30, 0x4C");
+  FontSelector = f6x8;
+  print_string(&ver2, 0, 19);
+  print_string(&srm2, 0, 30);
+  print_string(&motto, 0, 46);
 
-  asm_PrintString();
+  switch (*uint8_t_prt(RxMode)){
+    case RxModeStandard:
+      _rxmode = &stdrx;
+      break;
+    case RxModeCppm:
+      _rxmode = &cppm;
+      break;
+    case RxModeSBus:
+      _rxmode = &sbus;
+      break;
+    case RxModeSatDSMX:
+      _rxmode = &dsmx;
+      break;
+    case RxModeSatDSM2:
+      _rxmode = &dsm2;
+      break;  
+  }
+  print_string(_rxmode, 36, 30);
+  
+  print_string(&back, 0, 57);
 
-
-  Y1 = 17;
-  FontSelector = f12x16;
-  Y1 = 0;
-
-  /* Print version info */
-//	ldi t, 4				;print version information
-//	ldz ver10*2
-//	call PrintStringArray
-
-//	lrv X1, 36				;print RX mode
-//	lrv Y1, 26
-//	lds t, RxMode
-//	ldz modes*2
-//	call PrintFromStringArray
-//
-//	;footer
-//	call PrintBackFooter
-
-  //lcd_update();
   asm_LcdUpdate();
 
 //ver12:	call GetButtonsBlocking

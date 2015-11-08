@@ -37,12 +37,14 @@
 
 
 .macro safe_call_c
-  push r0
-  push_r18_to_r27_r30_r31
+  ;push r0
+  ;push_r18_to_r27_r30_r31
+  push_all
   clr r1
   call @0
-  pop_r18_to_r27_r30_r31
-  pop r0
+  pop_all
+  ;pop_r18_to_r27_r30_r31
+  ;pop r0
 .endmacro
 
 

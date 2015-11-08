@@ -4,9 +4,13 @@
 
 
 asm_PrintString:
-  safe_called_from_c PrintString
+  push_all
+  movw r30, r24
+  call PrintString
+  pop_all
   ret
 
 asm_LcdUpdate:
   safe_called_from_c LcdUpdate
   ret
+  
