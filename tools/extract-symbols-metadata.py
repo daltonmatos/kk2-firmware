@@ -56,8 +56,6 @@ with open(map_file, 'r') as f:
             parts = line.strip().split(" ")
             symbol = parts[1]
             addr = int(parts[-1], 16)
-            if symbol in ["CppmMainMenu"]:
-                write_err(symbol, " addr=", "0x%x" % addr)
             symbols_by_name[symbol].append(addr)
             symbols_by_addr[addr].append(symbol)
 
@@ -76,14 +74,8 @@ for line in sys.stdin:
     if m:
         group_dict = m.groupdict()
         if group_dict['addrH'] and group_dict['addrL']:  # This is a branch struction, must be relocated
-            write_err("branch instruction=", line.strip())
             addr = int(group_dict['addrH'] + group_dict['addrL'], 16)
-            if ("%x" % addr) in ["5db"]:
-                write_err("addr=05db")
             if addr in symbols_by_addr:  # We found a symbol at this address in the .map file
-                if ("%x" % addr) in ["5db"]:
-                    write_err("symbols in this addr=", symbols_by_addr[addr], " elf_addr=", group_dict['elf_addr'])
-                    write_err(line.strip())
                 for _s in symbols_by_addr[addr]:
                     symbols_addr_in_elf[_s] = addr
                     instructions_for_symbols[_s].append(int(group_dict['instr_addr'], 16))
