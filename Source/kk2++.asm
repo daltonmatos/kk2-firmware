@@ -70,6 +70,9 @@ reset:
 
   call c_main
 
+entrypoints: .dw Main, CppmMain, SBusMain, SatelliteMain 
+
+
 .include "rxmode.asm"
 .include "batteryvoltage.asm"
 
