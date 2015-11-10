@@ -8,10 +8,8 @@
 #include "constants.h"
 #include "io.h"
 
-void show_version(){
 
-  //lcd_clear();
-  uint8_t *_rxmode;
+void show_version(){
 
   PixelType = 1;
   FontSelector = f12x16;
@@ -22,24 +20,7 @@ void show_version(){
   print_string(&srm2, 0, 30);
   print_string(&motto, 0, 46);
 
-  switch (RxMode){
-    case RxModeStandard:
-      _rxmode = &stdrx;
-      break;
-    case RxModeCppm:
-      _rxmode = &cppm;
-      break;
-    case RxModeSBus:
-      _rxmode = &sbus;
-      break;
-    case RxModeSatDSMX:
-      _rxmode = &dsmx;
-      break;
-    case RxModeSatDSM2:
-      _rxmode = &dsm2;
-      break;  
-  }
-  print_string(_rxmode, 36, 30);
+  print_string((uint8_t *) pgm_read_word(&modes + RxMode*2), 36, 30);
   
   print_string(&back, 0, 57);
 
