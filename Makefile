@@ -11,7 +11,7 @@ SOURCES = $(wildcard $(SRC_DIR)/*.c) $(wildcard $(SRC_DIR)/display/*.c)
 OBJECTS = $(SOURCES:.c=.o)
 
 # Symbols used by the Assembly code but that are implemented in C
-EXTERNAL_SYMBOLS = f_main c_main fill_buffer lcd_clear lcd_command lcd_data show_version
+EXTERNAL_SYMBOLS = f_main c_main fill_buffer lcd_clear lcd_command lcd_data show_version c_contrast
 
 kk2++.hex: bindir kk2++.elf $(OBJECTS)
 	avr-gcc -O1 -mmcu=atmega644p -DF_CPU=20000000 -nostartfiles -o $(BIN_DIR)/kk2++.elf $(BIN_DIR)/kk2++.asm.hex.bin.elf $(BIN_DIR)/*.c.o

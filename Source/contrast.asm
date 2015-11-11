@@ -1,7 +1,11 @@
 
 
+c_contrast:
+  nop
 
 Contrast:
+  safe_call_c c_contrast
+  ret
 
 	lds t, UserProfile		;refuse access unless user profile #1 is selected
 	tst t

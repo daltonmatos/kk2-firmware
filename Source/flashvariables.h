@@ -22,6 +22,7 @@ extern uint8_t dsmx;
 extern uint8_t font6x8;
 
 extern uint8_t back;
+extern uint8_t nadtxt2;
 
 extern const uint8_t entrypoints;
 #endif

@@ -39,9 +39,12 @@ uint8_t __get_buttons_blocking(){
 }
 
 
-void print_string(uint8_t *str_addr, uint8_t x, uint8_t y){
+void print_string(const uint8_t *str_addr, uint8_t x, uint8_t y){
   X1 = x;
   Y1 = y;
   asm_PrintString(str_addr);
 }
 
+void wait_for_button(uint8_t button){
+  while (asm_GetButtonsBlocking() != button){}
+}
