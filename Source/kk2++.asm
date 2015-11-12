@@ -117,7 +117,6 @@ entrypoints: .dw Main, CppmMain, SBusMain, SatelliteMain
 .include "userprofile.asm"
 .include "trigonometry.asm"
 .include "setuphw.asm"
-.include "version.asm"
 .include "beeper.asm"
 .include "menu.asm"
 .include "lva.asm"

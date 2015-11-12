@@ -3,11 +3,6 @@
 
 #include <avr/io.h>
 
-/* version.asm */
-extern uint8_t ver1;
-extern uint8_t ver2;
-extern uint8_t ver10;
-
 extern uint8_t srm2;
 extern uint8_t null;
 extern uint8_t motto;

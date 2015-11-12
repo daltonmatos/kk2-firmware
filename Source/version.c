@@ -8,6 +8,9 @@
 #include "constants.h"
 #include "io.h"
 
+extern uint8_t ver1;
+extern uint8_t ver2;
+extern uint8_t ver10;
 
 void show_version(){
 

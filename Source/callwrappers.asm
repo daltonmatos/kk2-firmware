@@ -2,6 +2,13 @@
 
 .include "bindwrappers.asm"
 
+show_version:
+  nop
+
+ShowVersion:
+
+  safe_call_c show_version
+  ret
 
 asm_PrintString:
   push_all
