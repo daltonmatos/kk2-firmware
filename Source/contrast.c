@@ -1,4 +1,5 @@
 #include <avr/eeprom.h>
+#include <util/delay.h>
 #include "flashvariables.h"
 #include "ramvariables.h"
 #include "eepromvariables.h"
@@ -13,14 +14,16 @@ extern const char con6;
 
 void c_contrast(){
 
+  uint8_t pressed = 0;
+
   if (UserProfile){
     asm_ShowNoAccessDlg(&nadtxt2);
     wait_for_button(BUTTON_OK);
     return;
   }
 
-  uint8_t pressed;
   do {
+    lcd_clear();
     FontSelector = f12x16;
     print_string(&con1, 46, 0); /* LCD */
 
@@ -28,7 +31,6 @@ void c_contrast(){
     print_string(&con2, 0, 26); /* LCD Contrast: */
 
     print_string(&con6, 0, 57); /* Footer */
-    asm_LcdUpdate();
 
     switch (pressed){
       case BUTTON_UP:
@@ -43,8 +45,8 @@ void c_contrast(){
         break;
     }
     print_number(LcdContrast, 14*16, 26);
-    asm_LcdUpdate();
-    lcd_clear();
+    //asm_LcdUpdate();
+    lcd_update();
   } while ((pressed = wait_for_button(BUTTON_ANY)) != BUTTON_BACK);
 
   LcdContrast = eeprom_read_byte((uint8_t *) eeLcdContrast);

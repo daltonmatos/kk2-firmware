@@ -27,39 +27,63 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <util/delay.h>
 
 #include "st7565.h"
-
+#include "../ramvariables.h"
 
 void lcd_clear(){
   memset((uint8_t *) LCD_BUFFER, 0, 1024);
 }
 
+
+#define LCD_CS1		5
+#define LCD_RES		6
+#define LCD_A0		7
+#define	LCD_SCL		4
+#define	LCD_SI		1
+
+
+inline void spiwrite(uint8_t c) {
+  int8_t i;
+  for (i=7; i>=0; i--) {
+    PORTD &= ~_BV(LCD_SCL);
+    
+    if (c & _BV(i))
+      PORTD |= _BV(LCD_SI);
+    else
+      PORTD &= ~_BV(LCD_SI);
+    
+    PORTD |= _BV(LCD_SCL);
+  }
+}
+
 void lcd_raw(uint8_t comm){
 
-  PORTD &= ~_BV(5);
-  _delay_us(4);
+  PORTD &= ~_BV(LCD_CS1);
+  //_delay_us(4);
   for (uint8_t i=0; i < 8; i++){
-   (comm & 0x80) ? (PORTD |= _BV(1)) : (PORTD &= ~_BV(1));
-   _delay_us(4);
-   PORTD &= ~_BV(4); // cbi lcd_scl
-   _delay_us(4);
-   PORTD |= _BV(4);
+   (comm & 0x80) ? (PORTD |= _BV(LCD_SI)) : (PORTD &= ~_BV(LCD_SI));
+   //_delay_us(4);
+   PORTD &= ~_BV(LCD_SCL); // cbi lcd_scl
+   //_delay_us(4);
+   PORTD |= _BV(LCD_SCL);
    comm <<= 1;    
   }
 
-  PORTD |= _BV(5);
+  PORTD |= _BV(LCD_CS1);
 }
 
 void lcd_data(uint8_t data){
-  PORTD |= _BV(7);
+  PORTD |= _BV(LCD_A0);
   lcd_raw(data);
+  //spiwrite(data);
 }
 
 void lcd_command(uint8_t command){
-  PORTD &= ~_BV(7);
+  PORTD &= ~_BV(LCD_A0);
   lcd_raw(command);
+  //spiwrite(command);
 }
 
-void lcd_update(){
+void lcd_update_commands(){
 
   lcd_command(CMD_DISPLAY_ON); // 0xaf
   lcd_command(CMD_SET_DISP_START_LINE); // 0x40		;LCD ON		Display start line set
@@ -79,14 +103,18 @@ void lcd_update(){
   
   /* Set contrast */
   lcd_command(0x81);
-  lcd_command(0x24);
+  lcd_command(LcdContrast);
+}
 
+void lcd_update(){
+
+  lcd_update_commands();
 	/* Transfer image data */
   
-  uint8_t *buffer_base = (uint8_t *) LCD_BUFFER;
+  uint16_t buffer_base = 0x0100;
 
-  for (uint8_t page = 0; page < 8; page++){
-    lcd_command(0xb0 + page); /* set page address */
+  for (uint8_t page = 0xb0; page < 0xb8; page++){
+    lcd_command(page); /* set page address */
     
     /* Set column address */
     lcd_command(0x10);
@@ -94,8 +122,8 @@ void lcd_update(){
 
     /* Transfer one page */
     for (uint8_t page_bit = 0; page_bit < 128; page_bit++){
-      //uint8_t data = *(buffer_base++ + (page_bit * page));
-      uint8_t data = *buffer_base++;
+      uint8_t data = *((uint8_t* )buffer_base);
+      buffer_base += 1;
       lcd_data(data);
     }
   }
