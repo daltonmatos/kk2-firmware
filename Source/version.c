@@ -29,6 +29,6 @@ void show_version(){
 
   asm_LcdUpdate();
 
-  while (asm_GetButtonsBlocking() != BUTTON_BACK){}
+  wait_for_button(BUTTON_BACK);
 }
 

@@ -35,3 +35,13 @@ asm_ShowNoAccessDlg:
   call ShowNoAccessDlg
   pop_all
   ret
+
+asm_Print16Signed:
+  push_all
+  clr xh
+  clr yh
+  clr r25
+  mov xl, r24
+  call Print16Signed
+  pop_all
+  ret

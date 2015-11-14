@@ -13,6 +13,9 @@
 #define FontSelector RAM_VARIABLE(0x0744)
 
 #define RxMode RAM_VARIABLE(0x074D)
+
+#define LcdContrast RAM_VARIABLE(0x07A3)
+
 #define UserProfile RAM_VARIABLE(0x0803)
 
 #endif

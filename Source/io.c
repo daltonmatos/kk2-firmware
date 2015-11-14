@@ -45,6 +45,14 @@ void print_string(const uint8_t *str_addr, uint8_t x, uint8_t y){
   asm_PrintString(str_addr);
 }
 
-void wait_for_button(uint8_t button){
-  while (asm_GetButtonsBlocking() != button){}
+void print_number(int8_t number, uint8_t x, uint8_t y){
+  X1 = x;
+  Y1 = y;
+  asm_Print16Signed(number);
+}
+
+uint8_t wait_for_button(uint8_t button_mask){
+  uint8_t pressed = 0;
+  while ( !((pressed = asm_GetButtonsBlocking()) & button_mask)) {}
+  return pressed;
 }
