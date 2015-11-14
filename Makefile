@@ -2,6 +2,8 @@
 SRC_DIR = Source
 BIN_DIR = bin
 
+CC_FLAGS = -Os
+
 SRC_GIT_VERSION=$(shell git rev-parse HEAD | cut -c 1-7)
 
 ASM_SOURCES = $(wildcard $(SRC_DIR)/*.asm)
@@ -18,10 +20,10 @@ EXTERNAL_SYMBOLS = f_main c_main fill_buffer lcd_clear lcd_command lcd_data show
 
 kk2++.hex: bindir kk2++.elf $(OBJECTS)
 	sed -i -e 's/AiO.*\"/AiO\ $(SRC_GIT_VERSION)\"/' $(SRC_DIR)/flashvariables.c
-	avr-gcc -Os -mno-interrupts -nostartfiles -mmcu=atmega644p -DF_CPU=20000000 -o $(BIN_DIR)/flashvariables.c.o $(SRC_DIR)/flashvariables.c
+	avr-gcc $(CC_FLAGS) -mno-interrupts -nostartfiles -mmcu=atmega644p -DF_CPU=20000000 -o $(BIN_DIR)/flashvariables.c.o $(SRC_DIR)/flashvariables.c
 	sed -i -e 's/AiO.*\"/AiO\"/' $(SRC_DIR)/flashvariables.c
 
-	avr-gcc -Os -mmcu=atmega644p -DF_CPU=20000000 -nostartfiles -o $(BIN_DIR)/kk2++.elf $(BIN_DIR)/kk2++.asm.hex.bin.elf $(filter-out $(BIN_DIR)/flashvariables.c.o, $(wildcard $(BIN_DIR)/*.o)) $(BIN_DIR)/flashvariables.c.o
+	avr-gcc $(CC_FLAGS) -mmcu=atmega644p -DF_CPU=20000000 -nostartfiles -o $(BIN_DIR)/kk2++.elf $(BIN_DIR)/kk2++.asm.hex.bin.elf $(filter-out $(BIN_DIR)/flashvariables.c.o, $(wildcard $(BIN_DIR)/*.o)) $(BIN_DIR)/flashvariables.c.o
 	avr-objcopy -I elf32-avr -O ihex -j .text -j .data $(BIN_DIR)/kk2++.elf $(BIN_DIR)/kk2++.hex 
 
 .PHONY: bindir
@@ -40,7 +42,7 @@ kk2++.elf: kk2++.asm
 	cat $(BIN_DIR)/kk2++.symtab | tools/elf-add-symbol $(BIN_DIR)/kk2++.asm.hex.bin.elf
 
 .c.o:
-	avr-gcc -std=c99 -Os -nostartfiles -mno-interrupts -mmcu=atmega644p -DF_CPU=20000000 -c $< -o $(BIN_DIR)/$(<F).o
+	avr-gcc $(CC_FLAGS) -nostartfiles -mno-interrupts -mmcu=atmega644p -DF_CPU=20000000 -c $< -o $(BIN_DIR)/$(<F).o
 
 flash: kk2++.hex
 	/usr/share/arduino/hardware/tools/avrdude -V -C /usr/share/arduino/hardware/tools/avrdude.conf -patmega644p -cusbasp -Uflash:w:$(BIN_DIR)/kk2++.hex:i
