@@ -29,11 +29,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include "st7565.h"
 #include "../ramvariables.h"
 
-void lcd_clear(){
-  memset((uint8_t *) LCD_BUFFER, 0, 1024);
-}
-
-
 #define LCD_CS1		5
 #define LCD_RES		6
 #define LCD_A0		7
@@ -41,18 +36,8 @@ void lcd_clear(){
 #define	LCD_SI		1
 
 
-inline void spiwrite(uint8_t c) {
-  int8_t i;
-  for (i=7; i>=0; i--) {
-    PORTD &= ~_BV(LCD_SCL);
-    
-    if (c & _BV(i))
-      PORTD |= _BV(LCD_SI);
-    else
-      PORTD &= ~_BV(LCD_SI);
-    
-    PORTD |= _BV(LCD_SCL);
-  }
+void lcd_clear(){
+  memset((uint8_t *) LCD_BUFFER, 0, 1024);
 }
 
 void lcd_raw(uint8_t comm){
