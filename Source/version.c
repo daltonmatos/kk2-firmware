@@ -27,7 +27,7 @@ void show_version(){
   
   print_string(&back, 0, 57);
 
-  asm_LcdUpdate();
+  lcd_update();
 
   wait_for_button(BUTTON_BACK);
 }
