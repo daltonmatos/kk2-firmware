@@ -94,10 +94,10 @@ void lcd_update_commands(){
 void lcd_update(){
 
   lcd_update_commands();
-	/* Transfer image data */
   
-  uint16_t buffer_base = 0x0100;
+  uint16_t volatile buffer_base = LCD_BUFFER;
 
+	/* Transfer image data */
   for (uint8_t page = 0xb0; page < 0xb8; page++){
     lcd_command(page); /* set page address */
     
@@ -107,9 +107,7 @@ void lcd_update(){
 
     /* Transfer one page */
     for (uint8_t page_bit = 0; page_bit < 128; page_bit++){
-      uint8_t data = *((uint8_t* )buffer_base);
-      buffer_base += 1;
-      lcd_data(data);
+      lcd_data(*(uint8_t_prt(buffer_base++)));
     }
   }
 }

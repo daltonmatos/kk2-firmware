@@ -2,7 +2,7 @@
 SRC_DIR = Source
 BIN_DIR = bin
 
-CC_FLAGS = -O0
+CC_FLAGS = -Os
 
 SRC_GIT_VERSION=$(shell git rev-parse HEAD | cut -c 1-7)
 
