@@ -713,78 +713,13 @@ qq9:	st z, xl
 
 
 
-
+lcd_update:
+  nop
 
 
 LcdUpdate:
-;	PushAll
-	push xl
-	push xh
-	push yl
-	push yh
-	push zl
-	push zh
-
-	ldi zl, low(lcd_cd*2)	;refresh LCD control registers
-	ldi zh, high(lcd_cd*2)
-
-qq2:	lpm yl, z+
-	cpi yl, 0xff
-	breq qq1
-	rcall LcdCommand
-	rjmp qq2
-
-qq1:	ldi yl, 0x81		;set contrast
-	rcall LcdCommand
-	lds yl, LcdContrast
-	rcall LcdCommand
-
-
-	;Transfer image data
-
-	ldi xl, 0xb0	
-
-	ldi zl, low(LcdBuffer)
-	ldi zh, high(LcdBuffer)
-
-qq3:	mov yl, xl		;set page address
-	rcall LcdCommand
-
-	ldi yl, 0x10		;set column address
-	rcall LcdCommand
-	ldi yl, 0x00
-	rcall LcdCommand
-
-	ldi xh, 128		;transfer one page
-qq4:	ld yl, z+
-	rcall LcdData
-	dec xh
-	brne qq4
-
-	inc xl
-	cpi xl, 0xb8
-	brne qq3
-
-;	PopAll
-	pop zh
-	pop zl
-	pop yh
-	pop yl
-	pop xh
-	pop xl
-	ret
-
-lcd_cd:
-	.db 0xaf, 0x40		;LCD ON		Display start line set
-	.db 0xa0, 0xa6		;ADC		nor/res
-	.db 0xa4, 0xa2		;disp normal	bias 1/9
-	.db 0xee, 0xc8		;end		COM
-	.db 0x2f, 0x24		;power control	Vreg int res ratio
-	.db 0xac, 0x00		;static off
-	.db 0xf8, 0x00		;booster ratio
-	.db 0xe3, 0xff		;NOP
-
-
+  safe_call_c lcd_update
+  ret
 
 LcdClear:
 ;	PushAll
@@ -829,53 +764,6 @@ LcdClear12x16:
 	lrv FontSelector, f12x16
 	lrv Y1, 0
 	ret
-
-
-LcdCommand:
-	cbi lcd_a0
-	rjmp se4
-
-LcdData:
-	sbi lcd_a0
-
-se4:	cbi lcd_cs1
-	rcall se5
-
-	push xh
-
-	ldi xh,8
-
-se3:	lsl yl		;F T
-	brcs se1	;1 2
-	nop		;1
-	cbi lcd_si	;2
-	rjmp se2	;2
-se1:	sbi lcd_si	;  2
-	nop		;  1
-	nop		;  1
-
-se2:	rcall se5
-
-	cbi lcd_scl
-	rcall se5
-
-	sbi lcd_scl
-	rcall se5
-
-	dec xh
-	brne se3
-
-	sbi lcd_cs1
-	rcall se5
-
-	pop xh
-	ret
-
-se5:	ldi t, 4	;1 us delay at 20MHz
-se6:	dec t
-	brne se6
-	ret
-
 
 
 	;--- Confirmation dialogue ---
