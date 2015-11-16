@@ -34,7 +34,7 @@ A new binary will be available at ``bin/kk2++.elf`` if you need to disassembly a
  * ~~Migrate the interrupt handler vector to C, still keeping all code in AVR Assembly;~~ Change of plans: Will keep the assembly code as the main code (compiling with ``-nostartfiles``).
  * ~~Rewrite the EEPROM driver in C so it will be possible do read and write config values;~~ Not needed, will use ``<avr/eeprom.h>`` functions;
  * ~~Migrate simple logics do C, for example, the ``reset`` interrupt handler; This handler just reads EEPROM values and call the correct ``main`` routine, based on the Receiver type (Standard, CPPM, S.Bus, Satellite);~~ Migrated.
- * ~~Rewrite the LCD display driver and use it from the Assembly code;~~ First attempt: Done. Still does not work, for now the C code uses the original Assembly implementation. Will fully migrate another time
+ * ~~Rewrite the LCD display driver and use it from the Assembly code;~~ First attempt: Done. ~~Still does not work, for now the C code uses the original Assembly implementation.~~ The lcd_update() not working was due to gcc optimizing too much. Making some parts of the code ``volatile`` seems to solve the problem. C Implemented screens already uses the lcd_update() implemented in C.
  * Stat to migrate each configuration screen to C;
    * ~~Version Screen~~ Migrated
    * ~~LCD Contrast Screen~~ Migrated
