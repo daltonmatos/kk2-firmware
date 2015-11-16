@@ -14,6 +14,21 @@ The main script is: ``experiments/build-ihex.sh`` inside this repository.
 
 Below you will find a suggestion on the necessary steps to accomplish this migration.
 
+
+# Building the project
+
+There is a Makefile that builds all necessary parts of the project. Things you need to know brefore running make:
+
+ * You will need to have a working copy of ``avrasm2.exe``. It will run just fine with wine. Remember to edit Makefile and change the line ``AVRASM2 = wine ~/bin/AvrAssembler2/avrasm2.exe`` to point to your copy of ``avrasm2.exe``
+
+To build the project:
+ * Clone the project
+ * ``cd`` into the cloned project
+ * run ``make``
+
+A new binary will be available at ``bin/kk2++.elf`` if you need to disassembly and a ``bin/kk2++.hex`` file will be ready to be flashed into the micro-controller's memory.
+
+
 # Possible Migration Roadmap
 
  * ~~Migrate the interrupt handler vector to C, still keeping all code in AVR Assembly;~~ Change of plans: Will keep the assembly code as the main code (compiling with ``-nostartfiles``).
