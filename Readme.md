@@ -22,7 +22,13 @@ Below you will find a suggestion on the necessary steps to accomplish this migra
  * ~~Rewrite the LCD display driver and use it from the Assembly code;~~ First attempt: Done. Still does not work, for now the C code uses the original Assembly implementation. Will fully migrate another time
  * Stat to migrate each configuration screen to C;
    * ~~Version Screen~~ Migrated
-   * LCD Contrast Screen
+   * ~~LCD Contrast Screen~~ Migrated
+   * LCD Display driver
+     * ~~LcdClear~~ Migrated
+     * ~~LcdUpdate~~ Migrated
+     * PrintChar
+     * Sprite
+     * SetPixel
    * _More to be added_
  * Migrate the main loop to C, still calling the routines in Assembly;
  * Start to migrate each mainloop routine to C;
