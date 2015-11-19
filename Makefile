@@ -47,6 +47,10 @@ kk2++.elf: kk2++.asm
 flash: kk2++.hex
 	/usr/share/arduino/hardware/tools/avrdude -V -C /usr/share/arduino/hardware/tools/avrdude.conf -patmega644p -cusbasp -Uflash:w:$(BIN_DIR)/kk2++.hex:i
 
+size: kk2++.hex
+	avr-size bin/kk2++.elf
+
+
 .PHONY: clean
 clean:
 	rm -f bin/*
