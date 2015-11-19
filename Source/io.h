@@ -11,6 +11,7 @@ extern void asm_PrintString(const uint8_t *str_addr);
 extern uint8_t asm_GetButtonsBlocking();
 extern void asm_ShowNoAccessDlg(uint8_t *str);
 extern void asm_Print16Signed(int8_t number);
+extern void asm_HighlightRectangle();
 
 void print_string(const uint8_t *str_addr, uint8_t x, uint8_t y);
 void print_number(int8_t number, uint8_t x, uint8_t y);

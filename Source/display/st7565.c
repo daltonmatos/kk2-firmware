@@ -112,8 +112,6 @@ void lcd_update(){
   }
 }
 
-
-
 void fill_buffer(){
   lcd_clear();
   memset((uint8_t *) LCD_BUFFER, 0xff, 1024);

@@ -105,7 +105,6 @@ entrypoints: .dw Main, CppmMain, SBusMain, SatelliteMain
 .include "gimbal_main.asm"
 .include "gimbal_mainmenu.asm"
 
-.include "advanced.asm"
 .include "extra.asm"
 .include "motorcheck.asm"
 .include "boardrotation.asm"

@@ -2,6 +2,8 @@
 
 .include "bindwrappers.asm"
 
+; Wrappers to migrated routines
+
 show_version:
   nop
 
@@ -9,6 +11,15 @@ ShowVersion:
 
   safe_call_c show_version
   ret
+
+advanced_settings:
+  nop
+
+AdvancedSettings:
+  safe_call_c advanced_settings
+  ret
+
+; Interface to original Assembly Routines
 
 asm_PrintString:
   push_all
@@ -45,3 +56,25 @@ asm_Print16Signed:
   call Print16Signed
   pop_all
   ret
+
+asm_HighlightRectangle:
+  lrv PixelType, 0
+  safe_called_from_c HilightRectangle
+  ret
+
+asm_ChannelMapping:
+  safe_called_from_c ChannelMapping
+  ret
+
+asm_SensorSettings:
+  safe_called_from_c SensorSettings
+  ret
+
+asm_MixerEditor:
+  safe_called_from_c MixerEditor
+  ret
+
+asm_BoardRotation:
+  safe_called_from_c BoardRotation
+  ret
+

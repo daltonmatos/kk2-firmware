@@ -8,6 +8,8 @@
 #define YPos RAM_VARIABLE(0x073E)
 #define X1 RAM_VARIABLE(0x073F)
 #define Y1 RAM_VARIABLE(0x0740)
+#define X2 RAM_VARIABLE(0x0741)
+#define Y2 RAM_VARIABLE(0x0742)
 
 #define PixelType RAM_VARIABLE(0x0743)
 #define FontSelector RAM_VARIABLE(0x0744)
