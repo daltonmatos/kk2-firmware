@@ -11,7 +11,7 @@ SBusMain:
 
 	;--- Initialize LCD ---
 
-	call LoadLcdContrast
+	;call LoadLcdContrast; Not needed, called in main.c
 	call LcdUpdate
 	call LcdClear
 	call LcdUpdate

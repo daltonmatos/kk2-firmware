@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include <avr/io.h>
+#include <avr/eeprom.h>
 #include <stdlib.h>
 #include <avr/pgmspace.h> 
 #include <string.h>
@@ -29,6 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include "st7565.h"
 #include "../ramvariables.h"
 #include "../constants.h"
+#include "../eepromvariables.h"
 
 #define LCD_CS1		5
 #define LCD_RES		6
@@ -46,6 +48,15 @@ void lcd_clear12x16(){
   PixelType = 1;
   FontSelector = f12x16;
   Y1 = 0;
+}
+
+void lcd_load_contrast(){
+  LcdContrast = eeprom_read_byte(uint8_t_prt(eeLcdContrast));
+}
+
+void SetDefaultLcdContrast(){
+  LcdContrast = 0x24;
+  eeprom_write_byte(uint8_t_prt(eeLcdContrast), 0x24);
 }
 
 void lcd_raw(uint8_t comm){

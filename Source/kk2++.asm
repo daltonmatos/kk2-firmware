@@ -119,7 +119,6 @@ entrypoints: .dw Main, CppmMain, SBusMain, SatelliteMain
 .include "menu.asm"
 .include "lva.asm"
 .include "logic.asm"
-.include "contrast.asm"
 .include "auxsettings.asm"
 .include "loader.asm"
 .include "selflevel.asm"

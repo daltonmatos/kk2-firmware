@@ -81,6 +81,6 @@ void lcd_clear();
 void lcd_update();
 
 void lcd_clear12x16();
-
+void lcd_load_contrast();
 extern void asm_LcdUpdate();
 #endif

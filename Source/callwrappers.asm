@@ -4,6 +4,9 @@
 
 ; Wrappers to migrated routines
 
+SetDefaultLcdContrast:
+  nop
+
 show_version:
   nop
 ShowVersion:
@@ -22,6 +25,11 @@ BoardRotation:
   safe_call_c board_rotation
   ret
 
+c_contrast:
+  nop
+Contrast:
+  safe_call_c c_contrast
+  ret
 ; Interface to original Assembly Routines
 
 asm_PrintString:

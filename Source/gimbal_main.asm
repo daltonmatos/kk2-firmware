@@ -22,7 +22,7 @@ GimbalMain:
 	cpi t, 0x08
 	brne gm2
 
-	call SetDefaultLcdContrast
+	;call SetDefaultLcdContrast; Not needed, called in main.c
 
 
 	;--- Flight loop init ---
