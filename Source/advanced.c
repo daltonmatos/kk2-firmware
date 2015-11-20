@@ -17,7 +17,6 @@ extern const char updown;
 extern void asm_ChannelMapping();
 extern void asm_SensorSettings();
 extern void asm_MixerEditor();
-extern void asm_BoardRotation();
 
 
 void preapre_highlight_rectangle(uint8_t selected){
@@ -58,7 +57,7 @@ void make_call(uint8_t selected){
       asm_MixerEditor();
       break;
     case 3:
-      asm_BoardRotation();
+      board_rotation();
       break;  
   }
 }

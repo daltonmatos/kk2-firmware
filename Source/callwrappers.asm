@@ -19,12 +19,6 @@ AdvancedSettings:
   safe_call_c advanced_settings
   ret
 
-board_rotation:
-  nop
-BoardRotation:
-  safe_call_c board_rotation
-  ret
-
 c_contrast:
   nop
 Contrast:
@@ -83,9 +77,5 @@ asm_SensorSettings:
 
 asm_MixerEditor:
   safe_called_from_c MixerEditor
-  ret
-
-asm_BoardRotation:
-  safe_called_from_c BoardRotation
   ret
 
