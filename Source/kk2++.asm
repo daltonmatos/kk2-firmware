@@ -107,7 +107,6 @@ entrypoints: .dw Main, CppmMain, SBusMain, SatelliteMain
 
 .include "extra.asm"
 .include "motorcheck.asm"
-.include "boardrotation.asm"
 .include "channelmapping.asm"
 .include "errorlog.asm"
 .include "main.asm"

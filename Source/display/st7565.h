@@ -80,5 +80,7 @@ void fillrect(uint8_t *buff,
 void lcd_clear();
 void lcd_update();
 
+void lcd_clear12x16();
+
 extern void asm_LcdUpdate();
 #endif

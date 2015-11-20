@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "st7565.h"
 #include "../ramvariables.h"
+#include "../constants.h"
 
 #define LCD_CS1		5
 #define LCD_RES		6
@@ -38,6 +39,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 void lcd_clear(){
   memset((uint8_t *) LCD_BUFFER, 0, 1024);
+}
+
+void lcd_clear12x16(){
+  lcd_clear();
+  PixelType = 1;
+  FontSelector = f12x16;
+  Y1 = 0;
 }
 
 void lcd_raw(uint8_t comm){

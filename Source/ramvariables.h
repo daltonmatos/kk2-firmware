@@ -14,6 +14,8 @@
 #define PixelType RAM_VARIABLE(0x0743)
 #define FontSelector RAM_VARIABLE(0x0744)
 
+#define BoardOrientation RAM_VARIABLE(0x0749)
+
 #define RxMode RAM_VARIABLE(0x074D)
 
 #define LcdContrast RAM_VARIABLE(0x07A3)

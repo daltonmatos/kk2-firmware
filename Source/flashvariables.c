@@ -14,3 +14,22 @@ const char adv2[] PROGMEM = "Channel Mapping";
 const char adv3[] PROGMEM = "Sensor Settings";
 const char adv4[] PROGMEM = "Mixer Editor";
 const char adv5[] PROGMEM = "Board Orientation";
+
+/* Board Rotation screen */
+const char brd1[] PROGMEM = "Front";
+const char brr1[] PROGMEM = "Mount your KK2 board";
+const char brr2[] PROGMEM = "so that the on-screen";
+const char brr3[] PROGMEM = "arrow points to the";
+const char brr4[] PROGMEM = "front of your model.";
+/* It's an array because we use print_string to print one char */
+const uint8_t brd_up[] PROGMEM = {5, 0};
+const uint8_t brd_right[] PROGMEM = {6, 0};
+const uint8_t brd_down[] PROGMEM = {7, 0};
+const uint8_t brd_left[] PROGMEM = {8, 0};
+
+/* will be used by every screen that need this menu footer */
+const char backprev[] PROGMEM = "BACK PREV"; /* original name: bckprev */
+const char nextsel[] PROGMEM = " NEXT SELECT"; /* original name: nxtsel */
+const char _saved[] PROGMEM = "SAVED"; /* original name: saved */
+const char _ok[] PROGMEM = "OK"; /* original name: ok */
+

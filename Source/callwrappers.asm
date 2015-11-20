@@ -6,17 +6,20 @@
 
 show_version:
   nop
-
 ShowVersion:
-
   safe_call_c show_version
   ret
 
 advanced_settings:
   nop
-
 AdvancedSettings:
   safe_call_c advanced_settings
+  ret
+
+board_rotation:
+  nop
+BoardRotation:
+  safe_call_c board_rotation
   ret
 
 ; Interface to original Assembly Routines
