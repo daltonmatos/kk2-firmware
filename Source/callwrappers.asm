@@ -32,10 +32,10 @@ Contrast:
   ret
 ; Interface to original Assembly Routines
 
-asm_PrintString:
+asm_PrintChar:
   push_all
-  movw r30, r24
-  call PrintString
+  movw t, r24
+  call PrintChar
   pop_all
   ret
 

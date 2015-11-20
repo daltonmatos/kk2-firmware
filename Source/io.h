@@ -7,7 +7,7 @@
 #define BUTTON_BACK 0x08
 #define BUTTON_ANY BUTTON_OK | BUTTON_DOWN | BUTTON_UP | BUTTON_BACK
 
-extern void asm_PrintString(const uint8_t *str_addr);
+extern void asm_PrintChar(const char ch);
 extern uint8_t asm_GetButtonsBlocking();
 extern void asm_ShowNoAccessDlg(uint8_t *str);
 extern void asm_Print16Signed(int8_t number);

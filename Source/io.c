@@ -1,4 +1,5 @@
 #include <avr/io.h>
+#include <avr/pgmspace.h>
 #include "io.h"
 #include "ramvariables.h"
 #include "display/st7565.h"
@@ -42,7 +43,10 @@ uint8_t __get_buttons_blocking(){
 void print_string(const uint8_t *str_addr, uint8_t x, uint8_t y){
   X1 = x;
   Y1 = y;
-  asm_PrintString(str_addr);
+  char ch = 0;
+  while ((ch = pgm_read_byte(str_addr++))){
+    asm_PrintChar(ch);
+  }
 }
 
 void print_number(int8_t number, uint8_t x, uint8_t y){
