@@ -24,6 +24,14 @@ c_contrast:
 Contrast:
   safe_call_c c_contrast
   ret
+
+extra_features:
+  nop
+ExtraFeatures:
+  safe_call_c extra_features
+  ret
+
+
 ; Interface to original Assembly Routines
 
 asm_PrintChar:
@@ -78,4 +86,17 @@ asm_SensorSettings:
 asm_MixerEditor:
   safe_called_from_c MixerEditor
   ret
+
+asm_MotorCheck:
+  safe_called_from_c MotorCheck
+  ret  
+
+asm_GimbalMode:
+  safe_called_from_c GimbalMode
+  ret
+
+asm_SerialDebug:
+  safe_called_from_c SerialDebug
+  ret
+
 

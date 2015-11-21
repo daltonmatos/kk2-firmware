@@ -27,6 +27,12 @@ const uint8_t brd_right[] PROGMEM = {6, 0};
 const uint8_t brd_down[] PROGMEM = {7, 0};
 const uint8_t brd_left[] PROGMEM = {8, 0};
 
+/* Extra screen */
+const char ef1[] PROGMEM = "EXTRA";
+const char ef2[] PROGMEM = "Check Motor Outputs";
+const char ef3[] PROGMEM = "Gimbal Controller";
+const char ef4[] PROGMEM = "View Serial RX Data";
+
 /* will be used by every screen that need this menu footer */
 const char backprev[] PROGMEM = "BACK PREV"; /* original name: bckprev */
 const char nextsel[] PROGMEM = " NEXT SELECT"; /* original name: nxtsel */
