@@ -3,6 +3,11 @@
 .include "bindwrappers.asm"
 
 ; Wrappers to migrated routines
+gimbal_mode:
+  nop
+GimbalMode:
+  safe_call_c gimbal_mode
+  ret
 
 esc_calibration_warning:
   nop
@@ -117,4 +122,6 @@ asm_SerialDebug:
   safe_called_from_c SerialDebug
   ret
 
-
+asm_EnforceRestart:
+  safe_called_from_c EnforceRestart
+  ret

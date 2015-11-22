@@ -5,6 +5,7 @@
 #define eeRxMode      0x0071
 #define eeUserProfile 0x0073
 #define eeEscCalibration 0x0074
+#define eeGimbalMode 0x0077
 
 
 

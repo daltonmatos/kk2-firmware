@@ -101,7 +101,6 @@ entrypoints: .dw Main, CppmMain, SBusMain, SatelliteMain, SatelliteMain
 .include "sat_readrx.asm"
 
 .include "gimbal.asm"
-.include "gimbal_mode.asm"
 .include "gimbal_main.asm"
 .include "gimbal_mainmenu.asm"
 

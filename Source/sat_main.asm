@@ -92,7 +92,7 @@ SatelliteMain:
 
 	;--- Gimbal controller mode ---
 
-	call GetGimbalControllerMode
+	;call GetGimbalControllerMode ; Not needed, called in main.c
 	rvbrflagfalse flagGimbalMode, am10
 
 	jmp GimbalMain

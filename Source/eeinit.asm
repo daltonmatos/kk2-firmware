@@ -463,3 +463,11 @@ EnforceRestart:
 
 enf1:	rjmp enf1			;infinite loop
 
+	;--- Reset gimbal controller mode ---
+
+ResetGimbalControllerMode:
+
+	clr t
+	ldz eeGimbalMode
+	call WriteEeprom		;save in profile #1 only
+	ret

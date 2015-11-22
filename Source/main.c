@@ -17,6 +17,7 @@ int c_main(){
   UserProfile = eeprom_read_byte((uint8_t *) eeUserProfile);
   UserProfile &= 0x03;
 
+  flagGimbalMode = eeprom_read_byte((uint8_t *) eeGimbalMode);
   lcd_load_contrast();
   ((entrypoint_ptr) pgm_read_word(&entrypoints + RxMode*2))();
 

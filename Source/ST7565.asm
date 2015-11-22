@@ -778,7 +778,6 @@ qtunefn:.db "BACK RATE NEXT CHANGE", 0
 updown:	.db "BACK  UP  DOWN  ENTER", 0
 cont:	.db "CONTINUE", 0, 0
 clear:	.db "CLEAR", 0
-yn:	.db "YES  NO", 0
 back:	.db "BACK", 0, 0
 bckprev:.db "BACK PREV", 0		;used in combination with other footers (e.g. "NEXT CHANGE")
 bckmore:.db "BACK MORE", 0		;also used in combination with other footers (e.g. "NEXT CHANGE")
