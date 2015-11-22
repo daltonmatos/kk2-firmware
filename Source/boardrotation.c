@@ -85,14 +85,14 @@ void board_rotation(){
     return;
   }
 
-  uint8_t board_orientation = eeprom_read_byte((uint8_t *) eeBoardOrientation);
+  uint8_t board_orientation = eeprom_read_byte(eeBoardOrientation);
   board_orientation &= 0x03;
 
   _brd_render(board_orientation);
   lcd_update();
   while ((pressed = wait_for_button(BUTTON_ANY)) != BUTTON_BACK){
     if (pressed == BUTTON_OK){
-      eeprom_write_byte(uint8_t_prt(eeBoardOrientation), board_orientation);
+      eeprom_write_byte(eeBoardOrientation, board_orientation);
       BoardOrientation = board_orientation;
       _brd_print_warning();
     }

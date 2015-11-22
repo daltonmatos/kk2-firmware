@@ -40,7 +40,7 @@ void c_contrast(){
         LcdContrast = (LcdContrast - 1) < 25 ? 25 : LcdContrast - 1;
         break;
       case BUTTON_OK:
-        eeprom_write_byte((uint8_t *) eeLcdContrast, LcdContrast);
+        eeprom_write_byte(eeLcdContrast, LcdContrast);
         return;
         break;
     }
@@ -49,7 +49,7 @@ void c_contrast(){
     lcd_update();
   } while ((pressed = wait_for_button(BUTTON_ANY)) != BUTTON_BACK);
 
-  LcdContrast = eeprom_read_byte((uint8_t *) eeLcdContrast);
+  LcdContrast = eeprom_read_byte(eeLcdContrast);
 
   return;
 }

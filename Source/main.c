@@ -12,12 +12,12 @@ typedef void (*entrypoint_ptr)();
 
 int c_main(){
 
-  RxMode = eeprom_read_byte((uint8_t *) eeRxMode);
+  RxMode = eeprom_read_byte(eeRxMode);
 
-  UserProfile = eeprom_read_byte((uint8_t *) eeUserProfile);
+  UserProfile = eeprom_read_byte(eeUserProfile);
   UserProfile &= 0x03;
 
-  flagGimbalMode = eeprom_read_byte((uint8_t *) eeGimbalMode);
+  flagGimbalMode = eeprom_read_byte(eeGimbalMode);
   lcd_load_contrast();
   ((entrypoint_ptr) pgm_read_word(&entrypoints + RxMode*2))();
 

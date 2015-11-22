@@ -32,7 +32,7 @@ void esc_calibration_warning(){
     print_string(&war4, 0, Y1+9);
     print_string(&war5, 0, Y1+9);
     lcd_update();
-    eeprom_write_byte(uint8_t_prt(eeEscCalibration), 1);
+    eeprom_write_byte(eeEscCalibration, 1);
     while (1) {}
   }
 }

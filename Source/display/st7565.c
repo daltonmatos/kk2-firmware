@@ -51,12 +51,12 @@ void lcd_clear12x16(){
 }
 
 void lcd_load_contrast(){
-  LcdContrast = eeprom_read_byte(uint8_t_prt(eeLcdContrast));
+  LcdContrast = eeprom_read_byte(eeLcdContrast);
 }
 
 void SetDefaultLcdContrast(){
   LcdContrast = 0x24;
-  eeprom_write_byte(uint8_t_prt(eeLcdContrast), 0x24);
+  eeprom_write_byte(eeLcdContrast, 0x24);
 }
 
 void lcd_raw(uint8_t comm){

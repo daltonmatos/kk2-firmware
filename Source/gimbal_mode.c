@@ -23,7 +23,7 @@ void gimbal_mode(){
   uint8_t go_gimbal = 0;
 
 
-  current_setting = eeprom_read_byte(uint8_t_prt(eeGimbalMode));
+  current_setting = eeprom_read_byte(eeGimbalMode);
 
   lcd_clear12x16();
   print_string(&gbm1, 28, 0);
@@ -45,7 +45,7 @@ void gimbal_mode(){
     go_gimbal = 0xFF;
   }
 
-  eeprom_update_byte(uint8_t_prt(eeGimbalMode), go_gimbal);
+  eeprom_update_byte(eeGimbalMode, go_gimbal);
 
   if (go_gimbal != current_setting){
     asm_EnforceRestart();  
