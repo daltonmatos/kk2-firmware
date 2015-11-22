@@ -33,9 +33,22 @@ const char ef2[] PROGMEM = "Check Motor Outputs";
 const char ef3[] PROGMEM = "Gimbal Controller";
 const char ef4[] PROGMEM = "View Serial RX Data";
 
+/* ESC Calibration Warning Screen */
+const char war2[] PROGMEM = "ESC calibration will";
+const char war3[] PROGMEM = "be available on the";
+const char war4[] PROGMEM = "next start-up only.";
+const char war5[] PROGMEM = "REMOVE PROPS FIRST!";
+const char war9[] PROGMEM = "Do ESC calibration.";
+
 /* will be used by every screen that need this menu footer */
 const char backprev[] PROGMEM = "BACK PREV"; /* original name: bckprev */
 const char nextsel[] PROGMEM = " NEXT SELECT"; /* original name: nxtsel */
 const char _saved[] PROGMEM = "SAVED"; /* original name: saved */
 const char _ok[] PROGMEM = "OK"; /* original name: ok */
+
+
+/* Confirmation Dialog */
+const char confirm[] PROGMEM = "CONFIRM";
+const char rusure[] PROGMEM = "Are you sure?";
+const char conf[] PROGMEM = "CANCEL            YES";
 

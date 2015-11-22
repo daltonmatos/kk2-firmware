@@ -122,35 +122,6 @@ DisableEscCalibration:
 
 
 
-	;--- Warning displayed when enabling ESC calibration ---
-
-EscCalWarning:
-
-	ldz war9*2
-	call ShowConfirmationDlg
-	cpi t, 0x01			;OK?
-	breq war13
-
-	ret				;no, user cancelled
-
-war13:	call LcdClear12x16
-
-	call PrintWarningHeader
-
-	ldi t, 4			;print text
-	ldz war10*2
-	call PrintStringArray
-
-	call LcdUpdate
-
-	ser xl				;enable ESC calibration for the next start-up only
-	ldz eeEscCalibration
-	call StoreEeVariable8		;save in profile #1 only
-
-war11:	rjmp war11			;infinite loop. Restart is required
-
-
-
 
 
 esc10:	.db "ESC CALIBRATION", 0
@@ -162,13 +133,4 @@ esc22:	.db "Wait for the final", 0, 0
 
 esc25:	.dw esc20*2, esc21*2
 esc26:	.dw esc22*2, esc21*2
-
-war2:	.db "ESC calibration will", 0, 0
-war3:	.db "be available on the", 0
-war4:	.db "next start-up only.", 0
-war5:	.db "REMOVE PROPS FIRST!", 0
-
-war9:	.db "Do ESC calibration.", 0
-
-war10:	.dw war2*2, war3*2, war4*2, war5*2
 

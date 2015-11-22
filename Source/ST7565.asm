@@ -766,48 +766,8 @@ LcdClear12x16:
 	ret
 
 
-	;--- Confirmation dialogue ---
-
-ShowConfirmationDlg:
-
-	pushz			;input parameter (text pointer)
-	rcall LcdClear12x16
-
-	lrv X1, 22		;header
-	ldz confirm*2
-	rcall PrintHeader
-
-	lrv X1, 0		;print input text
-	lrv Y1, 26
-	popz
-	rcall PrintString
-
-	lrv X1, 0		;print "Are you sure?"
-	lrv Y1, 35
-	ldz rusure*2
-	rcall PrintString
-
-	;footer
-	lrv X1, 0
-	lrv Y1, 57
-	ldz conf*2
-	rcall PrintString
-
-	rcall LcdUpdate
-
-scd2:	rcall GetButtonsBlocking
-
-	cpi t, 0x08		;CANCEL?
-	breq scd3
-
-	cpi t, 0x01		;YES?
-	brne scd2
-
-scd3:	ret
-
-
 	;headers
-confirm:.db "CONFIRM", 0
+
 warning:.db "WARNING!", 0, 0
 cerror:	.db "ERROR", 0
 saved:	.db "SAVED", 0
@@ -816,7 +776,6 @@ saved:	.db "SAVED", 0
 tunefn:	.db "BACK RATE SAVE CHANGE", 0
 qtunefn:.db "BACK RATE NEXT CHANGE", 0
 updown:	.db "BACK  UP  DOWN  ENTER", 0
-conf:	.db "CANCEL            YES", 0
 cont:	.db "CONTINUE", 0, 0
 clear:	.db "CLEAR", 0
 yn:	.db "YES  NO", 0
@@ -830,7 +789,6 @@ ok:	.db "OK", 0, 0			;also used as status text (in sensortest.asm and flightdisp
 
 	;other texts
 motto:	.db "Fly safe!       RC911", 0
-rusure:	.db "Are you sure?", 0
 off:	.db "Off", 0
 on:	.db "On", 0, 0
 no:	.db "No", 0, 0

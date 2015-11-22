@@ -16,6 +16,6 @@ extern void asm_HighlightRectangle();
 void print_string(const uint8_t *str_addr, uint8_t x, uint8_t y);
 void print_number(int8_t number, uint8_t x, uint8_t y);
 uint8_t wait_for_button(uint8_t button_mask);
-
+uint8_t show_confirmation_dlg(const uint8_t *str);
 
 #endif

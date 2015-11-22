@@ -3,6 +3,7 @@
 #include "io.h"
 #include "ramvariables.h"
 #include "display/st7565.h"
+#include "constants.h"
 
 uint8_t __get_buttons(){
   return PINB;
@@ -60,3 +61,31 @@ uint8_t wait_for_button(uint8_t button_mask){
   while ( !((pressed = asm_GetButtonsBlocking()) & button_mask)) {}
   return pressed;
 }
+
+extern const char confirm;
+extern const char conf;
+extern const char rusure;
+
+
+uint8_t show_confirmation_dlg(const uint8_t *str){
+  
+  uint8_t pressed = 0;
+
+  lcd_clear12x16();
+
+  print_string(&confirm, 22, 0);
+  Y1 = 17;
+  FontSelector = f6x8;
+
+  print_string(str, 0, 26);
+
+  print_string(&rusure, 0, 35);
+
+  print_string(&conf, 0, 57);
+
+  lcd_update();
+
+  return wait_for_button(BUTTON_BACK | BUTTON_OK);
+
+}
+

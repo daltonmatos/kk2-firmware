@@ -4,6 +4,24 @@
 
 ; Wrappers to migrated routines
 
+esc_calibration_warning:
+  nop
+EscCalWarning:
+  safe_call_c esc_calibration_warning;
+  ret
+
+show_confirmation_dlg:
+  nop
+
+ShowConfirmationDlg:
+  push_for_call_return_value
+  clr r1 ;avr-gcc assumes r1 is always 0
+  call show_confirmation_dlg
+  movw r24, r30
+  pop_for_call_return_value
+  mov t, r24
+  ret
+
 SetDefaultLcdContrast:
   nop
 
