@@ -21,8 +21,8 @@ show_confirmation_dlg:
 ShowConfirmationDlg:
   push_for_call_return_value
   clr r1 ;avr-gcc assumes r1 is always 0
-  call show_confirmation_dlg
   movw r24, r30
+  call show_confirmation_dlg
   pop_for_call_return_value
   mov t, r24
   ret
