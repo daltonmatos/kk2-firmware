@@ -16,5 +16,12 @@
 
 #define eeBoardOrientation EEPROM_VARIABLE(0x0079)
 
+#define eeLinkRollPitch EEPROM_VARIABLE(0x00AC)
+#define eeAutoDisarm EEPROM_VARIABLE(0x00AD)
+#define eeButtonBeep EEPROM_VARIABLE(0x00AE)
+#define eeArmingBeeps EEPROM_VARIABLE(0x00AF)
+
+#define eeButtonBeep EEPROM_VARIABLE(0x00AE)
+
 #endif
 

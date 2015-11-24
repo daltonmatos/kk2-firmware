@@ -17,6 +17,9 @@
 #define BoardOrientation RAM_VARIABLE(0x0749)
 
 #define RxMode RAM_VARIABLE(0x074D)
+
+#define flagRollPitchLink RAM_VARIABLE(0x076C)
+
 #define flagGimbalMode RAM_VARIABLE(0x077A)
 
 #define LcdContrast RAM_VARIABLE(0x07A3)

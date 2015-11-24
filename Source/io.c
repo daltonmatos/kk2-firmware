@@ -124,5 +124,4 @@ void print_string_2(const uint8_t *str_addr, uint8_t x, uint8_t y, uint8_t hilig
       print_selector(0, y-1, x + (len * char_width), y + char_height);
       break;
   }
-
 }

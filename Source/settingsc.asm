@@ -3,7 +3,12 @@
 .def OldLinkFlag = r18
 
 
+mode_settings:
+  nop
+
 ModeSettings:
+  safe_call_c mode_settings
+  ret
 
 	clr Item
 	lds OldLinkFlag, flagRollPitchLink

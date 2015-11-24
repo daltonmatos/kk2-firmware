@@ -58,3 +58,5 @@ const char confirm[] PROGMEM = "CONFIRM";
 const char rusure[] PROGMEM = "Are you sure?";
 const char conf[] PROGMEM = "CANCEL            YES";
 
+/* Mode Settings (settingsc.c) screen */
+const char mode_settings_tittle[] PROGMEM = "MODE SETTINGS";
