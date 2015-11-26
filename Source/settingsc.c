@@ -39,12 +39,12 @@ void _mds_render(uint8_t current_item){
   }
 
   if (!flagGimbalMode){
-    print_string_2(eeprom_read_byte(eeLinkRollPitch) ? &yes : &no, 102, 12, current_item == 0 ? HIGHLIGHT_TO_THE_END_OF_LINE : HIGHLIGHT_NONE);
-    print_string_2(eeprom_read_byte(eeButtonBeep) ? &yes : &no, 102, 30, current_item == 2 ? HIGHLIGHT_TO_THE_END_OF_LINE : HIGHLIGHT_NONE);
-    print_string_2(eeprom_read_byte(eeAutoDisarm) ? &yes : &no, 102, 21, current_item == 1 ? HIGHLIGHT_TO_THE_END_OF_LINE : HIGHLIGHT_NONE);
-    print_string_2(eeprom_read_byte(eeArmingBeeps) ? &yes : &no, 102, 39, current_item == 3 ? HIGHLIGHT_TO_THE_END_OF_LINE : HIGHLIGHT_NONE);
+    print_string_2(eepromP_read_byte(eeLinkRollPitch) ? &yes : &no, 102, 12, current_item == 0 ? HIGHLIGHT_TO_THE_END_OF_LINE : HIGHLIGHT_NONE);
+    print_string_2(eepromP_read_byte(eeButtonBeep) ? &yes : &no, 102, 30, current_item == 2 ? HIGHLIGHT_TO_THE_END_OF_LINE : HIGHLIGHT_NONE);
+    print_string_2(eepromP_read_byte(eeAutoDisarm) ? &yes : &no, 102, 21, current_item == 1 ? HIGHLIGHT_TO_THE_END_OF_LINE : HIGHLIGHT_NONE);
+    print_string_2(eepromP_read_byte(eeArmingBeeps) ? &yes : &no, 102, 39, current_item == 3 ? HIGHLIGHT_TO_THE_END_OF_LINE : HIGHLIGHT_NONE);
   }else {
-    print_string_2(eeprom_read_byte(eeButtonBeep) ? &yes : &no, 102, 12, current_item == 0 ? HIGHLIGHT_TO_THE_END_OF_LINE : HIGHLIGHT_NONE);
+    print_string_2(eepromP_read_byte(eeButtonBeep) ? &yes : &no, 102, 12, current_item == 0 ? HIGHLIGHT_TO_THE_END_OF_LINE : HIGHLIGHT_NONE);
   }
 
   if (!flagGimbalMode){
@@ -60,6 +60,7 @@ void mode_settings(){
 
   uint8_t current_item = 0;
   uint8_t pressed = 0;
+  uint8_t old_roll_pitch_link = eepromP_read_byte(eeLinkRollPitch);
 
   _mds_render(current_item);
   lcd_update();
@@ -74,9 +75,9 @@ void mode_settings(){
         break;
       case BUTTON_OK:
         if (flagGimbalMode){
-          eeprom_update_byte(eeButtonBeep, eeprom_read_byte(eeButtonBeep) ^ 0xff);
+          eepromP_update_byte(eeButtonBeep, eepromP_read_byte(eeButtonBeep) ^ 0xff);
         }else {
-          eeprom_update_byte(eeLinkRollPitch + current_item, eeprom_read_byte(eeLinkRollPitch + current_item) ^ 0xff);
+          eepromP_update_byte(eeLinkRollPitch + current_item, eepromP_read_byte(eeLinkRollPitch + current_item) ^ 0xff);
         }
         break;
     }
@@ -89,6 +90,11 @@ void mode_settings(){
     lcd_update();
   }
 
-  flagRollPitchLink = eeprom_read_byte(eeLinkRollPitch);
+  flagRollPitchLink = eepromP_read_byte(eeLinkRollPitch);
+
+  if (flagRollPitchLink != old_roll_pitch_link){
+    /* Copy Elevator gains from Aileron gains */
+    eepromP_copy_block(eeParameterTableAileron, eeParameterTableElevator, 8);
+  }
 
 }

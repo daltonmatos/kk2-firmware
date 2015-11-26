@@ -4,6 +4,23 @@
 #define uint8_t_prt(a) ((uint8_t *) (a))
 #define EEPROM_VARIABLE(addr) ((uint8_t_prt(addr)))
 
+
+/* 
+* Aileron gains EEProm address: 0x44 to 0x4B
+* Elevator gains address: 0x4C to 0x53
+* Rudder gains address: 0x54 to 0x5B
+* Each gain is 1 word (2 bytes each), with this order:
+* P Gain
+* P Limit
+* I Gain
+* I Limit
+*/
+#define	eeParameterTable 0x0044
+#define	eeParameterTableAileron EEPROM_VARIABLE(eeParameterTable)
+#define	eeParameterTableElevator EEPROM_VARIABLE(eeParameterTable + 8)
+#define	eeParameterTableRudder EEPROM_VARIABLE(eeParameterTable + 16)
+
+
 #define eeLcdContrast EEPROM_VARIABLE(0x0070)
 #define eeRxMode      EEPROM_VARIABLE(0x0071)
 #define eeUserProfile EEPROM_VARIABLE(0x0073)

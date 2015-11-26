@@ -7,6 +7,8 @@
 #define BUTTON_BACK 0x08
 #define BUTTON_ANY BUTTON_OK | BUTTON_DOWN | BUTTON_UP | BUTTON_BACK
 
+
+
 enum {
   HIGHLIGHT_NONE = 1,
   HIGHLIGHT_STRING,
@@ -30,5 +32,15 @@ uint8_t show_confirmation_dlg(const uint8_t *str);
 void print_selector(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2);
 
 
+#define SHIFT_ADDR_TO_PROFILE(profile, addr) ((addr) | (profile << 8))
+#define SHIFT_ADDR_TO_CURRENT_PROFILE(addr) SHIFT_ADDR_TO_PROFILE(UserProfile, addr)
+
+/* UserProfile-aware eeprom functions. Always use the current profile */
+uint8_t eepromP_read_byte(const uint8_t *addr);
+void eepromP_update_byte(const uint8_t * addr, uint8_t value);
+void eepromP_copy_block(const uint8_t * src, const uint8_t *dest, uint8_t count);
+
+
+void eeprom_copy_block(uint8_t * src, uint8_t *dest, uint8_t count);
 
 #endif

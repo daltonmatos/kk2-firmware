@@ -1,6 +1,7 @@
 #include <avr/io.h>
 #include <avr/pgmspace.h>
 #include <string.h>
+#include <avr/eeprom.h>
 
 #include "io.h"
 #include "ramvariables.h"
@@ -124,4 +125,26 @@ void print_string_2(const uint8_t *str_addr, uint8_t x, uint8_t y, uint8_t hilig
       print_selector(0, y-1, x + (len * char_width), y + char_height);
       break;
   }
+}
+
+
+uint8_t eepromP_read_byte(const uint8_t *addr){
+  return eeprom_read_byte(uint8_t_prt(SHIFT_ADDR_TO_CURRENT_PROFILE((uint16_t) addr)));
+}
+
+void eepromP_update_byte(const uint8_t * addr, uint8_t value){
+  eeprom_update_byte(uint8_t_prt(SHIFT_ADDR_TO_CURRENT_PROFILE((uint16_t) addr)) , value);
+}
+
+void eepromP_copy_block(const uint8_t * src, const uint8_t *dest, uint8_t count){
+    eeprom_copy_block(uint8_t_prt(SHIFT_ADDR_TO_CURRENT_PROFILE((uint16_t) src)), 
+                      uint8_t_prt(SHIFT_ADDR_TO_CURRENT_PROFILE((uint16_t) dest)), 
+                      count);
+}
+
+void eeprom_copy_block(uint8_t * src, uint8_t *dest, uint8_t count){
+    for (uint8_t i = 0; i < count; i++){
+      uint8_t b = eeprom_read_byte(src + i);
+      eeprom_update_byte(dest + i, b);
+    }
 }
