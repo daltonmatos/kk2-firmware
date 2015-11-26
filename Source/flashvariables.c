@@ -60,3 +60,7 @@ const char conf[] PROGMEM = "CANCEL            YES";
 
 /* Mode Settings (settingsc.c) screen */
 const char mode_settings_tittle[] PROGMEM = "MODE SETTINGS";
+const char sux1[] PROGMEM = "Link Roll Pitch";
+const char sux2[] PROGMEM = "Auto Disarm";
+const char sux3[] PROGMEM = "Button Beep";
+const char sux4[] PROGMEM = "Arming Beeps";

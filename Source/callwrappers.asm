@@ -54,6 +54,11 @@ ExtraFeatures:
   safe_call_c extra_features
   ret
 
+mode_settings:
+  nop
+ModeSettings:
+  safe_call_c mode_settings
+  ret
 
 ; Interface to original Assembly Routines
 
