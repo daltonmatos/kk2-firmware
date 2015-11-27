@@ -12,6 +12,20 @@ extern const char con1;
 extern const char con2;
 extern const char con6;
 
+void _ctr_render(){
+
+    lcd_clear();
+    FontSelector = f12x16;
+    print_string(&con1, 46, 0); /* LCD */
+
+    FontSelector = f6x8;
+    print_string(&con2, 0, 26); /* LCD Contrast: */
+
+    print_string(&con6, 0, 57); /* Footer */
+
+    print_number(LcdContrast, 14*16, 26);
+}
+
 void c_contrast(){
 
   uint8_t pressed = 0;
@@ -22,15 +36,9 @@ void c_contrast(){
     return;
   }
 
-  do {
-    lcd_clear();
-    FontSelector = f12x16;
-    print_string(&con1, 46, 0); /* LCD */
-
-    FontSelector = f6x8;
-    print_string(&con2, 0, 26); /* LCD Contrast: */
-
-    print_string(&con6, 0, 57); /* Footer */
+  _ctr_render();
+  lcd_update();
+  while ((pressed = wait_for_button(BUTTON_ANY)) != BUTTON_BACK) {
 
     switch (pressed){
       case BUTTON_UP:
@@ -44,10 +52,9 @@ void c_contrast(){
         return;
         break;
     }
-    print_number(LcdContrast, 14*16, 26);
-    //asm_LcdUpdate();
+    _ctr_render();
     lcd_update();
-  } while ((pressed = wait_for_button(BUTTON_ANY)) != BUTTON_BACK);
+  }
 
   LcdContrast = eeprom_read_byte(eeLcdContrast);
 
