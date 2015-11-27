@@ -7,8 +7,8 @@ CC_FLAGS = -Os -std=gnu99
 SRC_GIT_VERSION=$(shell git rev-parse HEAD | cut -c 1-7)
 
 ASM_SOURCES = $(wildcard $(SRC_DIR)/*.asm)
-AVRASM2 = avrasm2
-#AVRASM2 = wine ~/bin/AvrAssembler2/avrasm2.exe
+#AVRASM2 = avrasm2
+AVRASM2 = wine ~/bin/AvrAssembler2/avrasm2.exe
 
 SOURCES = $(filter-out $(SRC_DIR)/flashvariables.c, $(wildcard $(SRC_DIR)/*.c) $(wildcard $(SRC_DIR)/display/*.c))
 
@@ -45,8 +45,8 @@ kk2++.elf: kk2++.asm
 	avr-gcc $(CC_FLAGS) -nostartfiles -mno-interrupts -mmcu=atmega644p -DF_CPU=20000000 -c $< -o $(BIN_DIR)/$(<F).o
 
 flash: kk2++.hex
-	#/usr/share/arduino/hardware/tools/avrdude -V -C /usr/share/arduino/hardware/tools/avrdude.conf -patmega644p -cusbasp -Uflash:w:$(BIN_DIR)/kk2++.hex:i
-	avrdude -V -C /usr/share/arduino/hardware/tools/avrdude.conf -patmega644p -cusbasp -Uflash:w:$(BIN_DIR)/kk2++.hex:i
+	/usr/share/arduino/hardware/tools/avrdude -V -C /usr/share/arduino/hardware/tools/avrdude.conf -patmega644p -cusbasp -Uflash:w:$(BIN_DIR)/kk2++.hex:i
+	#avrdude -V -C /usr/share/arduino/hardware/tools/avrdude.conf -patmega644p -cusbasp -Uflash:w:$(BIN_DIR)/kk2++.hex:i
 
 size: kk2++.hex
 	avr-size bin/kk2++.elf
