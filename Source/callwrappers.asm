@@ -69,10 +69,6 @@ asm_PrintChar:
   pop_all
   ret
 
-asm_LcdUpdate:
-  safe_called_from_c LcdUpdate
-  ret
-
 asm_GetButtonsBlocking:
   push_for_call_return_value
   call GetButtonsBlocking
@@ -85,16 +81,6 @@ asm_ShowNoAccessDlg:
   push_all
   movw r30, r24
   call ShowNoAccessDlg
-  pop_all
-  ret
-
-asm_Print16Signed:
-  push_all
-  clr xh
-  clr yh
-  clr r25
-  mov xl, r24
-  call Print16Signed
   pop_all
   ret
 
@@ -118,10 +104,6 @@ asm_MixerEditor:
 asm_MotorCheck:
   safe_called_from_c MotorCheck
   ret  
-
-asm_GimbalMode:
-  safe_called_from_c GimbalMode
-  ret
 
 asm_SerialDebug:
   safe_called_from_c SerialDebug

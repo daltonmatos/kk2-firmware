@@ -27,7 +27,7 @@ void _extra_make_call(uint8_t selected){
       asm_MotorCheck();
       break;
     case 1:
-      asm_GimbalMode();
+      gimbal_mode();
       break;
     case 2:
       asm_SerialDebug();
