@@ -62,8 +62,9 @@ void print_number(int8_t number, uint8_t x, uint8_t y){
   asm_Print16Signed(number);
 }
 
+extern const uint16_t convt;
+
 uint8_t print16_signed(uint16_t n){
-  uint16_t conv[] = {10000, 1000, 100, 10, 1};
   if (!n){
     asm_PrintChar('0');
     return 1;
@@ -74,12 +75,32 @@ uint8_t print16_signed(uint16_t n){
     n = -n;
   }
 
-  for (uint8_t c = 0; c < 5; c++){
-    uint8_t digit = n / conv[c];
+  uint8_t digit_4, digit_3, digit_2, digit_1, digit_0 = 0;
+  /*
+  while (n){
+    digit = n % 10;
     asm_PrintChar(digit + 16);
-    n = n - (digit * conv[c]);
-  }
+    n /= 10;
+  }*/
+  digit_4 = n / 10000;
+  if (digit_4) asm_PrintChar(digit_4 + 16);
 
+  n = (n - digit_4 * 10000);
+  digit_3 = (n / 1000);
+  if (digit_3) asm_PrintChar(digit_3 + 16);
+
+  n = (n - (digit_3 * 1000));
+  digit_2 = (n / 100);
+  if (digit_2) asm_PrintChar(digit_2 + 16);
+
+  n = (n - digit_2 * 100);
+  digit_1 = (n / 10);
+  if (digit_1) asm_PrintChar(digit_1 + 16);
+  
+  n = (n - digit_1 * 10);
+  digit_0 = (n / 1);
+  if (digit_0) asm_PrintChar(digit_0 + 16);
+  
   return 5;
 }
 
