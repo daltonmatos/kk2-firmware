@@ -19,32 +19,6 @@ extern void asm_SensorSettings();
 extern void asm_MixerEditor();
 
 
-void preapre_highlight_rectangle(uint8_t selected){
-/*  uint8_t rectangles[4][4] = {
-    {0, 16, 127, 25},
-    {0, 25, 127, 34},
-    {0, 34, 127, 43},
-    {0, 43, 127, 52}
-  };
-*/
-  
-  switch (selected){
-    case 0:
-      X1=0; Y1=16; X2=127; Y2=25;
-      break;
-    case 1:
-      X1=0; Y1=25; X2=127; Y2=34;
-      break;
-    case 2:
-      X1=0; Y1=34; X2=127; Y2=43;
-      break;
-    case 3:
-      X1=0; Y1=43; X2=127; Y2=52;
-      break;  
-  }
-
-}
-
 void make_call(uint8_t selected){
   switch (selected){
     case 0:
@@ -63,7 +37,7 @@ void make_call(uint8_t selected){
 }
 
 
-void _render(){
+void _render(uint8_t selected){
     lcd_clear();
 
     FontSelector = f12x16;
@@ -72,17 +46,12 @@ void _render(){
 
     FontSelector = f6x8;
 
-    print_string(&adv2, 0, 17);
-    print_string(&adv3, 0, 17 + 9);
-    print_string(&adv4, 0, 17 + 9*2);
-    print_string(&adv5, 0, 17 + 9*3);
+    print_string_2(&adv2, 0, 17, selected == 0 ? HIGHLIGHT_FULL_LINE : HIGHLIGHT_NONE);
+    print_string_2(&adv3, 0, 17 + 9, selected == 1 ? HIGHLIGHT_FULL_LINE : HIGHLIGHT_NONE);
+    print_string_2(&adv4, 0, 17 + 9*2, selected == 2 ? HIGHLIGHT_FULL_LINE : HIGHLIGHT_NONE);
+    print_string_2(&adv5, 0, 17 + 9*3, selected == 3 ? HIGHLIGHT_FULL_LINE : HIGHLIGHT_NONE);
 
     print_string(&updown, 0, 57); /* Footer */
-}
-
-void _highlight(uint8_t selected_item){
-    preapre_highlight_rectangle(selected_item);
-    asm_HighlightRectangle();  
 }
 
 void advanced_settings(){
@@ -90,8 +59,7 @@ void advanced_settings(){
   uint8_t selected_item = 0;
   uint8_t pressed = 0;
 
-  _render();
-  _highlight(selected_item);
+  _render(selected_item);
   lcd_update();
   while ((pressed = wait_for_button(BUTTON_ANY)) != BUTTON_BACK){ 
 
@@ -99,7 +67,6 @@ void advanced_settings(){
       make_call(selected_item);
     }
   
-    _render();
     switch (pressed){
       case BUTTON_UP:
         selected_item--;
@@ -110,7 +77,7 @@ void advanced_settings(){
       
     }
     selected_item &= 0x03; /* Limit to only 4 possible values */
-    _highlight(selected_item);
+    _render(selected_item);
     lcd_update();
   } 
 

@@ -12,14 +12,7 @@ extern const char ef4; // "View Serial RX Data", 0
 extern const char updown;
 
 extern void asm_MotorCheck();
-extern void asm_GimbalMode();
 extern void asm_SerialDebug();
-
-/* Implemented in advanced.c
- * TODO: Will be moved to a central location
- */
-extern void preapre_highlight_rectangle(uint8_t selected);
-extern void _highlight(uint8_t selected_item);
 
 void _extra_make_call(uint8_t selected){
   switch (selected){
@@ -36,7 +29,7 @@ void _extra_make_call(uint8_t selected){
 }
 
 
-void _extra_render(){
+void _extra_render(uint8_t selected){
     lcd_clear();
 
     FontSelector = f12x16;
@@ -45,9 +38,9 @@ void _extra_render(){
 
     FontSelector = f6x8;
 
-    print_string(&ef2, 0, 17);
-    print_string(&ef3, 0, Y1 + 9);
-    print_string(&ef4, 0, Y1 + 9);
+    print_string_2(&ef2, 0, 17, selected == 0 ? HIGHLIGHT_FULL_LINE : HIGHLIGHT_NONE);
+    print_string_2(&ef3, 0, 17 + 9, selected == 1 ? HIGHLIGHT_FULL_LINE : HIGHLIGHT_NONE);
+    print_string_2(&ef4, 0, 17 + 9*2, selected == 2 ? HIGHLIGHT_FULL_LINE : HIGHLIGHT_NONE);
 
     print_string(&updown, 0, 57); /* Footer */
 }
@@ -58,8 +51,7 @@ void extra_features(){
   int8_t selected_item = 0;
   uint8_t pressed = 0;
 
-  _extra_render();
-  _highlight(selected_item);
+  _extra_render(selected_item);
   lcd_update();
   while ((pressed = wait_for_button(BUTTON_ANY)) != BUTTON_BACK){ 
 
@@ -67,7 +59,6 @@ void extra_features(){
       _extra_make_call(selected_item);
     }
   
-    _extra_render();
     switch (pressed){
       case BUTTON_UP:
         selected_item--;
@@ -79,7 +70,7 @@ void extra_features(){
     }
     selected_item  = selected_item > 2 ? 0 : selected_item;
     selected_item  = selected_item < 0 ? 2 : selected_item;
-    _highlight(selected_item);
+    _extra_render(selected_item);
     lcd_update();
   } 
 
