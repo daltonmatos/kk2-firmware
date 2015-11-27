@@ -62,6 +62,28 @@ void print_number(int8_t number, uint8_t x, uint8_t y){
   asm_Print16Signed(number);
 }
 
+uint8_t print16_signed(uint16_t n){
+  uint16_t conv[] = {10000, 1000, 100, 10, 1};
+  if (!n){
+    asm_PrintChar('0');
+    return 1;
+  }
+
+  if (n < 0){
+    asm_PrintChar('-');
+    n = -n;
+  }
+
+  for (uint8_t c = 0; c < 5; c++){
+    uint8_t digit = n / conv[c];
+    asm_PrintChar(digit + 16);
+    n = n - (digit * conv[c]);
+  }
+
+  return 5;
+}
+
+
 uint8_t wait_for_button(uint8_t button_mask){
   uint8_t pressed = 0;
   while ( !((pressed = asm_GetButtonsBlocking()) & button_mask)) {}

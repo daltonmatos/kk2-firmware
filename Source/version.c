@@ -19,6 +19,12 @@ void show_version(){
   print_string(&ver1, 22, 0);
 
   FontSelector = f6x8;
+
+  X1 = 0;
+  Y1 = 19;
+  wait_for_button(BUTTON_ANY);
+  print16_signed(42);
+
   print_string(&ver2, 0, 19);
   print_string(&srm2, 0, 30);
   print_string(&motto, 0, 46);
