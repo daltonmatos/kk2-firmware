@@ -77,13 +77,6 @@ asm_GetButtonsBlocking:
   pop_for_call_return_value
   ret
 
-asm_ShowNoAccessDlg:
-  push_all
-  movw r30, r24
-  call ShowNoAccessDlg
-  pop_all
-  ret
-
 asm_HighlightRectangle:
   lrv PixelType, 0
   safe_called_from_c HilightRectangle

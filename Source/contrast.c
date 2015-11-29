@@ -11,6 +11,7 @@
 extern const char con1;
 extern const char con2;
 extern const char con6;
+extern const char affects_all_profiles;
 
 void _ctr_render(){
 
@@ -23,18 +24,13 @@ void _ctr_render(){
 
     print_string(&con6, 0, 57); /* Footer */
 
+    print_string_2(&affects_all_profiles, 3, 48, HIGHLIGHT_FULL_LINE);
     print_number(LcdContrast, 14*16, 26);
 }
 
 void c_contrast(){
 
   uint8_t pressed = 0;
-
-  if (UserProfile){
-    asm_ShowNoAccessDlg(&nadtxt2);
-    wait_for_button(BUTTON_OK);
-    return;
-  }
 
   _ctr_render();
   lcd_update();

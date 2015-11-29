@@ -23,6 +23,7 @@ extern const uint8_t brr3;
 extern const uint8_t brr4;
 extern const uint8_t _ok;
 
+extern const char affects_all_profiles;
 
 void _print_arrow(uint8_t board_orientation){
   FontSelector = s16x16;
@@ -35,7 +36,7 @@ void _print_arrow(uint8_t board_orientation){
       print_string(&brd_right, 0, 20);
       break;
     case 2:
-      print_string(&brd_down, 56, 38);
+      print_string(&brd_down, 56, 26);
       break;
     case 3:
       print_string(&brd_left, 112, 20);
@@ -47,13 +48,15 @@ void _print_arrow(uint8_t board_orientation){
 void _brd_render(uint8_t board_orientation){
     lcd_clear12x16();
 
-    print_string(&brd1, 34, 19);
+    print_string(&brd1, 34, 11);
 
     _print_arrow(board_orientation);
 
     FontSelector = f6x8;
     print_string(&backprev, 0, 57);
     print_string(&nextsel, X1, 57); 
+    
+    print_string_2(&affects_all_profiles, 3, 48, HIGHLIGHT_FULL_LINE);
 }
 
 void _brd_print_warning(){
@@ -78,12 +81,6 @@ void _brd_print_warning(){
 void board_rotation(){
   
   uint8_t pressed = 0;
-
-  if (UserProfile){
-    asm_ShowNoAccessDlg(&nadtxt2);
-    wait_for_button(BUTTON_OK);
-    return;
-  }
 
   uint8_t board_orientation = eeprom_read_byte(eeBoardOrientation);
   board_orientation &= 0x03;
