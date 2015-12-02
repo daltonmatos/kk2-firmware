@@ -4,8 +4,13 @@
 .def MpuGyroOld = r20
 .def MpuFilterOld = r21
 
+sensor_settings:
+  nop
+
 SensorSettings:
 
+  safe_call_c sensor_settings
+  ret
 //	call GetMpu6050Setup
 
 	clr Item

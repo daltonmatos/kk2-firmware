@@ -40,5 +40,11 @@
 
 #define eeButtonBeep EEPROM_VARIABLE(0x00AE)
 
+#define eeSensorsCalibrated EEPROM_VARIABLE(0x00BE)
+
+#define eeMpuFilter EEPROM_VARIABLE(0x00CA)
+#define eeMpuGyroCfg EEPROM_VARIABLE(0x00CB)
+#define eeMpuAccCfg EEPROM_VARIABLE(0x00CC)
+
 #endif
 

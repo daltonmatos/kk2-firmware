@@ -8,6 +8,10 @@
 #include "display/st7565.h"
 #include "constants.h"
 
+
+/* This holds info about each font. We will need CharWidth and CharHeight */
+extern const char TabCh;
+
 uint8_t __get_buttons(){
   return PINB;
 }
@@ -43,6 +47,42 @@ uint8_t __get_buttons_blocking(){
 
 }
 
+uint8_t constrain(int8_t value, uint8_t min, uint8_t max){
+  if (value < min) value = max;
+  if (value > max) value = min;
+  return value;
+}
+
+
+void print_selector(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2){
+  X1 = x1;
+  X2 = x2;
+  Y1 = y1;
+  Y2 = y2;
+  PixelType = 0;
+  asm_HighlightRectangle();
+}
+
+void _highlight_current_print(uint8_t len, uint8_t x, uint8_t y, uint8_t hilight_type){
+  uint8_t char_width = pgm_read_byte(&TabCh + (FontSelector * 6) + 2);
+  uint8_t char_height = pgm_read_byte(&TabCh + (FontSelector * 6) + 3);
+
+  switch (hilight_type){
+    case HIGHLIGHT_STRING:
+      print_selector(x, y-1, x + (len * char_width), y + char_height);
+      break;
+    case HIGHLIGHT_FULL_LINE:
+      print_selector(0, y-1, 127, y + char_height);
+      break;
+    case HIGHLIGHT_TO_THE_END_OF_LINE:
+      print_selector(x, y-1, 127, y + char_height);
+      break;
+    case HIGHLIGHT_FROM_BEGINNING_OF_LINE:
+      print_selector(0, y-1, x + (len * char_width), y + char_height);
+      break;
+  }
+}
+
 
 uint8_t print_string(const uint8_t *str_addr, uint8_t x, uint8_t y){
   X1 = x;
@@ -56,11 +96,18 @@ uint8_t print_string(const uint8_t *str_addr, uint8_t x, uint8_t y){
   return count;
 }
 
-void print_number(int8_t number, uint8_t x, uint8_t y){
+uint8_t print_number(int16_t number, uint8_t x, uint8_t y){
   X1 = x;
   Y1 = y;
-  //asm_Print16Signed(number);
-  print16_signed(number);
+  return print16_signed(number);
+}
+
+void print_number_2(int16_t number, uint8_t x, uint8_t y, uint8_t hilight_type){
+  X1 = x;
+  Y1 = y;
+  uint8_t digits = print16_signed(number);
+  _highlight_current_print(digits, x, y, hilight_type);
+
 }
 
 uint8_t print16_signed(int16_t n){
@@ -101,8 +148,7 @@ extern const char confirm;
 extern const char conf;
 extern const char rusure;
 
-/* This holds info about each font. We will need CharWidth and CharHeight */
-extern const char TabCh;
+
 
 uint8_t show_confirmation_dlg(const uint8_t *str){
   
@@ -126,34 +172,13 @@ uint8_t show_confirmation_dlg(const uint8_t *str){
 
 }
 
-void print_selector(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2){
-  X1 = x1;
-  X2 = x2;
-  Y1 = y1;
-  Y2 = y2;
-  PixelType = 0;
-  asm_HighlightRectangle();
-}
+
+
+
 
 void print_string_2(const uint8_t *str_addr, uint8_t x, uint8_t y, uint8_t hilight_type){
   uint8_t len = print_string(str_addr, x, y);
-  uint8_t char_width = pgm_read_byte(&TabCh + (FontSelector * 6) + 2);
-  uint8_t char_height = pgm_read_byte(&TabCh + (FontSelector * 6) + 3);
-
-  switch (hilight_type){
-    case HIGHLIGHT_STRING:
-      print_selector(x, y-1, x + (len * char_width), y + char_height);
-      break;
-    case HIGHLIGHT_FULL_LINE:
-      print_selector(0, y-1, 127, y + char_height);
-      break;
-    case HIGHLIGHT_TO_THE_END_OF_LINE:
-      print_selector(x, y-1, 127, y + char_height);
-      break;
-    case HIGHLIGHT_FROM_BEGINNING_OF_LINE:
-      print_selector(0, y-1, x + (len * char_width), y + char_height);
-      break;
-  }
+  _highlight_current_print(len, x, y, hilight_type);
 }
 
 

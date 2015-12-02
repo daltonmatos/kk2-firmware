@@ -1,6 +1,9 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
+#define FLAG_ON 0xFF
+#define FLAG_OFF 0x00
+
 #define	RxModeStandard 0
 #define	RxModeCppm 1
 #define	RxModeSBus 2

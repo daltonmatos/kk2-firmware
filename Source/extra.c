@@ -68,8 +68,9 @@ void extra_features(){
         break;
       
     }
-    selected_item  = selected_item > 2 ? 0 : selected_item;
-    selected_item  = selected_item < 0 ? 2 : selected_item;
+    selected_item = constrain(selected_item, 0, 2);
+    //selected_item  = selected_item > 2 ? 0 : selected_item;
+    //selected_item  = selected_item < 0 ? 2 : selected_item;
     _extra_render(selected_item);
     lcd_update();
   } 
