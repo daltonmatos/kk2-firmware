@@ -99,19 +99,16 @@ uint8_t print_string(const uint8_t *str_addr, uint8_t x, uint8_t y){
 uint8_t print_number(int16_t number, uint8_t x, uint8_t y){
   X1 = x;
   Y1 = y;
-  return print16_signed(number);
+  return _print16_signed(number);
 }
 
-void print_number_2(int16_t number, uint8_t x, uint8_t y, uint8_t hilight_type){
-  X1 = x;
-  Y1 = y;
-  uint8_t digits = print16_signed(number);
-  _highlight_current_print(digits, x, y, hilight_type);
-
-}
-
-uint8_t print16_signed(int16_t n){
+uint8_t _print16_signed(int16_t n){
+  uint8_t digit = 0;
   uint8_t print_zeroes = 0;
+  uint8_t total_digits = 0;
+  uint16_t _div = 0;
+
+
   if (!n){
     asm_PrintChar('0');
     return 1;
@@ -121,20 +118,29 @@ uint8_t print16_signed(int16_t n){
     asm_PrintChar('-');
     n = -n;
   }
-
-  uint8_t total_digits = 0;
-  uint16_t div = 10000;
-  for (uint8_t d = 0; d < 5; d++){
-    uint8_t digit = n / div;
-    if (print_zeroes || digit){
+  
+  _div = 10000;
+  for (uint8_t i=0; i < 5; i++){
+    digit = 0;
+    while (n >= _div && n > 0){
+      n -= _div;
+      digit++;
+    }
+    _div /= 10;
+    if (digit || print_zeroes){
       asm_PrintChar(digit + 16);
       total_digits++;
       print_zeroes = 1;
     }
-    n = n - (digit * div);
-    div /= 10;
   }
   return total_digits;
+}
+
+void print_number_2(int16_t number, uint8_t x, uint8_t y, uint8_t hilight_type){
+  X1 = x;
+  Y1 = y;
+  uint8_t digits = _print16_signed(number);
+  _highlight_current_print(digits, x, y, hilight_type);
 }
 
 

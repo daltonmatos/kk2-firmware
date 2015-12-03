@@ -33,7 +33,7 @@ void print_number_2(int16_t number, uint8_t x, uint8_t y, uint8_t hilight);
 
 uint8_t wait_for_button(uint8_t button_mask);
 uint8_t show_confirmation_dlg(const uint8_t *str);
-uint8_t print16_signed(int16_t n);
+uint8_t _print16_signed(int16_t n);
 
 #define SHIFT_ADDR_TO_PROFILE(profile, addr) ((addr) | (profile << 8))
 #define SHIFT_ADDR_TO_CURRENT_PROFILE(addr) SHIFT_ADDR_TO_PROFILE(UserProfile, addr)
