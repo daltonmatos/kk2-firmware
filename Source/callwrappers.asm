@@ -62,6 +62,10 @@ ModeSettings:
 
 ; Interface to original Assembly Routines
 
+asm_setup_mpu6050:
+  safe_called_from_c setup_mpu6050
+  ret
+
 asm_PrintChar:
   push_all
   movw t, r24

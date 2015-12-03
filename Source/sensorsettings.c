@@ -23,7 +23,7 @@ void _sns_render(uint8_t selected, uint8_t lpf_cfg, uint8_t gyro_cfg, uint8_t ac
   lcd_clear();
 
   print_string(&sse1, 0, 1);
-  print_number_2(pgm_read_word(&lpf + (lpf_cfg * 2)), 100, 1, selected == 0 ? HIGHLIGHT_TO_THE_END_OF_LINE : HIGHLIGHT_NONE);
+  print_number_2(pgm_read_word(&lpf + (lpf_cfg * 2)), 100, 1, selected == 0 ? HIGHLIGHT_STRING : HIGHLIGHT_NONE);
 
   print_string(&sse2, 0, 10);
   print_number_2(pgm_read_word(&gyro + (gyro_cfg * 2)), 100, 10, selected == 1 ? HIGHLIGHT_TO_THE_END_OF_LINE : HIGHLIGHT_NONE);
@@ -90,13 +90,17 @@ void sensor_settings(){
   MpuFilter = lpf_cfg;
   MpuGyroCfg = gyro_cfg << 3;
   MpuAccCfg = acc_cfg << 3;
-  
+
+  MpuGyroCfg &= _BV(4) | _BV(3);
+  MpuAccCfg &= _BV(4) | _BV(3);
+
   eepromP_update_byte(eeMpuFilter, MpuFilter);
   eepromP_update_byte(eeMpuGyroCfg, MpuGyroCfg);
   eepromP_update_byte(eeMpuAccCfg, MpuAccCfg);
 
   eepromP_update_byte(eeSensorsCalibrated, FLAG_OFF); /* Force sensors reclaibration */
-  // asm_setup6050();
+
+  asm_setup_mpu6050();
 }
 
 //sse11:	call LcdClear6x8
