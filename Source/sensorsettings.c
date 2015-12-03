@@ -18,6 +18,8 @@ extern const char acc;
 
 extern const char updown;
 
+extern uint8_t asm_get_mpu_register(uint8_t r);
+
 void _sns_render(uint8_t selected, uint8_t lpf_cfg, uint8_t gyro_cfg, uint8_t acc_cfg){
 
   lcd_clear();
@@ -30,6 +32,13 @@ void _sns_render(uint8_t selected, uint8_t lpf_cfg, uint8_t gyro_cfg, uint8_t ac
 
   print_string(&sse3, 0, 19);
   print_number_2(pgm_read_word(&acc + (acc_cfg * 2)), 100, 19, selected == 2 ? HIGHLIGHT_TO_THE_END_OF_LINE : HIGHLIGHT_NONE);
+
+  /* Debug values. Read directly from MPU6050 */
+  /*
+  print_number(asm_get_mpu_register(0x1A), 0, 40);
+  print_number(asm_get_mpu_register(0x1B) >> 3, 40, 40);
+  print_number(asm_get_mpu_register(0x1C) >> 3, 80, 40);
+  */
 
   print_string(&updown, 0, 57); /* Footer */
 }

@@ -62,6 +62,16 @@ ModeSettings:
 
 ; Interface to original Assembly Routines
 
+asm_get_mpu_register:
+  push_for_call_return_value
+  mov t, r24
+  sts TWI_address, t
+  call i2c_read_adr
+  clr r25
+  mov r24, t
+  pop_for_call_return_value
+  ret
+
 asm_setup_mpu6050:
   safe_called_from_c setup_mpu6050
   ret
