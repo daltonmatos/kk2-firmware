@@ -140,7 +140,6 @@ entrypoints: .dw Main, CppmMain, SBusMain, SatelliteMain, SatelliteMain
 .include "mainmenu.asm"
 .include "sensortest.asm"
 .include "sensorreading.asm"
-.include "sensorsettings.asm"
 .include "ST7565.asm"
 .include "miscsubs.asm"
 .include "168mathlib_subs.asm"

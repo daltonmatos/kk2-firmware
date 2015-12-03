@@ -23,6 +23,8 @@ extern void asm_ShowNoAccessDlg(uint8_t *str);
 extern void asm_Print16Signed(int8_t number);
 extern void asm_HighlightRectangle();
 extern void asm_EnforceRestart();
+extern uint8_t asm_get_mpu_register(uint8_t r);
+extern void asm_setup_mpu6050();
 
 uint8_t constrain(int8_t value, uint8_t min, uint8_t max);
 

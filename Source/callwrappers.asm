@@ -60,6 +60,12 @@ ModeSettings:
   safe_call_c mode_settings
   ret
 
+sensor_settings:
+  nop
+SensorSettings:
+
+  safe_call_c sensor_settings
+  ret
 ; Interface to original Assembly Routines
 
 asm_get_mpu_register:

@@ -66,3 +66,15 @@ const char sux1[] PROGMEM = "Link Roll Pitch";
 const char sux2[] PROGMEM = "Auto Disarm";
 const char sux3[] PROGMEM = "Button Beep";
 const char sux4[] PROGMEM = "Arming Beeps";
+
+
+/* Sensor Settings Screen */
+const char sse1[] PROGMEM = "HW Filter (Hz): ";
+const char sse2[] PROGMEM = "Gyro (deg/s)  : ";
+const char sse3[] PROGMEM = "ACC (g)       : ";
+
+const uint8_t lpf[]  PROGMEM = {255, 187, 97, 41, 19, 9, 4};
+const uint16_t gyro[] PROGMEM = {250, 500, 1000, 2000};
+const uint8_t acc[]  PROGMEM = {2, 4, 8, 16};
+
+
