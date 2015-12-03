@@ -14,6 +14,8 @@ extern const char updown;
 extern void asm_MotorCheck();
 extern void asm_SerialDebug();
 
+extern void gimbal_mode();
+
 void _extra_make_call(uint8_t selected){
   switch (selected){
     case 0:

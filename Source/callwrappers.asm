@@ -106,10 +106,6 @@ asm_ChannelMapping:
   safe_called_from_c ChannelMapping
   ret
 
-asm_SensorSettings:
-  safe_called_from_c SensorSettings
-  ret
-
 asm_MixerEditor:
   safe_called_from_c MixerEditor
   ret

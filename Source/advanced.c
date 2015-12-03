@@ -15,8 +15,10 @@ extern const char adv5; // [] PROGMEM = "Board Orientation";
 extern const char updown;
 
 extern void asm_ChannelMapping();
-extern void asm_SensorSettings();
 extern void asm_MixerEditor();
+
+extern void board_rotation();
+extern void sensor_settings();
 
 
 void make_call(uint8_t selected){
@@ -25,7 +27,7 @@ void make_call(uint8_t selected){
       asm_ChannelMapping();     
       break;
     case 1:
-      asm_SensorSettings();
+      sensor_settings();
       break;
     case 2:
       asm_MixerEditor();
