@@ -196,6 +196,14 @@ void eepromP_update_byte(const uint8_t * addr, uint8_t value){
   eeprom_update_byte(uint8_t_prt(SHIFT_ADDR_TO_CURRENT_PROFILE((uint16_t) addr)) , value);
 }
 
+uint16_t eepromP_read_word(const uint16_t *addr){
+  return eeprom_read_word(uint16_t_ptr(SHIFT_ADDR_TO_CURRENT_PROFILE((uint16_t) addr)));
+}
+
+void eepromP_update_word(const uint16_t * addr, uint16_t value){
+  eeprom_update_word(uint16_t_ptr(SHIFT_ADDR_TO_CURRENT_PROFILE((uint16_t) addr)), value);
+}
+
 void eepromP_copy_block(const uint8_t * src, const uint8_t *dest, uint8_t count){
     eeprom_copy_block(uint8_t_prt(SHIFT_ADDR_TO_CURRENT_PROFILE((uint16_t) src)), 
                       uint8_t_prt(SHIFT_ADDR_TO_CURRENT_PROFILE((uint16_t) dest)), 

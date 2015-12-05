@@ -9,6 +9,7 @@
 
 
 
+
 enum {
   HIGHLIGHT_NONE = 1,
   HIGHLIGHT_STRING,
@@ -43,6 +44,10 @@ uint8_t _print16_signed(int16_t n);
 /* UserProfile-aware eeprom functions. Always use the current profile */
 uint8_t eepromP_read_byte(const uint8_t *addr);
 void eepromP_update_byte(const uint8_t * addr, uint8_t value);
+
+uint16_t eepromP_read_word(const uint16_t *addr);
+void eepromP_update_word(const uint16_t * addr, uint16_t value);
+
 void eepromP_copy_block(const uint8_t * src, const uint8_t *dest, uint8_t count);
 
 

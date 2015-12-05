@@ -3,8 +3,12 @@
 
 .def Item = r17
 
+selflevel_settings:
+  nop
 
 SelflevelSettings:
+  safe_call_c selflevel_settings
+  ret
 
 	clr Item
 

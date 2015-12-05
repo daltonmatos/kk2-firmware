@@ -4,6 +4,8 @@
 #define uint8_t_prt(a) ((uint8_t *) (a))
 #define RAM_VARIABLE(addr) (*(uint8_t_prt(addr)))
 
+#define uint16_t_ptr(a) ((uint16_t *) (a))
+
 #define MpuFilter  RAM_VARIABLE(0x073A) 
 #define MpuAccCfg  RAM_VARIABLE(0x073B) 
 #define MpuGyroCfg RAM_VARIABLE(0x073C) 

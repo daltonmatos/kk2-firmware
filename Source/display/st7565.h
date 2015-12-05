@@ -1,6 +1,8 @@
 #ifndef ST7565_H
 #define ST7565_H
 
+#include <avr/io.h>
+
 #define LCDWIDTH 128
 #define LCDHEIGHT 64
 

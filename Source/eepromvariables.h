@@ -4,6 +4,9 @@
 #define uint8_t_prt(a) ((uint8_t *) (a))
 #define EEPROM_VARIABLE(addr) ((uint8_t_prt(addr)))
 
+#define uint16_t_ptr(a) ((uint16_t *) (a))
+#define EEPROM16_VARIABLE(addr) ((uint16_t_ptr(addr)))
+
 
 /* 
 * Aileron gains EEProm address: 0x44 to 0x4B
@@ -32,6 +35,12 @@
 
 
 #define eeBoardOrientation EEPROM_VARIABLE(0x0079)
+
+#define eeSelflevelPgain  EEPROM16_VARIABLE(0x0088)
+#define eeSelflevelPlimit EEPROM16_VARIABLE(0x008a)
+#define eeAccTrimRoll     EEPROM16_VARIABLE(0x008c)
+#define eeAccTrimPitch    EEPROM16_VARIABLE(0x008e)
+#define eeSlMixRate       EEPROM16_VARIABLE(0x0090)
 
 #define eeLinkRollPitch EEPROM_VARIABLE(0x00AC)
 #define eeAutoDisarm EEPROM_VARIABLE(0x00AD)
