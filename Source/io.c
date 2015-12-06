@@ -53,7 +53,6 @@ uint8_t constrain(int8_t value, uint8_t min, uint8_t max){
   return value;
 }
 
-
 void print_selector(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2){
   X1 = x1;
   X2 = x2;
@@ -196,7 +195,7 @@ void eepromP_update_byte(const uint8_t * addr, uint8_t value){
   eeprom_update_byte(uint8_t_prt(SHIFT_ADDR_TO_CURRENT_PROFILE((uint16_t) addr)) , value);
 }
 
-uint16_t eepromP_read_word(const uint16_t *addr){
+int16_t eepromP_read_word(const uint16_t *addr){
   return eeprom_read_word(uint16_t_ptr(SHIFT_ADDR_TO_CURRENT_PROFILE((uint16_t) addr)));
 }
 
@@ -216,3 +215,4 @@ void eeprom_copy_block(uint8_t * src, uint8_t *dest, uint8_t count){
       eeprom_update_byte(dest + i, b);
     }
 }
+

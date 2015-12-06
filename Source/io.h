@@ -23,9 +23,11 @@ extern uint8_t asm_GetButtonsBlocking();
 extern void asm_ShowNoAccessDlg(uint8_t *str);
 extern void asm_Print16Signed(int8_t number);
 extern void asm_HighlightRectangle();
+extern void asm_Rectangle();
 extern void asm_EnforceRestart();
 extern uint8_t asm_get_mpu_register(uint8_t r);
 extern void asm_setup_mpu6050();
+extern int16_t asm_NumEdit(int16_t number, int16_t min, int16_t max);
 
 uint8_t constrain(int8_t value, uint8_t min, uint8_t max);
 
@@ -45,12 +47,14 @@ uint8_t _print16_signed(int16_t n);
 uint8_t eepromP_read_byte(const uint8_t *addr);
 void eepromP_update_byte(const uint8_t * addr, uint8_t value);
 
-uint16_t eepromP_read_word(const uint16_t *addr);
+int16_t eepromP_read_word(const uint16_t *addr);
 void eepromP_update_word(const uint16_t * addr, uint16_t value);
 
 void eepromP_copy_block(const uint8_t * src, const uint8_t *dest, uint8_t count);
 
 
 void eeprom_copy_block(uint8_t * src, uint8_t *dest, uint8_t count);
+
+int16_t numedit(int16_t initial_value, int16_t min, int16_t max);
 
 #endif

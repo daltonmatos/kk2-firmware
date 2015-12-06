@@ -77,4 +77,8 @@ const uint8_t lpf[]  PROGMEM = {255, 187, 97, 41, 19, 9, 4};
 const uint16_t gyro[] PROGMEM = {250, 500, 1000, 2000};
 const uint8_t acc[]  PROGMEM = {2, 4, 8, 16};
 
+/* Self-level Settings Screen */
+const char sqz3[] PROGMEM = "ACC Trim Roll";
+const char sqz4[] PROGMEM = "ACC Trim Pitch";
+const char sqz5[] PROGMEM = "SL Mixing Rate";
 

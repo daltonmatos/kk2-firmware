@@ -63,11 +63,16 @@ ModeSettings:
 sensor_settings:
   nop
 SensorSettings:
-
   safe_call_c sensor_settings
   ret
-; Interface to original Assembly Routines
 
+selflevel_settings:
+  nop
+SelflevelSettings:
+  safe_call_c selflevel_settings
+  ret
+
+; Interface to original Assembly Routines
 asm_get_mpu_register:
   push_for_call_return_value
   mov t, r24
@@ -97,9 +102,44 @@ asm_GetButtonsBlocking:
   pop_for_call_return_value
   ret
 
+asm_NumEdit:
+; num=r25:r24
+; min=r23:r22
+; max=r21:r20
+; NumEdit expects:
+; num=xh:xl
+; min=yh:yl
+; max=zh:zl
+; return in r1:r0
+  push_r2_to_r17_r28_r29
+  push_r18_to_r27_r30_r31
+
+  mov xh, r25
+  mov xl, r24
+  mov yh, r23
+  mov yl, r22
+  mov zh, r21
+  mov zl, r20
+  call NumberEdit
+  
+  pop_r18_to_r27_r30_r31
+  pop_r2_to_r17_r28_r29
+
+  mov r25, r1
+  mov r24, r0
+  clr r1
+  ret
+
+asm_ReleaseButtons:
+  safe_called_from_c ReleaseButtons
+  ret
+
 asm_HighlightRectangle:
-  lrv PixelType, 0
   safe_called_from_c HilightRectangle
+  ret
+
+asm_Rectangle:
+  safe_called_from_c Rectangle
   ret
 
 asm_ChannelMapping:

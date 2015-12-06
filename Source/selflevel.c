@@ -50,6 +50,8 @@ void selflevel_settings(){
 
   int8_t pressed = 0;
   uint8_t selected_item = 0;
+  int16_t min = 0;
+  int16_t max = 0;
 
   _sl_render(selected_item);
   lcd_update();
@@ -66,6 +68,27 @@ void selflevel_settings(){
     }
 
     selected_item = constrain(selected_item, 0, 4);
+
+    if (pressed == BUTTON_OK){
+      switch (selected_item){
+        case 0:
+        case 1:
+          min = 0; max = 900;
+          break;
+        case 2:
+        case 3:
+          min = -900; max = 900;
+          break;
+        case 4:
+          min = 5; max = 50;
+          break;
+      }
+
+
+      eepromP_update_word(uint16_t_ptr(((int16_t) eeSelflevelPgain + selected_item*2)), 
+                          asm_NumEdit(eepromP_read_word(uint16_t_ptr((int16_t) eeSelflevelPgain + selected_item*2)), min, max));
+    }
+
     _sl_render(selected_item);
     lcd_update();
 
