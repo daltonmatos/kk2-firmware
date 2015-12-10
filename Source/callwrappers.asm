@@ -72,6 +72,12 @@ SelflevelSettings:
   safe_call_c selflevel_settings
   ret
 
+stick_scaling:
+  nop
+StickScaling:
+  safe_call_c stick_scaling
+  ret
+
 ; Interface to original Assembly Routines
 asm_get_mpu_register:
   push_for_call_return_value

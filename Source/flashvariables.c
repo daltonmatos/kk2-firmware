@@ -82,3 +82,6 @@ const char sqz3[] PROGMEM = "ACC Trim Roll";
 const char sqz4[] PROGMEM = "ACC Trim Pitch";
 const char sqz5[] PROGMEM = "SL Mixing Rate";
 
+/* Stick-scaling Screen */
+const char ss_title[] PROGMEM = "STICK SCALING";
+

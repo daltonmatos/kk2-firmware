@@ -36,6 +36,11 @@
 
 #define eeBoardOrientation EEPROM_VARIABLE(0x0079)
 
+#define eeStickScaleRoll      EEPROM16_VARIABLE(0x007e)
+#define eeStickScalePitch     EEPROM16_VARIABLE(0x0080)
+#define eeStickScaleYaw       EEPROM16_VARIABLE(0x0082)
+#define eeStickScaleThrottle  EEPROM16_VARIABLE(0x0084)
+#define eeStickScaleSlMixing  EEPROM16_VARIABLE(0x0086)
 #define eeSelflevelPgain  EEPROM16_VARIABLE(0x0088)
 #define eeSelflevelPlimit EEPROM16_VARIABLE(0x008a)
 #define eeAccTrimRoll     EEPROM16_VARIABLE(0x008c)

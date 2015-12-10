@@ -34,7 +34,7 @@ uint8_t constrain(int8_t value, uint8_t min, uint8_t max);
 uint8_t print_string(const uint8_t *str_addr, uint8_t x, uint8_t y);
 void print_string_2(const uint8_t *str_addr, uint8_t x, uint8_t y, uint8_t hilight);
 uint8_t print_number(int16_t number, uint8_t x, uint8_t y);
-void print_number_2(int16_t number, uint8_t x, uint8_t y, uint8_t hilight);
+uint8_t print_number_2(int16_t number, uint8_t x, uint8_t y, uint8_t hilight);
 
 uint8_t wait_for_button(uint8_t button_mask);
 uint8_t show_confirmation_dlg(const uint8_t *str);

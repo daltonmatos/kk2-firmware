@@ -16,7 +16,7 @@ OBJECTS = $(SOURCES:.c=.o)
 OUTPUT_OBJECTS = $(patsubst $(SRC_DIR)/%.o, $(BIN_DIR)/%.o, $(filter-out $(SRC_DIR)/flashvariables.c.o, $(OBJECTS)))
 
 # Symbols used by the Assembly code but that are implemented in C
-EXTERNAL_SYMBOLS = c_main lcd_clear lcd_command lcd_data show_version c_contrast lcd_update advanced_settings board_rotation SetDefaultLcdContrast extra_features show_confirmation_dlg esc_calibration_warning gimbal_mode mode_settings sensor_settings selflevel_settings
+EXTERNAL_SYMBOLS = c_main lcd_clear lcd_command lcd_data show_version c_contrast lcd_update advanced_settings board_rotation SetDefaultLcdContrast extra_features show_confirmation_dlg esc_calibration_warning gimbal_mode mode_settings sensor_settings selflevel_settings stick_scaling
 
 kk2++.hex: bindir kk2++.elf $(OBJECTS)
 	sed -i -e 's/AiO.*\"/AiO\ $(SRC_GIT_VERSION)\"/' $(SRC_DIR)/flashvariables.c

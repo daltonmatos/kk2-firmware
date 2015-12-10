@@ -135,11 +135,12 @@ uint8_t _print16_signed(int16_t n){
   return total_digits;
 }
 
-void print_number_2(int16_t number, uint8_t x, uint8_t y, uint8_t hilight_type){
+uint8_t print_number_2(int16_t number, uint8_t x, uint8_t y, uint8_t hilight_type){
   X1 = x;
   Y1 = y;
   uint8_t digits = _print16_signed(number);
   _highlight_current_print(digits, x, y, hilight_type);
+  return digits;
 }
 
 
