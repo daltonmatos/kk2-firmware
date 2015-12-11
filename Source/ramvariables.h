@@ -1,14 +1,18 @@
 #ifndef RAM_VARIABLES_H
 #define RAM_VARIABLES_H
 
+typedef struct {
+  int16_t integer;
+  uint8_t decimal;
+} b168_t;
+
 #define uint8_t_prt(a) ((uint8_t *) (a))
 #define RAM_VARIABLE(addr) (*(uint8_t_prt(addr)))
 
 #define uint16_t_ptr(a) ((uint16_t *) (a))
 #define RAM16_VARIABLE(addr) (*(uint16_t_ptr(addr)))
 
-#define _StickDeadZone 0x0606
-#define StickDeadZone RAM16_VARIABLE (_StickDeadZone) // 16.8 (3 bytes)
+#define StickDeadZone ((b168_t *) 0x0606) // 16.8 format (3 bytes)
 
 #define MpuFilter  RAM_VARIABLE(0x073A) 
 #define MpuAccCfg  RAM_VARIABLE(0x073B) 

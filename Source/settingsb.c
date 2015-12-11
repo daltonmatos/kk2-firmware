@@ -49,7 +49,7 @@ void _ms_render(uint8_t selected_item){
 }
 
 
-uint16_t _ms_max(selected_item){
+uint16_t _ms_max(uint8_t selected_item){
       switch (selected_item){
         case 0:
           return 20;
@@ -105,8 +105,7 @@ void misc_settings(){
   }
 
   /* Save StickDeadZone in RAM. It is 16.8 format encoded */
-  StickDeadZone = eepromP_read_word(eeStickDeadZone); // 16 (integer part)
-  *uint8_t_prt((uint16_t) _StickDeadZone + 2) = 0; // .8 (decimal part)
-
+  StickDeadZone->integer = eepromP_read_word(eeStickDeadZone);
+  StickDeadZone->decimal = 0;
 }
 
