@@ -87,6 +87,10 @@ dgs2:	.db "Digital Output", 0, 0
 dgs10:	.dw dgs1*2, dgs2*2
 
 
+stt7:  .db 107, 0, 127, 9
+       .db 107, 9, 127, 18
+       .db 107, 18, 127, 27
+       .db 107, 27, 127, 36
 
 	;--- Print DG2 funtion value ---
 

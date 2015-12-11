@@ -123,7 +123,6 @@ entrypoints: .dw Main, CppmMain, SBusMain, SatelliteMain, SatelliteMain
 .include "throttlecal.asm"
 .include "eeinit.asm"
 .include "sensorcal.asm"
-.include "settingsb.asm"
 .include "flightdisplay.asm"
 .include "arm.asm"
 .include "flightinit.asm"

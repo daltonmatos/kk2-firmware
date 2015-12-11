@@ -78,6 +78,11 @@ StickScaling:
   safe_call_c stick_scaling
   ret
 
+misc_settings:
+  nop
+MiscSettings:
+  safe_call_c misc_settings
+  ret
 ; Interface to original Assembly Routines
 asm_get_mpu_register:
   push_for_call_return_value

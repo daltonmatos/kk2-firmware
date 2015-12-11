@@ -253,7 +253,7 @@ fli5:	b16ldi Temper, 128.0			;most limit values (0-100%) are scaled with 128.0 t
 mad1:	.db "Data out of limits:", 0
 mad5:	.db "Sensor calibration", 0, 0
 mad7:	.db "Sensor raw data", 0
-
+stt1:  .db "Minimum Throttle: ", 0, 0
 
 
 	;--- Sanity check ---

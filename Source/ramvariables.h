@@ -5,6 +5,10 @@
 #define RAM_VARIABLE(addr) (*(uint8_t_prt(addr)))
 
 #define uint16_t_ptr(a) ((uint16_t *) (a))
+#define RAM16_VARIABLE(addr) (*(uint16_t_ptr(addr)))
+
+#define _StickDeadZone 0x0606
+#define StickDeadZone RAM16_VARIABLE (_StickDeadZone) // 16.8 (3 bytes)
 
 #define MpuFilter  RAM_VARIABLE(0x073A) 
 #define MpuAccCfg  RAM_VARIABLE(0x073B) 

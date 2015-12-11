@@ -46,6 +46,10 @@
 #define eeAccTrimRoll     EEPROM16_VARIABLE(0x008c)
 #define eeAccTrimPitch    EEPROM16_VARIABLE(0x008e)
 #define eeSlMixRate       EEPROM16_VARIABLE(0x0090)
+#define eeEscLowLimit       EEPROM16_VARIABLE(0x0092)
+#define eeStickDeadZone     EEPROM16_VARIABLE(0x0094)
+#define eeBattAlarmVoltage  EEPROM16_VARIABLE(0x0096)
+#define eeServoFilter       EEPROM16_VARIABLE(0x0098)
 
 #define eeLinkRollPitch EEPROM_VARIABLE(0x00AC)
 #define eeAutoDisarm EEPROM_VARIABLE(0x00AD)

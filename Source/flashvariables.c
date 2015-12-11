@@ -85,3 +85,10 @@ const char sqz5[] PROGMEM = "SL Mixing Rate";
 /* Stick-scaling Screen */
 const char ss_title[] PROGMEM = "STICK SCALING";
 
+/* Misc. Settings screen */
+const char misc_settings_title[] PROGMEM = "MISC. SETTINGS";
+
+const char _stt1[] PROGMEM = "Minimum Throttle: ";
+const char stt2[] PROGMEM = "Stick Dead Zone : ";
+const char stt5[] PROGMEM = "Alarm 1/10 Volts: ";
+const char stt6[] PROGMEM = "Servo Filter    : ";
