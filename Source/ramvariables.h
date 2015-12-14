@@ -3,7 +3,7 @@
 
 typedef struct {
   //int16_t integer;
-  uint8_t hi;
+  int8_t hi;
   uint8_t lo;
   uint8_t decimal;
 } b168_t;
