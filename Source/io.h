@@ -7,7 +7,7 @@
 #define BUTTON_BACK 0x08
 #define BUTTON_ANY BUTTON_OK | BUTTON_DOWN | BUTTON_UP | BUTTON_BACK
 
-
+#include "ramvariables.h"
 
 
 enum {
@@ -28,6 +28,8 @@ extern void asm_EnforceRestart();
 extern uint8_t asm_get_mpu_register(uint8_t r);
 extern void asm_setup_mpu6050();
 extern int16_t asm_NumEdit(int16_t number, int16_t min, int16_t max);
+
+uint8_t print_fpnumber(b168_t *number);
 
 uint8_t constrain(int8_t value, uint8_t min, uint8_t max);
 
