@@ -8,9 +8,9 @@
 #include "constants.h"
 #include "io.h"
 
-extern uint8_t ver1;
-extern uint8_t ver2;
-extern uint8_t ver10;
+extern const char  ver1;
+extern const char  ver2;
+extern const char  ver10;
 
 void show_version(){
 
@@ -24,7 +24,7 @@ void show_version(){
   print_string(&srm2, 0, 30);
   print_string(&motto, 0, 46);
 
-  print_string((uint8_t *) pgm_read_word(&modes + RxMode*2), 36, 30);
+  print_string((char *) pgm_read_word(&modes + RxMode*2), 36, 30);
   
   print_string(&back, 0, 57);
 

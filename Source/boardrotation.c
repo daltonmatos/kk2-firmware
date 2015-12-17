@@ -11,17 +11,17 @@
 extern const char brd1;
 extern const char backprev;
 extern const char nextsel;
-extern const uint8_t brd_up;
-extern const uint8_t brd_right;
-extern const uint8_t brd_down;
-extern const uint8_t brd_left;
+extern const char brd_up;
+extern const char brd_right;
+extern const char brd_down;
+extern const char brd_left;
 
-extern const uint8_t _saved;
-extern const uint8_t brr1;
-extern const uint8_t brr2;
-extern const uint8_t brr3;
-extern const uint8_t brr4;
-extern const uint8_t _ok;
+extern const char _saved;
+extern const char brr1;
+extern const char brr2;
+extern const char brr3;
+extern const char brr4;
+extern const char _ok;
 
 extern const char affects_all_profiles;
 

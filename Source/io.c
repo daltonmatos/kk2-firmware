@@ -83,7 +83,7 @@ void _highlight_current_print(uint8_t len, uint8_t x, uint8_t y, uint8_t hilight
 }
 
 
-uint8_t print_string(const uint8_t *str_addr, uint8_t x, uint8_t y){
+uint8_t print_string(const char *str_addr, uint8_t x, uint8_t y){
   X1 = x;
   Y1 = y;
   char ch = 0;
@@ -180,7 +180,7 @@ extern const char rusure;
 
 
 
-uint8_t show_confirmation_dlg(const uint8_t *str){
+uint8_t show_confirmation_dlg(const char *str){
   
   uint8_t pressed = 0;
 
@@ -206,7 +206,7 @@ uint8_t show_confirmation_dlg(const uint8_t *str){
 
 
 
-void print_string_2(const uint8_t *str_addr, uint8_t x, uint8_t y, uint8_t hilight_type){
+void print_string_2(const char *str_addr, uint8_t x, uint8_t y, uint8_t hilight_type){
   uint8_t len = print_string(str_addr, x, y);
   _highlight_current_print(len, x, y, hilight_type);
 }
