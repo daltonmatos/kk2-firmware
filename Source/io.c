@@ -95,30 +95,6 @@ uint8_t print_string(const char *str_addr, uint8_t x, uint8_t y){
   return count;
 }
 
-uint8_t _print8_decimal(b168_t *number, uint8_t precision){
-
-  uint16_t frac = number->decimal;
-  uint16_t digits = 0;
-  while (frac && precision){
-    frac &= 0x00ff;
-    frac *= 10;
-    asm_PrintChar((frac >> 8) + 16);
-    precision--;
-    digits++;
-  }
-  return digits;
-}
-
-uint8_t print_fpnumber(b168_t *number){
-  uint8_t digits = 0;
-  X1 = 10;
-  Y1 = 1;
-  digits = _print16_signed((number->hi << 8) | number->lo);
-  asm_PrintChar('.');
-  digits += _print8_decimal(number, 3);
-  return ++digits;
-}
-
 uint8_t print_number(int16_t number, uint8_t x, uint8_t y){
   X1 = x;
   Y1 = y;

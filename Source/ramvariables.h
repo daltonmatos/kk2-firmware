@@ -1,12 +1,7 @@
 #ifndef RAM_VARIABLES_H
 #define RAM_VARIABLES_H
 
-typedef struct {
-  //int16_t integer;
-  int8_t hi;
-  uint8_t lo;
-  uint8_t decimal;
-} b168_t;
+#include "b168.h"
 
 #define uint8_t_prt(a) ((uint8_t *) (a))
 #define RAM_VARIABLE(addr) (*(uint8_t_prt(addr)))
