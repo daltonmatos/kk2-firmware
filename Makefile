@@ -12,7 +12,7 @@ AVRASM2 = wine ~/bin/AvrAssembler2/avrasm2.exe
 
 SOURCES = $(filter-out $(SRC_DIR)/flashvariables.c, $(wildcard $(SRC_DIR)/*.c) $(wildcard $(SRC_DIR)/display/*.c))
 
-OBJECTS = $(SOURCES:.c=.o)
+OBJECTS = $(patsubst $(SRC_DIR)/%, $(BIN_DIR)/%, $(SOURCES:.c=.o))
 OUTPUT_OBJECTS = $(patsubst $(SRC_DIR)/%.o, $(BIN_DIR)/%.o, $(filter-out $(SRC_DIR)/flashvariables.c.o, $(OBJECTS)))
 
 # Symbols used by the Assembly code but that are implemented in C
@@ -23,7 +23,10 @@ $(BIN_DIR)/kk2++.hex: $(BIN_DIR)/kk2++.elf $(OBJECTS)
 	avr-gcc $(CC_FLAGS) -mno-interrupts -nostartfiles -mmcu=atmega644p -DF_CPU=20000000 -o $(BIN_DIR)/flashvariables.c.o $(SRC_DIR)/flashvariables.c
 	sed -i -e 's/AiO.*\"/AiO\"/' $(SRC_DIR)/flashvariables.c
 
-	avr-gcc $(CC_FLAGS) -mmcu=atmega644p -DF_CPU=20000000 -nostartfiles -o $(BIN_DIR)/kk2++.elf $(BIN_DIR)/kk2++.asm.hex.bin.elf $(filter-out $(BIN_DIR)/flashvariables.c.o, $(wildcard $(BIN_DIR)/*.o)) $(BIN_DIR)/flashvariables.c.o
+	avr-gcc $(CC_FLAGS) -mmcu=atmega644p -DF_CPU=20000000 -nostartfiles -o $(BIN_DIR)/kk2++.elf \
+		$(BIN_DIR)/kk2++.asm.hex.bin.elf \
+		$(filter-out $(BIN_DIR)/flashvariables.o, $(OUTPUT_OBJECTS)) \
+		$(BIN_DIR)/flashvariables.c.o
 	avr-objcopy -I elf32-avr -O ihex -j .text -j .data $(BIN_DIR)/kk2++.elf $(BIN_DIR)/kk2++.hex 
 
 .PHONY: bindir
@@ -41,17 +44,18 @@ $(BIN_DIR)/kk2++.elf: $(BIN_DIR)/kk2++.asm.hex
 
 	cat $(BIN_DIR)/kk2++.symtab | tools/elf-add-symbol $(BIN_DIR)/kk2++.asm.hex.bin.elf > /dev/null
 
-.c.o:
-	avr-gcc $(CC_FLAGS) -nostartfiles -mno-interrupts -mmcu=atmega644p -DF_CPU=20000000 -c $< -o $(BIN_DIR)/$(<F).o
+$(BIN_DIR)/%.o: $(SRC_DIR)/%.c
+	@mkdir -p $(dir $(patsubst $(SRC_DIR)/%, $(BIN_DIR)/%, $@))	
+	avr-gcc $(CC_FLAGS) -mmcu=atmega644p -DF_CPU=20000000 -c $(SRC_DIR)/$(patsubst $(BIN_DIR)/%,%, $(@:.o=.c)) -o $(dir $(patsubst $(SRC_DIR)/%, $(BIN_DIR)/%, $@))/$(@F:.c=.o)
 
 flash: $(BIN_DIR)/kk2++.hex
 	/usr/share/arduino/hardware/tools/avrdude -V -C /usr/share/arduino/hardware/tools/avrdude.conf -patmega644p -cusbasp -Uflash:w:$(BIN_DIR)/kk2++.hex:i
 	#avrdude -V -C /usr/share/arduino/hardware/tools/avrdude.conf -patmega644p -cusbasp -Uflash:w:$(BIN_DIR)/kk2++.hex:i
 
-size: kk2++.hex
+size: $(BIN_DIR)/kk2++.hex
 	avr-size bin/kk2++.elf
 
 
 .PHONY: clean
 clean:
-	rm -f bin/*
+	rm -rf bin/*
