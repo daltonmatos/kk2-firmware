@@ -79,8 +79,10 @@ void fillrect(uint8_t *buff,
 	      uint8_t x, uint8_t y, uint8_t w, uint8_t h, 
 	      uint8_t color);
 
+void setup_display();
 void lcd_clear();
 void lcd_update();
+void lcd_command(uint8_t command);
 
 void lcd_clear12x16();
 void lcd_load_contrast();
