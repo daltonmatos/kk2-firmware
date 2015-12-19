@@ -40,100 +40,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 void setup_display(){
 	
-	//ldi t,0b00110010	// output5, output6
-	//out ddra,t
-  DDRA = 0x32;
-
-	//;       76543210
-	//ldi t,0b00001010
-	//out ddrb,t
-  DDRB = 0x0A;
-
-	//;       76543210
-	//ldi t,0b11111100	// scl, sda, output 1-8
-	//out ddrc,t
-  DDRC = 0xFC;
-  
   DDRD = 0xF2; //0b11110010
 
-	//;       76543210
-	//ldi t,0b11111111	;turn off digital inputs on port A
-	//store didr0,t
-  DIDR0 = 0xFF;
-
-	//;       76543210
-	//ldi t,0b11110101	;turn on pull ups on button inputs and aux, rud
-	//out portb,t
-  PORTB = 0xF5;
-
-	//;       76543210
-	//ldi t,0b00000011	;turn on pull ups SPI pin
-	//out portc,t
-  PORTC = 0xF3;
-	
 	//ldi t,0b00001101	;turn on pull ups on thr, ele and ail
   PORTD = 0x0D;
-	
 
-
-	//;       76543210
-	//ldi t,0b00000000	;set timer 1 to run at 2.5MHz
-	//store tccr1a, t
-  TCCR1A = 0x00;
-	
-  //;       76543210
-	//ldi t,0b00000010
-	//store tccr1b, t
-  TCCR1B = 0x02;
-
-	//;       76543210
-	//ldi t,0b00000000
-	//store tccr1c, t
-  TCCR1C = 0x00;
-
-	//       76543210
-	//ldi t,0b00010101	;setup external interrupts.
-	//store eicra, t
-  EICRA = 0x15;
-
-	//;       76543210
-	//ldi t,0b00000011	;aileron and elevator
-	//store eimsk, t
-  EIMSK = 0x03;
-
-	//;       76543210
-	//ldi t,0b00001010
-	//store pcicr, t
-  PCICR = 0x0A;
-
-	//;       76543210
-	//ldi t,0b00000001	;throttle
-	//store pcmsk3, t
-  PCMSK3 = 0x01;
-
-	//;       76543210
-	//ldi t,0b00000101	;rudder and aux
-	//store pcmsk1, t
-  PCMSK1 = 0x05;
-
-	//lds t, TWSR
-	//andi t, 0b11111100	;initialize twi prescaler set to 4^0 = 1
-	//sts TWSR, t
-  TWSR &= 0xFC;
-
-	//ldi t, 17 
-	//sts TWBR, t		;TWBR = ((20000000L / 400000L) - 16) / 2 = 17 for 400kHz clk rate
-  TWBR = 17;
-
-  //sbi lcd_cs1		;LCD signals
   PORTD |= _BV(LCD_CS1);
-
-	//sbi lcd_scl
 	PORTD |= _BV(LCD_SCL);
-  //cbi lcd_res
   PORTD &= ~_BV(LCD_RES);
-
-	//sbi lcd_res
   PORTD |= _BV(LCD_RES);
 }
 
