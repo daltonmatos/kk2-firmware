@@ -27,7 +27,7 @@ EeInit:
 
 	call setup_mpu6050
 	rcall ShowDisclaimer
-	rcall InitialSetup		;display initial setup menu
+	call InitialSetup		;display initial setup menu
 	rjmp eei3
 
 eei1:	ldz eeUserAccepted		;show the disclaimer if not yet accepted
@@ -267,7 +267,7 @@ iup8:	movw z, y
 	brne iup9
 
 	rcall ShowDisclaimer
-	rcall InitialSetup
+	call InitialSetup
 	rjmp EnforceRestart
 
 iup9:	clr t
@@ -353,103 +353,7 @@ eew5:	.db "documents carefully.", 0, 0
 eew10:	.dw eew2*2, eew3*2, eew4*2, eew5*2
 
 
-isp1:	.db "SETUP", 0
-isp2:	.db "Load Motor Layout", 0
-isp3:	.db "ACC Calibration", 0
-isp4:	.db "Trim Battery Voltage", 0, 0
-isp5:	.db "Select RX Mode", 0, 0
-
-
-
-isp7:	.db 0, 16, 127, 25
-	.db 0, 25, 127, 34
-	.db 0, 34, 127, 43
-	.db 0, 43, 127, 52
-
-isp10:	.dw isp2*2, isp3*2, isp4*2, isp5*2
-
-
-
-	;--- Initial setup menu ---
-
-InitialSetup:
-
-	clr Counter
-	sts LoadMenuListYposSave, Counter
-	sts LoadMenuCursorYposSave, Counter
-
-isp11:	call LcdClear12x16
-
-	lrv X1, 34			;setup
-	ldz isp1*2
-	call PrintHeader
-
-	ldi t, 4
-	ldz isp10*2
-	call PrintStringArray
-
-	;footer
-	call PrintMenuFooter
-
-	;print selector
-	ldzarray isp7*2, 4, Counter
-	call PrintSelector
-
-	call LcdUpdate
-
-	call GetButtonsBlocking
-
-	cpi t, 0x08			;BACK?
-	brne isp15
-
-	ret
-
-isp15:	cpi t, 0x04			;PREV?
-	brne isp20
-
-	dec Counter
-
-isp16:	andi Counter, 0x03
-	rjmp isp11
-
-isp20:	cpi t, 0x02			;NEXT?
-	brne isp25
-
-	inc Counter
-	rjmp isp16
-
-isp25:	cpi t, 0x01			;SELECT?
-	brne isp11
-
-	call ReleaseButtons
-	push Counter
-	cpi Counter, 0
-	brne isp26
-
-	call LoadMixer			;load motor layout
-	rjmp isp40
-
-isp26:	cpi Counter, 1
-	brne isp27
-
-	call CalibrateSensors		;ACC calibration
-	rjmp isp40
-
-isp27:	cpi Counter, 2
-	brne isp28
-	
-	call AdjustBatteryVoltage	;adjust battery voltage
-	rjmp isp40
-
-isp28:	call SelectRxMode		;select RX mode
-
-isp40:	pop Counter
-	rjmp isp11
-
-
 .undef Counter
-
-
 
 	;--- Enforce restart ---
 

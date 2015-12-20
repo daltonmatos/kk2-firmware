@@ -83,6 +83,37 @@ misc_settings:
 MiscSettings:
   safe_call_c misc_settings
   ret
+
+
+/* Initial Setup Screen 
+ * Could not make this work in C. Leave it here for now.
+const char isp1[] PROGMEM = "INITIAL SETUP";
+const char isp5[] PROGMEM = "Select RX Mode";
+const char isp4[] PROGMEM = "Trim Battery Voltage";
+const char isp3[] PROGMEM = "ACC Calibration";
+const char isp2[] PROGMEM = "Load Motor Layout";
+
+const isp10[4] PROGMEM = {
+  isp2,
+  isp3,
+  isp4,
+  isp5
+};
+*/
+
+isp1:  .db "INITIAL SETUP", 0
+isp2:  .db "Load Motor Layout", 0
+isp3:  .db "ACC Calibration", 0
+isp4:  .db "Trim Battery Voltage", 0, 0
+isp5:  .db "Select RX Mode", 0, 0
+isp10: .dw isp2*2, isp3*2, isp4*2, isp5*2
+
+initial_setup:
+  nop
+InitialSetup:
+  safe_call_c initial_setup
+  ret
+
 ; Interface to original Assembly Routines
 asm_get_mpu_register:
   push_for_call_return_value
@@ -171,4 +202,21 @@ asm_SerialDebug:
 
 asm_EnforceRestart:
   safe_called_from_c EnforceRestart
+  ret
+
+
+asm_LoadMixer:
+  safe_called_from_c LoadMixer
+  ret
+
+asm_CalibrateSensors:
+  safe_called_from_c CalibrateSensors
+  ret
+
+asm_AdjustBatteryVoltage:
+  safe_called_from_c AdjustBatteryVoltage
+  ret
+
+asm_SelectRxMode:
+  safe_called_from_c SelectRxMode
   ret
