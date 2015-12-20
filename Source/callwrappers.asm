@@ -36,6 +36,12 @@ ShowVersion:
   safe_call_c show_version
   ret
 
+adv2: .db "Channel Mapping", 0
+adv3: .db "Sensor Settings", 0
+adv4: .db "Mixer Editor", 0
+adv5: .db "Board Orientation", 0
+
+_adv_options: .dw adv2*2, adv3*2, adv4*2, adv5*2
 advanced_settings:
   nop
 AdvancedSettings:

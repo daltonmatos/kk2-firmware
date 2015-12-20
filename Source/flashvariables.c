@@ -12,10 +12,6 @@ const char colon_and_space[] PROGMEM = ": ";
 
 /* Advanced Settings Menu */
 const char adv1[] PROGMEM = "ADVANCED";
-const char adv2[] PROGMEM = "Channel Mapping";
-const char adv3[] PROGMEM = "Sensor Settings";
-const char adv4[] PROGMEM = "Mixer Editor";
-const char adv5[] PROGMEM = "Board Orientation";
 
 /* Board Rotation screen */
 const char brd1[] PROGMEM = "Front";
