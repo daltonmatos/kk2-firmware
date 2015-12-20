@@ -25,7 +25,7 @@ void __attribute__((optimize("O0"))) _menu_render_screen(
   lcd_clear();
   FontSelector = f6x8;
 
-  print_string_2(title, 57 - ((strlen_p(title) / 2) * 7), 1, HIGHLIGHT_FULL_LINE);
+  print_string_2(title, 72 - (strlen_p(title)*8 / 2), 1, HIGHLIGHT_FULL_LINE);
 
   for (op=0; op < total_options; op++){
     print_string_2((char *) pgm_read_word(options + op*2), 0, 11 + 9*op, op == selected_item ? HIGHLIGHT_FULL_LINE : HIGHLIGHT_NONE);  
