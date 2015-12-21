@@ -28,7 +28,7 @@ EXTERNAL_SYMBOLS = c_main lcd_clear lcd_command lcd_data show_version \
 									 gimbal_mode mode_settings sensor_settings selflevel_settings \
 									 stick_scaling misc_settings initial_setup
 
-$(BIN_DIR)/kk2++.hex: $(BIN_DIR)/kk2++.elf $(OBJECTS) $(BIN_DIR)/flashvariables.o
+$(BIN_DIR)/kk2++.hex: $(BIN_DIR)/kk2++.elf $(OBJECTS) $(BIN_DIR)/flashvariables.o $(BIN_DIR)/kk2++.asm.hex
 	avr-gcc $(CC_FLAGS) -mmcu=atmega644p -DF_CPU=20000000 -nostartfiles -o $(BIN_DIR)/kk2++.elf \
 		$(BIN_DIR)/kk2++.asm.hex.bin.elf \
 		$(filter-out $(BIN_DIR)/flashvariables.o, $(OUTPUT_OBJECTS)) \
@@ -69,7 +69,7 @@ flash:
 	/usr/share/arduino/hardware/tools/avrdude -V -C /usr/share/arduino/hardware/tools/avrdude.conf -patmega644p -cusbasp -Uflash:w:$(BIN_DIR)/kk2++.hex:i
 	#avrdude -V -C /usr/share/arduino/hardware/tools/avrdude.conf -patmega644p -cusbasp -Uflash:w:$(BIN_DIR)/kk2++.hex:i
 
-size: $(BIN_DIR)/kk2++.hex
+size:
 	avr-size bin/kk2++.elf
 
 .PHONY: bindir
