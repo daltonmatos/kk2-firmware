@@ -5,6 +5,8 @@
 #include "io.h"
 #include "constants.h"
 
+#include "menu.h"
+
 uint8_t strlen_p(const char *str){
   uint8_t size = 0;
   while (pgm_read_byte(str++)){
@@ -70,3 +72,12 @@ void __attribute__((optimize("O0"))) render_menu(
 
 }
 
+/*void render_menu2(menu_t *data){
+
+  render_menu(data->title,
+              data->footer,
+              data->options,
+              data->ok_callback,
+              data->total_options);
+
+}*/
