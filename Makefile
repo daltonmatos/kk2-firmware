@@ -29,10 +29,10 @@ EXTERNAL_SYMBOLS = c_main lcd_clear lcd_command lcd_data show_version \
 									 stick_scaling misc_settings initial_setup
 
 $(BIN_DIR)/kk2++.hex: $(BIN_DIR)/kk2++.elf $(OBJECTS) $(BIN_DIR)/flashvariables.o $(BIN_DIR)/kk2++.asm.hex
-	avr-gcc $(CC_FLAGS) -mmcu=atmega644p -DF_CPU=20000000 -nostartfiles -o $(BIN_DIR)/kk2++.elf \
+	avr-gcc $(CC_FLAGS) -mmcu=atmega644p -DF_CPU=20000000 -nostartfiles \
+		-o $(BIN_DIR)/kk2++.elf \
 		$(BIN_DIR)/kk2++.asm.hex.bin.elf \
-		$(filter-out $(BIN_DIR)/flashvariables.o, $(OUTPUT_OBJECTS)) \
-			$(BIN_DIR)/flashvariables.o
+		$(filter-out $(BIN_DIR)/flashvariables.o, $(OUTPUT_OBJECTS)) $(BIN_DIR)/flashvariables.o
 	avr-objcopy -I elf32-avr -O ihex -j .text -j .data $(BIN_DIR)/kk2++.elf $(BIN_DIR)/kk2++.hex 
 
 
