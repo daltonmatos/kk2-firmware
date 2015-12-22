@@ -27,9 +27,6 @@ const uint8_t brd_left[] PROGMEM = {8, 0};
 
 /* Extra screen */
 const char ef1[] PROGMEM = "EXTRA";
-const char ef2[] PROGMEM = "Check Motor Outputs";
-const char ef3[] PROGMEM = "Gimbal Controller";
-const char ef4[] PROGMEM = "View Serial RX Data";
 
 /* ESC Calibration Warning Screen */
 const char war2[] PROGMEM = "ESC calibration will";
