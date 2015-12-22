@@ -147,14 +147,6 @@ asm_PrintChar:
   pop_all
   ret
 
-asm_GetButtonsBlocking:
-  push_for_call_return_value
-  call GetButtonsBlocking
-  clr r25
-  mov r24, t
-  pop_for_call_return_value
-  ret
-
 asm_NumEdit:
 ; num=r25:r24
 ; min=r23:r22
@@ -181,10 +173,6 @@ asm_NumEdit:
   mov r25, r1
   mov r24, r0
   clr r1
-  ret
-
-asm_ReleaseButtons:
-  safe_called_from_c ReleaseButtons
   ret
 
 asm_HighlightRectangle:

@@ -34,6 +34,7 @@
 
 #define LcdContrast RAM_VARIABLE(0x07A3)
 
+#define BtnReversed RAM_VARIABLE(0x0791)
 
 #define UserProfile RAM_VARIABLE(0x0803)
 

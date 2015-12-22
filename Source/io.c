@@ -2,7 +2,7 @@
 #include <avr/pgmspace.h>
 #include <string.h>
 #include <avr/eeprom.h>
-
+#include <util/delay.h>
 #include "io.h"
 #include "ramvariables.h"
 #include "display/st7565.h"
@@ -12,39 +12,46 @@
 /* This holds info about each font. We will need CharWidth and CharHeight */
 extern const char TabCh;
 
-uint8_t __get_buttons(){
-  return PINB;
-}
+uint8_t get_buttons(){
+  uint8_t _pinb = PINB;
 
+  _pinb ^= 0xFF;
+  _pinb >>= 4;
+  _pinb &= 0x0F;
 
-uint8_t __wait_for_keypress(){
-
-  uint8_t buttons = __get_buttons();
-
-  while (!buttons){
-    buttons = __get_buttons();
+  if (!_pinb){
+    return BUTTON_NONE;
   }
+  _delay_us(250);
+  _delay_us(250);
 
-  // call _beep();
-  
-  return buttons;
+  _pinb = PINB;
+  _pinb ^= 0xFF;
+  _pinb >>= 4;
+  _pinb &= 0x0F;
+
+  if (BtnReversed){}
+
+  return _pinb;
+}
+
+void release_buttons(){
+  while (get_buttons() != BUTTON_NONE){}
+}
+
+uint8_t get_buttons_blocking(){
+  uint8_t pressed = 0;
+  release_buttons();
+  while ((pressed = get_buttons()) == BUTTON_NONE){}
+  //beep();
+  return pressed;
 }
 
 
-
-
-void __release_buttons(){
-
-  while (__get_buttons() != 0){
-  }
-
-}
-
-uint8_t __get_buttons_blocking(){
-
-  __release_buttons();
-  return __wait_for_keypress();
-
+uint8_t wait_for_button(uint8_t button_mask){
+  uint8_t pressed = 0;
+  while ( !((pressed = get_buttons_blocking()) & button_mask)) {}
+  return pressed;
 }
 
 uint8_t constrain(int8_t value, uint8_t min, uint8_t max){
@@ -144,11 +151,7 @@ uint8_t print_number_2(int16_t number, uint8_t x, uint8_t y, uint8_t hilight_typ
 }
 
 
-uint8_t wait_for_button(uint8_t button_mask){
-  uint8_t pressed = 0;
-  while ( !((pressed = asm_GetButtonsBlocking()) & button_mask)) {}
-  return pressed;
-}
+
 
 extern const char confirm;
 extern const char conf;

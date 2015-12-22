@@ -1,6 +1,7 @@
 #ifndef IO_H
 #define IO_H
 
+#define BUTTON_NONE 0x00
 #define BUTTON_OK 0x01
 #define BUTTON_DOWN 0x02
 #define BUTTON_UP 0x04
