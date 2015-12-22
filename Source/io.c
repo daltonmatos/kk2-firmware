@@ -12,6 +12,8 @@
 /* This holds info about each font. We will need CharWidth and CharHeight */
 extern const char TabCh;
 
+#define EXTRACT_BIT(n, bit) ((n) & _BV((bit)))
+
 uint8_t get_buttons(){
   uint8_t _pinb = PINB;
 
@@ -30,7 +32,12 @@ uint8_t get_buttons(){
   _pinb >>= 4;
   _pinb &= 0x0F;
 
-  if (BtnReversed){}
+  if (BtnReversed){
+    _pinb = (EXTRACT_BIT(_pinb, 0) << 3)
+           |(EXTRACT_BIT(_pinb, 1) << 1)
+           |(EXTRACT_BIT(_pinb, 2) >> 1)
+           |(EXTRACT_BIT(_pinb, 3) >> 3);
+  }
 
   return _pinb;
 }
