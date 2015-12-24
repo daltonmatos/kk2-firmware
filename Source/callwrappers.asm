@@ -175,14 +175,6 @@ asm_NumEdit:
   clr r1
   ret
 
-asm_HighlightRectangle:
-  safe_called_from_c HilightRectangle
-  ret
-
-asm_Rectangle:
-  safe_called_from_c Rectangle
-  ret
-
 asm_ChannelMapping:
   safe_called_from_c ChannelMapping
   ret

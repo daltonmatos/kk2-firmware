@@ -143,28 +143,33 @@ void lcd_update(){
   }
 }
 
-void fill_buffer(){
-  lcd_clear();
-  memset((uint8_t *) LCD_BUFFER, 0xff, 1024);
-
-  //safe_LcdUpdate();
-  lcd_update();
-  while (1){}
-}
-
+void setpixel(uint8_t *buff, uint8_t x, uint8_t y, uint8_t c){}
 
 // the most basic function, set a single pixel
-void setpixel(uint8_t *buff, uint8_t x, uint8_t y, uint8_t color) {
+void __setpixel(uint8_t x, uint8_t y) {
   if ((x >= LCDWIDTH) || (y >= LCDHEIGHT))
     return;
 
-  // x is which column
-  if (color) 
-    buff[x+ (y/8)*128] |= _BV(7-(y%8));  
-  else
-    buff[x+ (y/8)*128] &= ~_BV(7-(y%8)); 
+  uint8_t xl = (y % 8) + 1;
+  uint8_t xh = (_BV(0) << (xl - 1));
+  uint16_t buff_pos = x + (y/8)*128;
+  switch (PixelType){
+    case 0: // XOR
+      LCD_BUFFER_ptr[buff_pos] ^= xh;
+      break;
+    case 1: // OR
+      //LCD_BUFFER_ptr[x+ (y/8)*128] |= _BV(7-(y%8));  
+      LCD_BUFFER_ptr[buff_pos] |= xh; 
+      break;
+    case 2: // AND
+      //LCD_BUFFER_ptr[x+ (y/8)*128] &= ~_BV(7-(y%8)); 
+      LCD_BUFFER_ptr[buff_pos] &= (xh ^ 0xFF); 
+      break;
+  
+  }
 }
 
+/*
 void drawbitmap(uint8_t *buff, uint8_t x, uint8_t y, 
 		const uint8_t bitmap, uint8_t w, uint8_t h,
 		uint8_t color) {
@@ -178,6 +183,7 @@ void drawbitmap(uint8_t *buff, uint8_t x, uint8_t y,
 
 
 }
+*/
 
 /*void drawstring(uint8_t *buff, uint8_t x, uint8_t line, uint8_t *c) {
   while (c[0] != 0) {
@@ -204,16 +210,9 @@ void drawchar(uint8_t *buff, uint8_t x, uint8_t line, uint8_t c) {
   }
 }
 */
-// the most basic function, clear a single pixel
-void clearpixel(uint8_t *buff, uint8_t x, uint8_t y) {
-  // x is which column
-  buff[x+ (y/8)*128] &= ~_BV(7-(y%8));
-}
 
 // bresenham's algorithm - thx wikpedia
-void drawline(uint8_t *buff,
-	      uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, 
-	      uint8_t color) {
+void __drawline(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1) {
 
   uint8_t steep = abs(y1 - y0) > abs(x1 - x0);
   if (steep) {
@@ -240,9 +239,9 @@ void drawline(uint8_t *buff,
 
   for (; x0<x1; x0++) {
     if (steep) {
-      setpixel(buff, y0, x0, color);
+      __setpixel(y0, x0);
     } else {
-      setpixel(buff, x0, y0, color);
+      __setpixel(x0, y0);
     }
     err -= dy;
     if (err < 0) {
@@ -252,7 +251,20 @@ void drawline(uint8_t *buff,
   }
 }
 
+void __attribute__((optimize("O0"))) __fillrect(uint8_t x, uint8_t y, uint8_t w, uint8_t h) {
+  uint8_t i = 0;
+  uint8_t j = 0;
+
+  // stupidest version - just pixels - but fast with internal buffer!
+  for (i=x; i<w; i++) {
+    for (j=y; j<h; j++) {
+      __setpixel(i, j);
+    }
+  }
+}
+
 // filled rectangle
+/*
 void fillrect(uint8_t *buff,
 	      uint8_t x, uint8_t y, uint8_t w, uint8_t h, 
 	      uint8_t color) {
@@ -264,9 +276,22 @@ void fillrect(uint8_t *buff,
     }
   }
 }
+*/
 
+void __drawrect(uint8_t x, uint8_t y, uint8_t w, uint8_t h) {
+  // stupidest version - just pixels - but fast with internal buffer!
+  for (uint8_t i=x; i<x+w; i++) {
+    __setpixel(i, y);
+    __setpixel(i, y+h-1);
+  }
+  for (uint8_t i=y; i<y+h; i++) {
+    __setpixel(x, i);
+    __setpixel(x+w-1, i);
+  } 
+}
 
 // draw a rectangle
+/*
 void drawrect(uint8_t *buff,
 	      uint8_t x, uint8_t y, uint8_t w, uint8_t h, 
 	      uint8_t color) {
@@ -280,9 +305,10 @@ void drawrect(uint8_t *buff,
     setpixel(buff, x+w-1, i, color);
   } 
 }
-
+*/
 
 // draw a circle
+/*
 void drawcircle(uint8_t *buff,
 	      uint8_t x0, uint8_t y0, uint8_t r, 
 	      uint8_t color) {
@@ -319,9 +345,10 @@ void drawcircle(uint8_t *buff,
     
   }
 }
-
+*/
 
 // draw a circle
+/*
 void fillcircle(uint8_t *buff,
 	      uint8_t x0, uint8_t y0, uint8_t r, 
 	      uint8_t color) {
@@ -355,9 +382,5 @@ void fillcircle(uint8_t *buff,
     }    
   }
 }
+*/
 
-
-// clear everything
-void clear_buffer(uint8_t *buff) {
-  memset(buff, 0, 1024);
-}

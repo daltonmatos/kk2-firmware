@@ -68,12 +68,8 @@ uint8_t constrain(int8_t value, uint8_t min, uint8_t max){
 }
 
 void print_selector(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2){
-  X1 = x1;
-  X2 = x2;
-  Y1 = y1;
-  Y2 = y2;
   PixelType = 0;
-  asm_HighlightRectangle();
+  __fillrect(x1, y1, x2, y2);
 }
 
 void _highlight_current_print(uint8_t len, uint8_t x, uint8_t y, uint8_t hilight_type){
