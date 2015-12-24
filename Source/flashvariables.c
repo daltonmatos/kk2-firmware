@@ -85,3 +85,7 @@ const char _stt1[] PROGMEM = "Minimum Throttle: ";
 const char stt2[] PROGMEM = "Stick Dead Zone : ";
 const char stt5[] PROGMEM = "Alarm 1/10 Volts: ";
 const char stt6[] PROGMEM = "Servo Filter    : ";
+
+/* Channel Mapping scren */
+const char cm_title[] PROGMEM = "CHANNEL MAPPING";
+const char aux4[] PROGMEM = "Aux4";

@@ -21,7 +21,6 @@ enum {
 
 extern void asm_PrintChar(const char ch);
 extern void asm_ShowNoAccessDlg(const char *str);
-extern void asm_Print16Signed(int8_t number);
 extern void asm_EnforceRestart();
 extern uint8_t asm_get_mpu_register(uint8_t r);
 extern void asm_setup_mpu6050();

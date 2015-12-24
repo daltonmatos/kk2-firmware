@@ -4,18 +4,13 @@
 #include "display/st7565.h"
 #include "io.h"
 
-
 void main(){
 
   setup_display();
   lcd_load_contrast();
 
-  PixelType = 1;
-  __setpixel(10, 8);
-  __setpixel(11, 8);
-  __setpixel(12, 8);
-  __setpixel(13, 8);
-  __setpixel(14, 8);
+  print_number(eepromP_read_byte(eeChannelRoll), 20, 40);
+  print_number(eepromP_read_byte(eeChannelThrottle), 30, 40);
 
   lcd_update();
   

@@ -36,6 +36,17 @@ void make_call(uint8_t selected){
 
 void advanced_settings(){
 
-  render_menu(&adv1, &updown, &_adv_options, &make_call, 4);
+  menu_t data = {
+    .title = &adv1,
+    .footer_callback = &print_std_footer,
+    .options = &_adv_options,
+    .ok_callback = &make_call,
+    .render_callback = 0,
+    .total_options = 4,
+    .up_callback = 0,
+    .down_callback = 0    
+  };
+
+  render_menu(&data);
 
 }

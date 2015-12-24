@@ -16,68 +16,60 @@ uint8_t strlen_p(const char *str){
 }
 
 
-void __attribute__((optimize("O0"))) _menu_render_screen(
-    const char *title,
-    const char *footer,
-    const char *options,
-    uint8_t selected_item, 
-    uint8_t total_options){
+void __attribute__((optimize("O0"))) _menu_render_screen(menu_t *data, uint8_t selected_item){
 
   uint8_t op = 0;
   lcd_clear();
   FontSelector = f6x8;
 
-  print_string_2(title, 72 - (strlen_p(title)*8 / 2), 1, HIGHLIGHT_FULL_LINE);
+  print_string_2(data->title, 72 - (strlen_p(data->title)*8 / 2), 1, HIGHLIGHT_FULL_LINE);
 
-  for (op=0; op < total_options; op++){
-    print_string_2((char *) pgm_read_word(options + op*2), 0, 11 + 9*op, op == selected_item ? HIGHLIGHT_FULL_LINE : HIGHLIGHT_NONE);  
+  if (data->render_callback){
+    data->render_callback(selected_item);
+  }else{
+    for (op=0; op < data->total_options; op++){
+      print_string_2((char *) pgm_read_word(data->options + op*2), 0, 11 + 9*op, op == selected_item ? HIGHLIGHT_FULL_LINE : HIGHLIGHT_NONE);  
+    }
   }
 
-  print_string(footer, 0, 57);
+  if (data->footer_callback){
+    data->footer_callback();
+  }
   lcd_update();
 }
 
 
-void __attribute__((optimize("O0"))) render_menu(
-    const char *title,
-    const char *footer,
-    const char *options, 
-    void (*callback)(uint8_t),
-    uint8_t total_options){
+void __attribute__((optimize("O0"))) render_menu(menu_t *data){
 
   uint8_t selected_item = 0;
   uint8_t pressed = 0;
 
-  _menu_render_screen(title, footer, options, selected_item, total_options);
+  _menu_render_screen(data, selected_item);
   
   while ((pressed = wait_for_button(BUTTON_ANY)) != BUTTON_BACK){
 
     switch (pressed){
       case BUTTON_DOWN:
           selected_item += 1;
+          if (data->down_callback){
+            data->down_callback(constrain(selected_item, 0, data->total_options - 1));
+          }
           break;
       case BUTTON_UP:
           selected_item -= 1;
+          if (data->up_callback){
+            data->up_callback(constrain(selected_item, 0, data->total_options - 1));
+          }
           break;  
     }
-    selected_item = constrain(selected_item, 0, total_options - 1);
+    selected_item = constrain(selected_item, 0, data->total_options - 1);
 
     if (pressed == BUTTON_OK){
-      lcd_clear();
-      callback(selected_item);
+      data->ok_callback(selected_item);
     }
 
-    _menu_render_screen(title, footer, options, selected_item, total_options);
+    _menu_render_screen(data, selected_item);
   }
 
 }
 
-/*void render_menu2(menu_t *data){
-
-  render_menu(data->title,
-              data->footer,
-              data->options,
-              data->ok_callback,
-              data->total_options);
-
-}*/

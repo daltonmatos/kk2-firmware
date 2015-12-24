@@ -36,6 +36,17 @@
 
 #define BtnReversed RAM_VARIABLE(0x0791)
 
+
+#define MappedChannel1_addr 0x07c2
+#define MappedChannel1 RAM_VARIABLE(MappedChannel1_addr)
+#define MappedChannel2 RAM_VARIABLE(0x07c3)
+#define MappedChannel3 RAM_VARIABLE(0x07c4)
+#define MappedChannel4 RAM_VARIABLE(0x07c5)
+#define MappedChannel5 RAM_VARIABLE(0x07c6)
+#define MappedChannel6 RAM_VARIABLE(0x07c7)
+#define MappedChannel7 RAM_VARIABLE(0x07c8)
+#define MappedChannel8 RAM_VARIABLE(0x07c9)
+
 #define UserProfile RAM_VARIABLE(0x0803)
 
 #endif

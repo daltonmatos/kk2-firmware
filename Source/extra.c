@@ -30,6 +30,16 @@ void _extra_make_call(uint8_t selected){
 
 void extra_features(){
   
-  render_menu(&ef1, &updown, &_extra_options, &_extra_make_call, 3);
-
+  menu_t data = {
+    .title = &ef1,
+    .footer_callback = &print_std_footer,
+    .options = &_extra_options,
+    .ok_callback = &_extra_make_call,
+    .render_callback = 0,
+    .total_options = 3,
+    .up_callback = 0,
+    .down_callback = 0    
+  };
+  
+  render_menu(&data);
 }

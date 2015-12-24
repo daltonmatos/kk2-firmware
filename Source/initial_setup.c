@@ -35,6 +35,15 @@ void ok_callback(uint8_t item){
 
 void initial_setup(){
 
-  render_menu(&isp1, &updown, &isp10, &ok_callback, 4);
-
+  menu_t data = {
+    .title = &isp1,
+    .footer_callback = &print_std_footer,
+    .options = &isp10,
+    .ok_callback = &ok_callback,
+    .render_callback = 0,
+    .total_options = 4,
+    .up_callback = 0,
+    .down_callback = 0
+  };
+  render_menu(&data);
 }

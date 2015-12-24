@@ -31,6 +31,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../ramvariables.h"
 #include "../constants.h"
 #include "../eepromvariables.h"
+#include "../io.h"
 
 #define LCD_CS1		5
 #define LCD_RES		6
@@ -143,7 +144,15 @@ void lcd_update(){
   }
 }
 
-void setpixel(uint8_t *buff, uint8_t x, uint8_t y, uint8_t c){}
+extern char backprev;
+extern char nxtchng;
+
+void print_std_footer(){
+    print_string(&backprev, 0, 57);
+    print_string(&nxtchng, X1, 57);
+}
+
+
 
 // the most basic function, set a single pixel
 void __setpixel(uint8_t x, uint8_t y) {

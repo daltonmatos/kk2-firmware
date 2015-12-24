@@ -89,5 +89,6 @@ void lcd_command(uint8_t command);
 
 void lcd_clear12x16();
 void lcd_load_contrast();
-extern void asm_LcdUpdate();
+void print_std_footer();
+void print_title(const char *title);
 #endif

@@ -78,7 +78,7 @@ void _highlight_current_print(uint8_t len, uint8_t x, uint8_t y, uint8_t hilight
 
   switch (hilight_type){
     case HIGHLIGHT_STRING:
-      print_selector(x, y-1, x + (len * char_width), y + char_height);
+      print_selector(x-2, y-1, x + (len * char_width) + 2, y + char_height);
       break;
     case HIGHLIGHT_FULL_LINE:
       print_selector(0, y-1, 127, y + char_height);
