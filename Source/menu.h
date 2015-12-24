@@ -10,8 +10,6 @@ typedef struct {
   uint8_t total_options;
   void (*render_callback)(uint8_t);
   void (*ok_callback)(uint8_t);
-  void (*up_callback)(uint8_t);
-  void (*down_callback)(uint8_t);
 } menu_t;
 
 

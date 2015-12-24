@@ -51,15 +51,9 @@ void __attribute__((optimize("O0"))) render_menu(menu_t *data){
     switch (pressed){
       case BUTTON_DOWN:
           selected_item += 1;
-          if (data->down_callback){
-            data->down_callback(constrain(selected_item, 0, data->total_options - 1));
-          }
           break;
       case BUTTON_UP:
           selected_item -= 1;
-          if (data->up_callback){
-            data->up_callback(constrain(selected_item, 0, data->total_options - 1));
-          }
           break;  
     }
     selected_item = constrain(selected_item, 0, data->total_options - 1);

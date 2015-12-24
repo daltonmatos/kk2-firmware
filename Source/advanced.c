@@ -43,8 +43,6 @@ void advanced_settings(){
     .ok_callback = &make_call,
     .render_callback = 0,
     .total_options = 4,
-    .up_callback = 0,
-    .down_callback = 0    
   };
 
   render_menu(&data);

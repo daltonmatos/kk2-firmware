@@ -5,6 +5,7 @@
 #include "io.h"
 #include "ramvariables.h"
 #include "eepromvariables.h"
+#include "menu.h"
 
 extern const char ss_title;
 extern const char percent;
@@ -21,10 +22,6 @@ extern const char nxtchng;
 
 void _ss_render(uint8_t selected_item){
 
-  lcd_clear();
-  FontSelector = f6x8;
-
-  print_string_2(&ss_title, 21, 1, HIGHLIGHT_FULL_LINE);
   print_string(&ail, 0, 11);
   print_string(&ele, 0, 20);
   print_string(&rudd, 0, 29);
@@ -47,40 +44,25 @@ void _ss_render(uint8_t selected_item){
   X1 = 67 + (6*_x);  Y1 = 47; PixelType = 0;
   asm_PrintChar('%');
 
-  print_string(&backprev, 0, 57);
-  print_string(&nxtchng, 55, 57);
   
+}
+
+void _ss_ok_callback(uint8_t selected_item){
+      eepromP_update_word(uint16_t_ptr(((int16_t) eeStickScaleRoll + selected_item*2)), 
+                          asm_NumEdit(eepromP_read_word(uint16_t_ptr((int16_t) eeStickScaleRoll + selected_item*2)), 0, 500));
 }
 
 void stick_scaling(){
 
-  uint8_t pressed = 0;
-  int8_t selected_item = 0;
-
-  _ss_render(selected_item);
-  lcd_update();
-  while ((pressed = wait_for_button(BUTTON_ANY)) != BUTTON_BACK){
-
-
-    switch (pressed){
-      case BUTTON_UP:
-        selected_item--;
-        break;
-      case BUTTON_DOWN:
-        selected_item++;
-        break;
-    }
-
-    selected_item = constrain(selected_item, 0, 4);
-
-    if (pressed == BUTTON_OK){
-      eepromP_update_word(uint16_t_ptr(((int16_t) eeStickScaleRoll + selected_item*2)), 
-                          asm_NumEdit(eepromP_read_word(uint16_t_ptr((int16_t) eeStickScaleRoll + selected_item*2)), 0, 500));
-    }
-    _ss_render(selected_item);
-    lcd_update();
-
-  }
+  menu_t data = {
+    .title = &ss_title,
+    .footer_callback = &print_std_footer,
+    .options = 0,
+    .ok_callback = &_ss_ok_callback,
+    .render_callback = &_ss_render,
+    .total_options = 5,
+  };
+  render_menu(&data);
 
 }
 

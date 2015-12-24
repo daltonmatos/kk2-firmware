@@ -37,8 +37,6 @@ void extra_features(){
     .ok_callback = &_extra_make_call,
     .render_callback = 0,
     .total_options = 3,
-    .up_callback = 0,
-    .down_callback = 0    
   };
   
   render_menu(&data);
