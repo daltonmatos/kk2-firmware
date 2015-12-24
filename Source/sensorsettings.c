@@ -25,7 +25,7 @@ void _sns_render(uint8_t selected, uint8_t lpf_cfg, uint8_t gyro_cfg, uint8_t ac
   lcd_clear();
 
   print_string(&sse1, 0, 1);
-  print_number_2(pgm_read_byte(&lpf + (lpf_cfg)) + 1, 100, 1, selected == 0 ? HIGHLIGHT_STRING : HIGHLIGHT_NONE);
+  print_number_2(pgm_read_byte(&lpf + (lpf_cfg)) + 1, 100, 1, selected == 0 ? HIGHLIGHT_TO_THE_END_OF_LINE : HIGHLIGHT_NONE);
 
   print_string(&sse2, 0, 10);
   print_number_2(pgm_read_word(&gyro + (gyro_cfg * 2)), 100, 10, selected == 1 ? HIGHLIGHT_TO_THE_END_OF_LINE : HIGHLIGHT_NONE);
