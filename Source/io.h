@@ -54,4 +54,7 @@ void eeprom_copy_block(uint8_t * src, uint8_t *dest, uint8_t count);
 
 int16_t numedit(int16_t initial_value, int16_t min, int16_t max);
 
+void print_std_footer();
+void print_title(const char *title);
+
 #endif

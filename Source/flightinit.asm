@@ -58,22 +58,7 @@ fli8:	b16store_array FilteredOut1, Temp
 	b16mov MixFactor, Temp
 
 
-	ldy MappedChannel1
-	rcall GetEeChannelMapping
-	rcall LoadMappedChannel			;eeChannelRoll		or eeSatChannelRoll
-	rcall LoadMappedChannel			;eeChannelPitch		or eeSatChannelPitch
-	rcall LoadMappedChannel			;eeChannelThrottle	or eeSatChannelThrottle
-	rcall LoadMappedChannel			;eeChannelYaw		or eeSatChannelYaw
-	rcall LoadMappedChannel			;eeChannelAux		or eeSatChannelAux
-	rcall LoadMappedChannel			;eeChannelAux2		or eeSatChannelAux2
-	rcall LoadMappedChannel			;eeChannelAux3		or eeSatChannelAux3
-	rcall LoadMappedChannel			;eeChannelAux4		or eeSatChannelAux4
-	call CheckChannelMapping
-	brcc fli3
-
-	call ChannelMappingError		;invalid channel mapping must be resolved before we can continue
-	call ChannelMapping
-
+  ; Channel Mapping check was called here. Not needed anymore, called on main.c
 
 fli3:	rcall LoadGimbalSettings
 
@@ -554,33 +539,4 @@ LoadDG2Settings:
 	call ReadEepromP
 	sts DG2Functions, t
 	ret
-
-
-
-	;--- Get EEPROM address of the first mapped channel ---
-
-GetEeChannelMapping:
-
-	lds t, RxMode
-	cpi t, RxModeSatDSM2
-	brlt ecm1
-
-	ldz eeSatChannelRoll		;channel mapping for Satellite mode
-	rjmp ecm2
-
-ecm1:	ldz eeChannelRoll		;normal channel mapping
-
-ecm2:	ret
-
-
-
-	;--- Read mapped channel value from EEPROM ---
-
-LoadMappedChannel:
-
-	call GetEePVariable8
-	dec xl
-	st y+, xl
-	ret
-
 

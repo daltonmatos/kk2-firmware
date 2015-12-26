@@ -95,6 +95,11 @@ MiscSettings:
   safe_call_c misc_settings
   ret
 
+channel_mapping:
+  nop
+ChannelMapping:
+  safe_call_c channel_mapping
+  ret
 
 /* Initial Setup Screen 
  * Could not make this work in C. Leave it here for now.

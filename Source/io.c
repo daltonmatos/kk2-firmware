@@ -92,6 +92,26 @@ void _highlight_current_print(uint8_t len, uint8_t x, uint8_t y, uint8_t hilight
   }
 }
 
+extern char backprev;
+extern char nxtchng;
+
+void print_std_footer(){
+    print_string(&backprev, 0, 57);
+    print_string(&nxtchng, X1, 57);
+}
+
+uint8_t strlen_p(const char *str){
+  uint8_t size = 0;
+  while (pgm_read_byte(str++)){
+    size++;
+  }
+  return size;
+}
+
+void print_title(const char *title){
+
+  print_string_2(title, 72 - (strlen_p(title)*8 / 2), 1, HIGHLIGHT_FULL_LINE);
+}
 
 uint8_t print_string(const char *str_addr, uint8_t x, uint8_t y){
   X1 = x;

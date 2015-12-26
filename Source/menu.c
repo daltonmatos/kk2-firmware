@@ -7,22 +7,13 @@
 
 #include "menu.h"
 
-uint8_t strlen_p(const char *str){
-  uint8_t size = 0;
-  while (pgm_read_byte(str++)){
-    size++;
-  }
-  return size;
-}
-
-
 void __attribute__((optimize("O0"))) _menu_render_screen(menu_t *data, uint8_t selected_item){
 
   uint8_t op = 0;
   lcd_clear();
   FontSelector = f6x8;
 
-  print_string_2(data->title, 72 - (strlen_p(data->title)*8 / 2), 1, HIGHLIGHT_FULL_LINE);
+  print_title(data->title);
 
   if (data->render_callback){
     data->render_callback(selected_item);

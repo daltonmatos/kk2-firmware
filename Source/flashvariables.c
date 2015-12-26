@@ -89,3 +89,7 @@ const char stt6[] PROGMEM = "Servo Filter    : ";
 /* Channel Mapping scren */
 const char cm_title[] PROGMEM = "CHANNEL MAPPING";
 const char aux4[] PROGMEM = "Aux4";
+
+const char cmw1[] PROGMEM = "Channel mapping is";
+const char cmw2[] PROGMEM = "invalid. Duplicates";
+const char cmw3[] PROGMEM = "are not allowed.";

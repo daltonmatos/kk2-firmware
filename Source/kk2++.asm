@@ -105,7 +105,6 @@ entrypoints: .dw Main, CppmMain, SBusMain, SatelliteMain, SatelliteMain
 .include "gimbal_mainmenu.asm"
 
 .include "motorcheck.asm"
-.include "channelmapping.asm"
 .include "errorlog.asm"
 .include "main.asm"
 .include "tuning.asm"

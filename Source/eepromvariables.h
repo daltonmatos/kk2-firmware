@@ -52,7 +52,8 @@
 #define eeServoFilter       EEPROM16_VARIABLE(0x0098)
 #define eeUnused              EEPROM16_VARIABLE(0x009a)
 
-#define eeChannelRoll         EEPROM_VARIABLE(0x009c)
+#define eeChannelRoll_addr    0x009c
+#define eeChannelRoll         EEPROM_VARIABLE(eeChannelRoll_addr)
 #define eeChannelPitch        EEPROM_VARIABLE(0x009d)
 #define eeChannelThrottle     EEPROM_VARIABLE(0x009e)
 #define eeChannelYaw          EEPROM_VARIABLE(0x009f)
@@ -60,7 +61,9 @@
 #define eeChannelAux2         EEPROM_VARIABLE(0x00a1)
 #define eeChannelAux3         EEPROM_VARIABLE(0x00a2)
 #define eeChannelAux4         EEPROM_VARIABLE(0x00a3)
-#define eeSatChannelRoll      EEPROM_VARIABLE(0x00a4)
+
+#define eeSatChannelRoll_addr 0x00a4
+#define eeSatChannelRoll      EEPROM_VARIABLE(eeSatChannelRoll_addr)
 #define eeSatChannelPitch     EEPROM_VARIABLE(0x00a5)
 #define eeSatChannelThrottle  EEPROM_VARIABLE(0x00a6)
 #define eeSatChannelYaw       EEPROM_VARIABLE(0x00a7)

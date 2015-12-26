@@ -144,15 +144,6 @@ void lcd_update(){
   }
 }
 
-extern char backprev;
-extern char nxtchng;
-
-void print_std_footer(){
-    print_string(&backprev, 0, 57);
-    print_string(&nxtchng, X1, 57);
-}
-
-
 
 // the most basic function, set a single pixel
 void __setpixel(uint8_t x, uint8_t y) {
