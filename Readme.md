@@ -29,13 +29,42 @@ To build the project:
 A new binary will be available at ``bin/kk2++.elf`` if you need to disassembly and a ``bin/kk2++.hex`` file will be ready to be flashed into the micro-controller's memory.
 
 
-# Possible Migration Roadmap
+# Migration Roadmap
 
  * ~~Migrate the interrupt handler vector to C, still keeping all code in AVR Assembly;~~ Change of plans: Will keep the assembly code as the main code (compiling with ``-nostartfiles``).
  * ~~Rewrite the EEPROM driver in C so it will be possible do read and write config values;~~ Not needed, will use ``<avr/eeprom.h>`` functions;
  * ~~Migrate simple logics do C, for example, the ``reset`` interrupt handler; This handler just reads EEPROM values and call the correct ``main`` routine, based on the Receiver type (Standard, CPPM, S.Bus, Satellite);~~ Migrated.
  * ~~Rewrite the LCD display driver and use it from the Assembly code;~~ First attempt: Done. ~~Still does not work, for now the C code uses the original Assembly implementation.~~ The lcd_update() not working was due to gcc optimizing too much. Making some parts of the code ``volatile`` seems to solve the problem. C Implemented screens already uses the lcd_update() implemented in C.
- * Stat to migrate each configuration screen to C;
+ * Start to migrate each configuration screen to C;
+
+   * Remote Tuning
+   * PI Editor
+   * ~~Self-level Settings~~
+   * ~~Stick Scaling~~
+   * ~~Mode Settings~~
+   * ~~Misc. Settings~~
+   * Gimbal Settings
+   * ~~Advanced Settings~~
+     * ~~Channel Mapping~~
+     * ~~Sensor Settings~~
+     * Mixer Editor
+     * ~~Board orientation~~
+   * AUX Switch Setup
+   * DG2 Switch Setup
+   * ~~Initial Setup~~
+     * Load Motor Layout
+     * ACC Calibration
+     * Trim Battery Voltage
+     * Select RX Mode
+   * Receiver Test
+   * Sensor Test
+   * Show Motor Layout
+   * User Profile
+   * ~~Extra Features~~
+     * Check Motor Outputs
+     * ~~Gimbal Controller~~
+     * View Serial RX Data
+   * ~~ESC Calibration~~
    * ~~Version Screen~~ Migrated
    * ~~LCD Contrast Screen~~ Migrated
    * LCD Display driver
@@ -44,7 +73,7 @@ A new binary will be available at ``bin/kk2++.elf`` if you need to disassembly a
      * PrintChar
      * Sprite
      * SetPixel
-   * _More to be added_
+ * Reduce overal refresh rate from 400kHz to about 100Hz. This will leave room for flight loop to run.
  * Migrate the main loop to C, still calling the routines in Assembly;
  * Start to migrate each mainloop routine to C;
  * ....
