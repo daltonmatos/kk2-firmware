@@ -1,5 +1,15 @@
 #include <avr/pgmspace.h>
 
+
+
+const char _char_data[] PROGMEM = {
+  4, 6, 4, //font4x6
+  6, 8, 6, //font6x8
+  8, 12, 12, //font8x12
+  12, 16, 24, //font12x16
+  16, 16, 32 //symbols16x16
+};
+
 const char ver1[] PROGMEM = "VERSION";
 const char ver2[] PROGMEM = "KK2.1.x AiO";
 

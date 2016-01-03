@@ -19,7 +19,7 @@ enum {
   HIGHLIGHT_FROM_BEGINNING_OF_LINE
 };
 
-extern void asm_PrintChar(const char ch);
+extern void asm_Sprite(const char *ch, uint8_t charWidth, uint8_t charHeight);
 extern void asm_ShowNoAccessDlg(const char *str);
 extern void asm_EnforceRestart();
 extern uint8_t asm_get_mpu_register(uint8_t r);
@@ -37,6 +37,7 @@ uint8_t wait_for_button(uint8_t button_mask);
 uint8_t show_confirmation_dlg(const char *str);
 uint8_t _print16_signed(int16_t n);
 
+void print_char(const char ch);
 #define SHIFT_ADDR_TO_PROFILE(profile, addr) ((addr) | (profile << 8))
 #define SHIFT_ADDR_TO_CURRENT_PROFILE(addr) SHIFT_ADDR_TO_PROFILE(UserProfile, addr)
 

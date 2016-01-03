@@ -11,6 +11,7 @@
 
 /* This holds info about each font. We will need CharWidth and CharHeight */
 extern const char TabCh;
+extern const char _char_data[];
 
 #define EXTRACT_BIT(n, bit) ((n) & _BV((bit)))
 
@@ -73,8 +74,9 @@ void print_selector(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2){
 }
 
 void _highlight_current_print(uint8_t len, uint8_t x, uint8_t y, uint8_t hilight_type){
-  uint8_t char_width = pgm_read_byte(&TabCh + (FontSelector * 6) + 2);
-  uint8_t char_height = pgm_read_byte(&TabCh + (FontSelector * 6) + 3);
+  uint8_t offset = FontSelector * 3;
+  uint8_t char_width = pgm_read_byte(&_char_data[offset]);
+  uint8_t char_height = pgm_read_byte(&_char_data[offset + 1]);
 
   switch (hilight_type){
     case HIGHLIGHT_STRING:
@@ -119,7 +121,7 @@ uint8_t print_string(const char *str_addr, uint8_t x, uint8_t y){
   char ch = 0;
   uint8_t count = 0;
   while ((ch = pgm_read_byte(str_addr++))){
-    asm_PrintChar(ch);
+    print_char(ch);
     count++;
   }
   return count;
@@ -139,12 +141,12 @@ uint8_t _print16_signed(int16_t n){
 
 
   if (!n){
-    asm_PrintChar('0');
+    print_char('0');
     return 1;
   }
 
   if (n < 0){
-    asm_PrintChar('-');
+    print_char('-');
     n = -n;
   }
   
@@ -157,7 +159,7 @@ uint8_t _print16_signed(int16_t n){
     }
     _div /= 10;
     if (digit || print_zeroes){
-      asm_PrintChar(digit + 16);
+      print_char(digit + 48);
       total_digits++;
       print_zeroes = 1;
     }
@@ -179,7 +181,6 @@ uint8_t print_number_2(int16_t number, uint8_t x, uint8_t y, uint8_t hilight_typ
 extern const char confirm;
 extern const char conf;
 extern const char rusure;
-
 
 
 uint8_t show_confirmation_dlg(const char *str){
@@ -243,3 +244,42 @@ void eeprom_copy_block(uint8_t * src, uint8_t *dest, uint8_t count){
     }
 }
 
+
+extern const char font4x6[]; 
+extern const char font6x8[]; 
+extern const char font12x16[]; 
+extern const char symbols16x16[]; 
+
+const char* _get_font_address(){
+  switch(FontSelector){
+    case f4x6:
+      return font4x6;
+      break;
+    case f6x8:
+      return font6x8;
+      break;
+    case f12x16:
+      return font12x16;
+      break;
+    case s16x16:
+      return symbols16x16;
+      break;
+  }
+}
+
+void print_char(const char ch){
+
+  uint8_t table_offset = 32;
+  const char *font_address = _get_font_address();
+  uint8_t offset = FontSelector * 3;
+  uint8_t char_width = pgm_read_byte(&_char_data[offset]);
+  uint8_t char_height = pgm_read_byte(&_char_data[offset + 1]);
+  uint8_t char_bytes = pgm_read_byte(&_char_data[offset + 2]);
+  
+  if (ch < 32){
+    table_offset = 0;
+  }
+  uint16_t char_offset = (ch - table_offset) * char_bytes;
+  asm_Sprite(font_address + char_offset, char_width, char_height);
+  X1 = X1 + char_width;
+}

@@ -346,98 +346,17 @@ print2:	lpm t, z+
 
 print1: ret
 
-
-.def	CharWidth	=r17
-.def	CharHeight	=r18
-.def	CharBytes	=r19
-
+print_char:
+  ret
 
 PrintChar:
-;	PushAll
-	push xl
-	push xh
-	push yl
-	push zl
-	push zh
-	push r17
-	push r18
-	push r19
-
-	lds xl, FontSelector	;Z = address of TabCh * 2 + FontSelector * 6
-	ldi xh, 6
-	mul xl, xh
-
-	ldz TabCh*2
-	add zl, r0
-	adc zh, r1
-
-	lpm xl, Z+
-	lpm xh, Z+
-
-	lpm CharWidth, Z+
-	lpm CharHeight, Z+
-	lpm CharBytes, Z
-
-	movw Z, X
-
-	rcall pp1
-
-;	PopAll
-	pop r19
-	pop r18
-	pop r17
-	pop zh
-	pop zl
-	pop yl
-	pop xh
-	pop xl
-	ret
-
-TabCh:	.db low(font4x6*2), high(font4x6*2), 4, 6, 4, 0
-	.db low(font6x8*2), high(font6x8*2), 6, 8, 6, 0
-	.db low(font8x12*2), high(font8x12*2), 8, 12, 12, 0
-	.db low(font12x16*2), high(font12x16*2), 12, 16, 24, 0
-	.db low(symbols16x16*2), high(symbols16x16*2), 16, 16, 32, 0
-
-
-
-pp1:	mov xl,t	;
-	mov xh,t
-	andi xl,0b00011111
-	andi xh,0b01100000
-
-	cpi xh, 0b01000000	;ABCDEF
-	brne pp2
-	subi xl,-0x20
-	jmp pp3
-
-pp2:	cpi xh, 0b01100000	;abcdef
-	brne pp3
-	subi xl,-0x40
-
-pp3:	mul xl, CharBytes	;Find address of char
-	add zl, r0
-	adc zh, r1
-
-	mov xl, CharWidth
-	mov yl, CharHeight
-
-	rcall Sprite		;draw char
-
-	lds t, X1		;advance to next position
-	add t, CharWidth
-	sts X1, t
-
-	ret
-
-.undef	CharWidth
-.undef	CharHeight
-.undef	CharBytes
-
-
-
-
-
+  push_all
+  clr r25
+  mov r24, t
+  clr r1
+  call print_char
+  pop_all
+  ret
 
 Sprite:			;Z = bitmap address
 			;xl = x size

@@ -42,7 +42,7 @@ void _ss_render(uint8_t selected_item){
   print_number_2(eepromP_read_word(eeStickScaleThrottle), 67, 38, selected_item == 3 ? HIGHLIGHT_TO_THE_END_OF_LINE : HIGHLIGHT_NONE);
   uint8_t _x = print_number_2(eepromP_read_word(eeStickScaleSlMixing), 67, 47, selected_item == 4 ? HIGHLIGHT_TO_THE_END_OF_LINE : HIGHLIGHT_NONE);
   X1 = 67 + (6*_x);  Y1 = 47; PixelType = 0;
-  asm_PrintChar('%');
+  print_char('%');
 
   
 }
