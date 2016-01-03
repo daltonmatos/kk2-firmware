@@ -101,6 +101,22 @@ ChannelMapping:
   safe_call_c channel_mapping
   ret
 
+; Used in rxmode screen
+stdrx:	.db "Standard RX", 0
+cppm:	.db "CPPM (aka. PPM)", 0
+sbus:	.db "S.Bus", 0
+dsm2:	.db "Satellite DSM2", 0, 0
+dsmx:	.db "Satellite DSMX", 0, 0
+
+; Used in version screen
+modes:	.dw stdrx*2, cppm*2, sbus*2, dsm2*2, dsmx*2
+
+select_rx_mode:
+  ret
+SelectRxMode:
+  safe_call_c select_rx_mode
+  ret
+
 /* Initial Setup Screen 
  * Could not make this work in C. Leave it here for now.
 const char isp1[] PROGMEM = "INITIAL SETUP";

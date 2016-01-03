@@ -1,0 +1,69 @@
+#include <avr/io.h>
+#include <avr/eeprom.h>
+
+#include "menu.h"
+#include "io.h"
+#include "constants.h"
+#include "eepromvariables.h"
+#include "display/st7565.h"
+
+extern const char srm1; // RX MODE
+extern const char srm2; // Mode
+extern const char srm4; // Restart is required!
+
+extern const char stdrx;
+extern const char cppm; 
+extern const char sbus; 
+extern const char dsm2; 
+extern const char dsmx; 
+extern const char affects_all_profiles;
+
+#define RXMODE_NONE 0xFF
+
+void _rxmode_render(uint8_t selected_item){
+
+  print_string(&srm2, 0, 20);
+
+  switch (selected_item){
+    case RxModeStandard:
+      print_string(&stdrx, 35, 20);
+      break;
+    case RxModeCppm:
+      print_string(&cppm, 35, 20);
+      break;
+    case RxModeSBus:
+      print_string(&sbus, 35, 20);
+      break;
+    case RxModeSatDSM2:
+      print_string(&dsm2, 35, 20);
+      break;
+    case RxModeSatDSMX:
+      print_string(&dsmx, 35, 20);
+      break;  
+  }
+  print_string_2(&affects_all_profiles, 3, 48, HIGHLIGHT_FULL_LINE);
+}
+
+
+void _rxmode_ok_callback(uint8_t selected_item){
+
+  eeprom_update_byte(eeRxMode, selected_item);
+  print_string_2(&srm4, 4, 35, HIGHLIGHT_FULL_LINE);
+  lcd_update();
+  while(1){}
+
+}
+
+void select_rx_mode(){
+
+  menu_t data = {
+    .title = &srm1,
+    .footer_callback = &print_std_footer,
+    .options = 0,
+    .render_callback = &_rxmode_render,
+    .ok_callback = &_rxmode_ok_callback,
+    .total_options = 5,
+  };
+  
+  render_menu(&data);
+}

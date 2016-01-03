@@ -357,6 +357,7 @@ eew10:	.dw eew2*2, eew3*2, eew4*2, eew5*2
 
 	;--- Enforce restart ---
 
+srm4:	.db "Restart is required!", 0, 0
 EnforceRestart:
 
 	call LcdClear6x8		;restart is required
@@ -374,4 +375,14 @@ ResetGimbalControllerMode:
 	clr t
 	ldz eeGimbalMode
 	call WriteEeprom		;save in profile #1 only
+	ret
+
+	;--- Reset RX mode ---
+
+ResetRxMode:
+
+	ldi t, RxModeStandard		;set RX mode to 'Standard Receiver'
+	sts RxMode, t
+	ldz eeRxMode
+	call WriteEeprom
 	ret

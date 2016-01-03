@@ -105,3 +105,7 @@ const char aux4[] PROGMEM = "Aux4";
 const char cmw1[] PROGMEM = "Channel mapping is";
 const char cmw2[] PROGMEM = "invalid. Duplicates";
 const char cmw3[] PROGMEM = "are not allowed.";
+
+/* Rx Mode screen */
+const char srm1[] PROGMEM = "RX MODE";
+const char srm2[] PROGMEM = "Mode: ";

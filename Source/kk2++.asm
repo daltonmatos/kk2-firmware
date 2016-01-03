@@ -73,7 +73,6 @@ reset:
 entrypoints: .dw Main, CppmMain, SBusMain, SatelliteMain, SatelliteMain
 
 
-.include "rxmode.asm"
 .include "batteryvoltage.asm"
 
 .include "serial_readrx.asm"

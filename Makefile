@@ -27,7 +27,8 @@ EXTERNAL_SYMBOLS = c_main lcd_clear lcd_command lcd_data show_version \
 c_contrast lcd_update advanced_settings board_rotation \
 SetDefaultLcdContrast extra_features show_confirmation_dlg esc_calibration_warning \
 gimbal_mode mode_settings sensor_settings selflevel_settings \
-stick_scaling misc_settings initial_setup __setpixel channel_mapping print_char
+stick_scaling misc_settings initial_setup __setpixel channel_mapping print_char \
+select_rx_mode
 
 $(BIN_DIR)/kk2++.hex: $(BIN_DIR)/kk2++.elf $(OBJECTS) $(BIN_DIR)/flashvariables.o $(BIN_DIR)/kk2++.asm.hex
 	avr-gcc $(CC_FLAGS) -mmcu=atmega644p -DF_CPU=20000000 -nostartfiles \
