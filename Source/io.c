@@ -267,6 +267,32 @@ const char* _get_font_address(){
   }
 }
 
+void _sprite(const char *bitmap, uint8_t w, uint8_t h, uint8_t bytes, uint8_t x, uint8_t y){
+
+  uint8_t b = 0;
+  uint8_t _x1_original = x;
+  uint8_t _y1_original = y;
+  uint8_t volatile char_data = 0;
+  uint8_t volatile bits = 0;
+
+  for (b = 0; b < bytes; b++){
+    char_data = pgm_read_byte(bitmap + b);
+    for (bits = 0; bits < 8; bits++){
+      if (char_data & 0x80){
+        __setpixel(x, y);
+      }
+      x++;
+      char_data <<= 1;
+
+      if ((x - _x1_original) == w) {
+        y++;
+        x = _x1_original;
+      }
+
+    }
+  }
+}
+
 void print_char(const char ch){
 
   uint8_t table_offset = 32;
@@ -280,6 +306,6 @@ void print_char(const char ch){
     table_offset = 0;
   }
   uint16_t char_offset = (ch - table_offset) * char_bytes;
-  asm_Sprite(font_address + char_offset, char_width, char_height);
+  _sprite(font_address + char_offset, char_width, char_height, char_bytes, X1, Y1);
   X1 = X1 + char_width;
 }

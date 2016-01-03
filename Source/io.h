@@ -19,7 +19,6 @@ enum {
   HIGHLIGHT_FROM_BEGINNING_OF_LINE
 };
 
-extern void asm_Sprite(const char *ch, uint8_t charWidth, uint8_t charHeight);
 extern void asm_ShowNoAccessDlg(const char *str);
 extern void asm_EnforceRestart();
 extern uint8_t asm_get_mpu_register(uint8_t r);

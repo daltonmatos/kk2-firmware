@@ -145,22 +145,6 @@ asm_setup_mpu6050:
   safe_called_from_c setup_mpu6050
   ret
 
-asm_Sprite:
-  push_all
-
-  movw Z, r24
-  ; xl = charWidth (r23:r22)
-  clr xh
-  mov xl, r22
-  ; yl = charHeight (r21:r20)
-  clr yh
-  mov yl, r20
-
-  call Sprite
-  pop_all
-  ret
-
-
 asm_NumEdit:
 ; num=r25:r24
 ; min=r23:r22
