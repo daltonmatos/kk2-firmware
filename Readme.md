@@ -55,7 +55,7 @@ A new binary will be available at ``bin/kk2++.elf`` if you need to disassembly a
      * Load Motor Layout
      * ACC Calibration
      * Trim Battery Voltage
-     * Select RX Mode
+     * ~~Select RX Mode~~
    * Receiver Test
    * Sensor Test
    * Show Motor Layout
@@ -68,11 +68,11 @@ A new binary will be available at ``bin/kk2++.elf`` if you need to disassembly a
    * ~~Version Screen~~ Migrated
    * ~~LCD Contrast Screen~~ Migrated
    * LCD Display driver
-     * ~~LcdClear~~ Migrated
-     * ~~LcdUpdate~~ Migrated
-     * PrintChar
-     * Sprite
-     * SetPixel
+     * ~~LcdClear~~
+     * ~~LcdUpdate~~
+     * ~~PrintChar~~
+     * ~~Sprite~~
+     * ~~SetPixel~~
  * Reduce overal refresh rate from 400kHz to about 100Hz. This will leave room for flight loop to run.
  * Migrate the main loop to C, still calling the routines in Assembly;
  * Start to migrate each mainloop routine to C;
