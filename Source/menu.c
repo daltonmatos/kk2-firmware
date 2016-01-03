@@ -32,7 +32,8 @@ void __attribute__((optimize("O0"))) _menu_render_screen(menu_t *data, uint8_t s
 
 void __attribute__((optimize("O0"))) render_menu(menu_t *data){
 
-  uint8_t selected_item = 0;
+  uint8_t selected_item = data->initial_option;
+  //uint8_t selected_item = 0;
   uint8_t pressed = 0;
 
   _menu_render_screen(data, selected_item);

@@ -48,7 +48,10 @@ void _rxmode_render(uint8_t selected_item){
 void _rxmode_ok_callback(uint8_t selected_item){
 
   eeprom_update_byte(eeRxMode, selected_item);
-  print_string_2(&srm4, 4, 35, HIGHLIGHT_FULL_LINE);
+  PixelType = 2;
+  __fillrect(0, 33, 128, 64);
+  PixelType = 1;
+  print_string_2(&srm4, 4, 45, HIGHLIGHT_FULL_LINE);
   lcd_update();
   while(1){}
 
@@ -63,6 +66,7 @@ void select_rx_mode(){
     .render_callback = &_rxmode_render,
     .ok_callback = &_rxmode_ok_callback,
     .total_options = 5,
+    .initial_option = RxMode,
   };
   
   render_menu(&data);

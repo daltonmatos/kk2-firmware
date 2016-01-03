@@ -116,6 +116,7 @@ void channel_mapping(){
     .ok_callback = &_cm_ok_cb,
     .render_callback = &_cm_render,
     .total_options = 8,
+    .initial_option = 0,
   };
 
   while (1){

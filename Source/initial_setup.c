@@ -42,6 +42,7 @@ void initial_setup(){
     .ok_callback = &ok_callback,
     .render_callback = 0,
     .total_options = 4,
+    .initial_option = 0,
   };
   render_menu(&data);
 }
