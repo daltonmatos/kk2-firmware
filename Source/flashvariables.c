@@ -10,6 +10,8 @@ const char _char_data[] PROGMEM = {
   16, 16, 32 //symbols16x16
 };
 
+const char _nxtchng[] PROGMEM = " NEXT CHANGE";
+
 const char ver1[] PROGMEM = "VERSION";
 const char ver2[] PROGMEM = "KK2.1.x AiO";
 

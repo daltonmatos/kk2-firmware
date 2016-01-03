@@ -19,6 +19,7 @@ DEBUG_OBJECTS = $(addprefix $(BIN_DIR)/, \
 debug.o \
 flashvariables.o \
 display/st7565.o \
+io.o \
 )
 
 # Symbols used by the Assembly code but that are implemented in C
