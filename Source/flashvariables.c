@@ -109,3 +109,8 @@ const char cmw3[] PROGMEM = "are not allowed.";
 /* Rx Mode screen */
 const char srm1[] PROGMEM = "RX MODE";
 const char srm2[] PROGMEM = "Mode: ";
+
+/* DG2 Switch Setup */
+const char dg2_settings_title[] PROGMEM = "DG2 SWITCH SETUP";
+const char dgs1[] PROGMEM = "Stay Armed/Spin:";
+const char dgs2[] PROGMEM = "Digital Output :";

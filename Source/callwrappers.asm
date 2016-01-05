@@ -101,6 +101,12 @@ ChannelMapping:
   safe_call_c channel_mapping
   ret
 
+sbus_dg2settings:
+  ret
+SBusDG2SwitchSetup:
+  safe_call_c sbus_dg2settings
+  ret
+
 ; Used in rxmode screen
 stdrx:	.db "Standard RX", 0
 cppm:	.db "CPPM (aka. PPM)", 0

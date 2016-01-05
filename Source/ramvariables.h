@@ -47,6 +47,7 @@
 #define MappedChannel7 RAM_VARIABLE(0x07c8)
 #define MappedChannel8 RAM_VARIABLE(0x07c9)
 
+#define DG2Functions RAM_VARIABLE(0x07d9)
 #define UserProfile RAM_VARIABLE(0x0803)
 
 #endif

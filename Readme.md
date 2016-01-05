@@ -50,7 +50,7 @@ A new binary will be available at ``bin/kk2++.elf`` if you need to disassembly a
      * Mixer Editor
      * ~~Board orientation~~
    * AUX Switch Setup
-   * DG2 Switch Setup
+   * ~~DG2 Switch Setup~~
    * ~~Initial Setup~~
      * Load Motor Layout
      * ACC Calibration

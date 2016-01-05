@@ -91,7 +91,6 @@ entrypoints: .dw Main, CppmMain, SBusMain, SatelliteMain, SatelliteMain
 .include "sbus_mainmenu.asm"
 .include "sbus_status.asm"
 .include "sbus_readrx.asm"
-.include "sbus_dg2settings.asm"
 
 .include "sat_main.asm"
 .include "sat_hwsetup.asm"

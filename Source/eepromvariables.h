@@ -85,5 +85,6 @@
 #define eeMpuGyroCfg EEPROM_VARIABLE(0x00CB)
 #define eeMpuAccCfg EEPROM_VARIABLE(0x00CC)
 
+#define eeDG2Functions EEPROM_VARIABLE(0x00CE) /* b000000xy, y=Stay armed and spin motors: x=digital output */
 #endif
 
