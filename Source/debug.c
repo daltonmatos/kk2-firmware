@@ -8,21 +8,26 @@
 #include "constants.h"
 #include "fonts.h"
 #include "logo.h"
+#include "b168.h"
 
-extern const char ver2;
 
 void main(){
 
   setup_display();
   lcd_load_contrast();
-
   PixelType = 1;
-  _sprite(image_data_Font_k, 16, 0, 41, 10, 20);
-  _sprite(image_data_Font_k, 16, 0, 41, 25, 20);  
-  _sprite(image_data_Font_2, 16, 0, 28, 45, 25);
+  FontSelector = f6x8;
 
-  _sprite(image_data_Font_n, 16, 0, 29, 65, 25);
-  _sprite(image_data_Font_g, 16, 0, 52, 80, 20);
+  StickDeadZone->hi = 0;
+  StickDeadZone->lo = 0x20;
+  StickDeadZone->decimal = ENCODE_TO_8BIT_PRECISION(0);
+
+  X1 = 0; Y1 = 0;
+  print_b168(StickDeadZone, 3);
+
+  X1 = 0; Y1 = 10;
+  b168_const_add(StickDeadZone, -32);
+  print_b168(StickDeadZone, 3);
 
   lcd_update();
   wait_for_button(BUTTON_ANY);

@@ -19,10 +19,12 @@ uint8_t __print8_decimal(b168_t *number, uint8_t precision){
 
 uint8_t print_b168(b168_t *number, uint8_t precision){
   uint8_t digits = 0;
-  X1 = 10;
-  Y1 = 1;
   digits = _print16_signed((number->hi << 8) | number->lo);
   print_char('.');
   digits += __print8_decimal(number, precision);
+  if (!number->decimal){
+    _print16_signed(0);
+  }
   return ++digits;
 }
+

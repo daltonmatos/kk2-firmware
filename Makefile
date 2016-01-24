@@ -10,7 +10,7 @@ ASM_SOURCES = $(wildcard $(SRC_DIR)/*.asm) $(wildcard $(SRC_DIR)/*.inc)
 #AVRASM2 = avrasm2
 AVRASM2 = wine ~/bin/AvrAssembler2/avrasm2.exe
 
-SOURCES = $(filter-out $(SRC_DIR)/flashvariables.c $(SRC_DIR)/debug.c, $(wildcard $(SRC_DIR)/*.c) $(wildcard $(SRC_DIR)/display/*.c))
+SOURCES = $(filter-out $(SRC_DIR)/flashvariables.c $(SRC_DIR)/debug.c, $(wildcard $(SRC_DIR)/*.c) $(wildcard $(SRC_DIR)/display/*.c) $(wildcard $(SRC_DIR)/*.S))
 
 OBJECTS = $(patsubst $(SRC_DIR)/%, $(BIN_DIR)/%, $(SOURCES:.c=.o))
 OUTPUT_OBJECTS = $(patsubst $(SRC_DIR)/%.o, $(BIN_DIR)/%.o, $(filter-out $(SRC_DIR)/flashvariables.c.o, $(OBJECTS)))
@@ -20,6 +20,8 @@ debug.o \
 flashvariables.o \
 display/st7565.o \
 io.o \
+fp-math-168.S \
+b168.o \
 )
 
 # Symbols used by the Assembly code but that are implemented in C
@@ -34,7 +36,7 @@ $(BIN_DIR)/kk2++.hex: $(BIN_DIR)/kk2++.elf $(OBJECTS) $(BIN_DIR)/flashvariables.
 	avr-gcc $(CC_FLAGS) -mmcu=atmega644p -DF_CPU=20000000 -nostartfiles \
 		-o $(BIN_DIR)/kk2++.elf \
 		$(BIN_DIR)/kk2++.asm.hex.bin.elf \
-		$(filter-out $(BIN_DIR)/flashvariables.o, $(OUTPUT_OBJECTS)) $(BIN_DIR)/flashvariables.o
+		$(filter-out $(BIN_DIR)/flashvariables.o, $(OUTPUT_OBJECTS:.S=.o)) $(BIN_DIR)/flashvariables.o
 	avr-objcopy -I elf32-avr -O ihex -j .text -j .data $(BIN_DIR)/kk2++.elf $(BIN_DIR)/kk2++.hex 
 
 
@@ -57,13 +59,17 @@ $(BIN_DIR)/flashvariables.o: $(SRC_DIR)/flashvariables.c $(SRC_DIR)/flashvariabl
 	touch -d "$(mtime)" $(SRC_DIR)/flashvariables.c
 	
 
+$(BIN_DIR)/%.S: $(SRC_DIR)/%.S
+	@mkdir -p $(dir $(patsubst $(SRC_DIR)/%, $(BIN_DIR)/%, $@))	
+	avr-gcc $(CC_FLAGS) -mmcu=atmega644p -DF_CPU=20000000 -c $(SRC_DIR)/$(patsubst $(BIN_DIR)/%,%, $(@:.o=.c)) -o $(dir $(patsubst $(SRC_DIR)/%, $(BIN_DIR)/%, $@))/$(@F:.S=.o)
+
 $(BIN_DIR)/%.o: $(SRC_DIR)/%.c
 	@mkdir -p $(dir $(patsubst $(SRC_DIR)/%, $(BIN_DIR)/%, $@))	
 	avr-gcc $(CC_FLAGS) -mmcu=atmega644p -DF_CPU=20000000 -c $(SRC_DIR)/$(patsubst $(BIN_DIR)/%,%, $(@:.o=.c)) -o $(dir $(patsubst $(SRC_DIR)/%, $(BIN_DIR)/%, $@))/$(@F:.c=.o)
 
 debug: CC_FLAGS += -DDEBUG
 debug: $(DEBUG_OBJECTS) $(BIN_DIR)/flashvariables.o
-	avr-gcc $(CC_FLAGS) -mmcu=atmega644p -DF_CPU=20000000 -o $(BIN_DIR)/kk2++.elf $(DEBUG_OBJECTS)
+	avr-gcc $(CC_FLAGS) -mmcu=atmega644p -DF_CPU=20000000 -o $(BIN_DIR)/kk2++.elf $(DEBUG_OBJECTS:.S=.o)
 	avr-objcopy -I elf32-avr -O ihex -j .text -j .data $(BIN_DIR)/kk2++.elf $(BIN_DIR)/kk2++.hex 
 	
 
