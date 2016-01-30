@@ -9,9 +9,9 @@ typedef struct {
   uint8_t decimal;
 } b168_t;
 
-#define PRECISION 0.00390625
+#define PRECISION 0.00390625 /* This is the maximum precision represented in 16.8 format. 1/2^8 */
 #define ENCODE3(value) ((int32_t) ((value) / (PRECISION)))
-#define b168_load(b168_prt, value) b168_unpack(ENCODE3(value), b168_prt)
+#define b168ldi(b168_prt, value) b168_unpack(ENCODE3(value), b168_prt)
 
 #define ENCODE_TO_8BIT_PRECISION(value) ((uint8_t) ((value) / (PRECISION)))
 
