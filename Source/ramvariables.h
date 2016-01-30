@@ -9,6 +9,9 @@
 #define uint16_t_ptr(a) ((uint16_t *) (a))
 #define RAM16_VARIABLE(addr) (*(uint16_t_ptr(addr)))
 
+#define Temp          ((b168_t *) 0x0540)
+#define Temp2         ((b168_t *) 0x0543)
+#define Temper        ((b168_t *) 0x0546)
 #define StickDeadZone ((b168_t *) 0x0606) // 16.8 format (3 bytes)
 
 #define MpuFilter  RAM_VARIABLE(0x073A) 
