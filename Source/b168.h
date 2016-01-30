@@ -30,8 +30,7 @@ void b168nmov(b168_t *dest, b168_t *src); /* Negate src and move to dest */
 
 /* Implemented in Assembly*/
 void b168_add(b168_t *dest, b168_t *a, b168_t *b); /* a + b, stores result inside dest */
-/* _mul must receive 3 parameters. Signature must be: (b168_t *dest, b168_t *a, b168_t *b)*/
-void b168_mul(b168_t *a, b168_t *b); /* a * b, stores result inside a */
+void b168_mul(b168_t *dest, b168_t *a, b168_t *b); /* a * b, stores result inside dest */
 
 void b168fmul(b168_t *number, uint8_t value); /* multiply number by 2^value */
 void b168fdiv(b168_t *number, uint8_t value); /* divide number by 2^value */
