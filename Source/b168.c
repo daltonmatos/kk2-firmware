@@ -2,14 +2,6 @@
 #include "b168.h"
 #include "io.h"
 
-int32_t b168_pack(b168_t *v){
-  int32_t _v = v->hi;
-  _v <<= 16;
-  _v |= (v->lo << 8);
-  _v |= v->decimal;
-  return _v;
-}
-
 b168_t *b168_unpack(int32_t _v, b168_t *dest){
   dest->hi = (_v >> 16);
   dest->lo = (_v >> 8);

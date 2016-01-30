@@ -7,7 +7,7 @@
 
 load_temp:
   push_all
-  b16ldi Temp, 9.0
+  b16ldi Temp, -12.77
   pop_all
   ret
 

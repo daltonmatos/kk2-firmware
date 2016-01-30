@@ -1,6 +1,19 @@
 
 
 
+.global b168_pack
+b168_pack:
+  movw Z, r24
+  ld r20, Z+ /* high */
+  ld r19, Z+ /* low */
+  ld r18, Z+ /* fraction */
+
+  clr r25
+  mov r24, r20 /* high */
+  mov r23, r19 /* low */
+  mov r22, r18 /* fraction */
+  ret
+
 .global b168fadd
 
 b168fadd:
