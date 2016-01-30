@@ -20,24 +20,38 @@ b168fadd:
 .global b168_add
 b168_add:
 
-  movw r30, r24
-  ld r20, Z+
-  ld r19, Z+
-  ld r18, Z+
+  push r17
+  push r16
+  push r15
+  push r14
+  push r13
+  push r12
 
   movw r30, r22
-  ld r21, Z+
-  ld r26, Z+
-  ld r27, Z+
+  ld r17, Z+
+  ld r16, Z+
+  ld r15, Z+
+
+  movw r30, r20
+  ld r14, Z+
+  ld r13, Z+
+  ld r12, Z+
   
-  add r18, r27
-  adc r19, r26
-  adc r20, r21
+  add r17, r14
+  adc r16, r13
+  adc r15, r12
 
   movw r30, r24
-  st Z+, r20
-  st Z+, r19
-  st Z+, r18
+  st Z+, r17
+  st Z+, r16
+  st Z+, r15
+
+  pop r12
+  pop r13
+  pop r14
+  pop r15
+  pop r16
+  pop r17
 
   ret
 
