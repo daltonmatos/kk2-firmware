@@ -19,17 +19,6 @@ void main(){
   PixelType = 1;
   FontSelector = f6x8;
 
-  load_temp();
-  //b168_print(Temp, 3, 0, 0);
-  print_bits16(b168_pack(Temp), 0, 0);
-
-  b168_load(Temp2, -12.77);
-  //b168_print(Temp2, 3, 0, 10);
-  print_bits16(b168_pack(Temp2), 0, 10);
-
-  b168_mul(StickDeadZone, Temp, Temp2);
-
-  b168_print(StickDeadZone, 3, 0, 30);
   lcd_update();
   while (1){}
 
