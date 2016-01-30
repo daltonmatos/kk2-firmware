@@ -5,6 +5,7 @@
 #include "constants.h"
 #include "ramvariables.h"
 #include "display/st7565.h"
+#include "b168.h"
 
 extern const char misc_settings_title;
 
@@ -104,19 +105,8 @@ void misc_settings(){
 
   }
 
-  /* Save StickDeadZone in RAM. It is 16.8 format encoded
-   * Original Assembly code expects these 3 bytes to be:
-   * hi:lo[.decimal]
-   * If we use *(uint16_ptr(StickDeadZone)) = eepromP...
-   * for some reason gcc stores:
-   * lo:hi[.decimal]
-   * This same happens if we use StickDeadZone->integer = eepromP...
-   * If we need to use this value in C, we must do:
-   * uint16_t value = (StickDeadZone->hi << 8) | StickDeadZone->lo;
-   */
+  /* Save StickDeadZone in RAM. It is 16.8 format encoded */
   uint16_t _eeStickDeadZone = eepromP_read_word(eeStickDeadZone);
-  StickDeadZone->hi = (uint8_t) (_eeStickDeadZone >> 8);
-  StickDeadZone->lo = (uint8_t) _eeStickDeadZone;
-  StickDeadZone->decimal = 0;
+  b168_unpack(((int32_t) _eeStickDeadZone) << 8, StickDeadZone);
 }
 
