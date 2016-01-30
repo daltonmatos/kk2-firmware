@@ -69,7 +69,13 @@ $(BIN_DIR)/%.o: $(SRC_DIR)/%.c
 
 debug: CC_FLAGS += -DDEBUG
 debug: $(DEBUG_OBJECTS) $(BIN_DIR)/flashvariables.o
-	avr-gcc $(CC_FLAGS) -mmcu=atmega644p -DF_CPU=20000000 -o $(BIN_DIR)/kk2++.elf $(DEBUG_OBJECTS:.S=.o)
+	$(AVRASM2) $(SRC_DIR)/debug.asm -fI -o $(BIN_DIR)/debug.hex -l $(BIN_DIR)/debug.lst -m $(BIN_DIR)/debug.map
+	avr-objcopy -j .sec1 -I ihex -O binary $(BIN_DIR)/debug.hex $(BIN_DIR)/debug.asm.hex.bin
+	avr-objcopy --rename-section .data=.text,contents,alloc,load,readonly,code -I binary -O elf32-avr $(BIN_DIR)/debug.asm.hex.bin $(BIN_DIR)/debug.asm.hex.bin.elf
+	avr-objdump -d $(BIN_DIR)/debug.asm.hex.bin.elf | python2 tools/extract-symbols-metadata.py $(BIN_DIR)/debug.map > $(BIN_DIR)/debug.symtab
+	cat $(BIN_DIR)/debug.symtab | tools/elf-add-symbol $(BIN_DIR)/debug.asm.hex.bin.elf > /dev/null
+
+	avr-gcc $(CC_FLAGS) -mmcu=atmega644p -DF_CPU=20000000 -o $(BIN_DIR)/kk2++.elf $(DEBUG_OBJECTS:.S=.o) $(BIN_DIR)/debug.asm.hex.bin.elf
 	avr-objcopy -I elf32-avr -O ihex -j .text -j .data $(BIN_DIR)/kk2++.elf $(BIN_DIR)/kk2++.hex 
 	
 

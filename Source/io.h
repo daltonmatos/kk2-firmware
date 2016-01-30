@@ -38,6 +38,9 @@ uint8_t show_confirmation_dlg(const char *str);
 uint8_t _print16_signed(int16_t n);
 
 void print_char(const char ch);
+void print_bits32(int32_t n, uint8_t x, uint8_t y);
+void print_bits16(int16_t n, uint8_t x, uint8_t y);
+void print_bits8(int8_t n, uint8_t x, uint8_t y);
 #define SHIFT_ADDR_TO_PROFILE(profile, addr) ((addr) | (profile << 8))
 #define SHIFT_ADDR_TO_CURRENT_PROFILE(addr) SHIFT_ADDR_TO_PROFILE(UserProfile, addr)
 

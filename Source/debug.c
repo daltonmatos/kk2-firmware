@@ -10,6 +10,7 @@
 #include "logo.h"
 #include "b168.h"
 
+extern void load_temp();
 
 void main(){
 
@@ -18,20 +19,11 @@ void main(){
   PixelType = 1;
   FontSelector = f6x8;
 
-  StickDeadZone->hi = 0;
-  StickDeadZone->lo = 0x20;
-  StickDeadZone->decimal = ENCODE_TO_8BIT_PRECISION(0);
-
-  X1 = 0; Y1 = 0;
-  print_b168(StickDeadZone, 3);
-
-  X1 = 0; Y1 = 10;
-  b168_const_add(StickDeadZone, -32);
-  print_b168(StickDeadZone, 3);
+  b168_load(Temp, 10.1);
+  b168fadd(Temp, -11);
+  b168_print(Temp, 3, 0, 10);
 
   lcd_update();
-  wait_for_button(BUTTON_ANY);
-  
   while (1){}
 
 }

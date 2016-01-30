@@ -175,8 +175,59 @@ uint8_t print_number_2(int16_t number, uint8_t x, uint8_t y, uint8_t hilight_typ
   return digits;
 }
 
+void print_bits32(int32_t number, uint8_t x, uint8_t y){
+  uint8_t volatile bits = 0;
+  uint8_t volatile _x = x;
+  X1 = x;
+  Y1 = y;
+  FontSelector = f6x8;
+  for (bits = 0; bits < 32; bits++){
+    if (number & 0x80000000){
+      PixelType = 1;
+      __setpixel(_x, Y1);
+    }else{
+      PixelType = 1;
+      __setpixel(_x, Y1 + 1);
+    }
+    number <<= 1;
+    _x+=2;
+  }
 
+}
 
+void print_bits16(int16_t number, uint8_t x, uint8_t y){
+  uint8_t volatile bits = 0;
+  X1 = x;
+  Y1 = y;
+  FontSelector = f6x8;
+  PixelType = 1;
+  for (bits = 0; bits < 16; bits++){
+    if (number & 0x8000){
+      print_char('1');
+    }else{
+      print_char('0');
+    }
+    number <<= 1;
+  }
+
+}
+
+void print_bits8(int8_t number, uint8_t x, uint8_t y){
+  uint8_t volatile bits = 0;
+  X1 = x;
+  Y1 = y;
+  FontSelector = f6x8;
+  PixelType = 1;
+  for (bits = 0; bits < 8; bits++){
+    if (number & 0x80){
+      print_char('1');
+    }else{
+      print_char('0');
+    }
+    number <<= 1;
+  }
+
+}
 
 extern const char confirm;
 extern const char conf;
