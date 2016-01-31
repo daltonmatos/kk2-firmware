@@ -2,7 +2,7 @@
 #include "b168.h"
 #include "io.h"
 
-b168_t *b168_unpack(int32_t _v, b168_t *dest){
+b168_t *b168_unpack(b168_t *dest, int32_t _v){
   dest->hi = (_v >> 16);
   dest->lo = (_v >> 8);
   dest->decimal = _v;
@@ -44,7 +44,7 @@ uint8_t b168_print(b168_t *number, uint8_t precision, uint8_t x, uint8_t y){
 }
 
 b168_t *b168_neg(b168_t *v){
-  b168_unpack(-b168_pack(v), v);
+  b168_unpack(v, -b168_pack(v));
 }
 
 void b168clr(b168_t *number){

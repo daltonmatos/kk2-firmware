@@ -107,6 +107,6 @@ void misc_settings(){
 
   /* Save StickDeadZone in RAM. It is 16.8 format encoded */
   uint16_t _eeStickDeadZone = eepromP_read_word(eeStickDeadZone);
-  b168_unpack(((int32_t) _eeStickDeadZone) << 8, StickDeadZone);
+  b168_unpack(StickDeadZone, ((int32_t) _eeStickDeadZone) << 8);
 }
 
