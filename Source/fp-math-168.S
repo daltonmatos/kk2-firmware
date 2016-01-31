@@ -50,9 +50,9 @@ b168_add:
   ld r13, Z+
   ld r12, Z+
   
-  add r17, r14
+  add r15, r12
   adc r16, r13
-  adc r15, r12
+  adc r17, r14
 
   movw r30, r24
   st Z+, r17
