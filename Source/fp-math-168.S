@@ -296,3 +296,40 @@ mul3:
 
   ret
 
+
+
+.global b168cmp
+b168cmp:
+
+  movw r30, r24
+  ld r18, Z+
+  ld r19, Z+
+  ld r20, Z+
+
+  movw r30, r22
+  ld r26, Z+
+  ld r27, Z+
+  ld r25, Z+
+
+  cp r20, r25
+  cpc r19, r27
+  cpc r18, r25
+
+  brlt __lt
+  breq __eq
+  ldi r24, 1
+  jmp __ret
+
+__lt:
+  breq __eq
+  ldi r24, -1
+  jmp __ret
+
+__eq:
+  ldi r24, 0
+
+__ret:
+  clr r25
+
+  ret
+
