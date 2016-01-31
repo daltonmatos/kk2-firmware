@@ -59,6 +59,25 @@ void b168set(b168_t *n, uint8_t c){
   n->decimal = c;
 }
 
+/*
+ * Does not work if number is negative.
+ * Original code also does not work
+ */
+b168_t *b168inc(b168_t *number){
+  return b168fadd(number, 1);
+}
+
+/*
+ * "Works" if number is negative, but ignores decimal part.
+ * When number is negative, subtracts 2 instead of 1. Original code also does this.
+ * number = 0.5
+ * b168dec(number) gives -1.5, should be -0.5
+ * The original code has this same behavior
+ */
+b168_t *b168dec(b168_t *number){
+  return b168fadd(number, -1);
+}
+
 void b168mov(b168_t *dest, b168_t *src){
   dest->hi = src->hi;
   dest->lo = src->lo;
