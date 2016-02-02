@@ -66,7 +66,7 @@ A new binary will be available at ``bin/kk2++.elf`` (if you need to disassembly)
      * ~~PrintChar~~
      * ~~Sprite~~
      * ~~SetPixel~~
- * Reduce overal refresh rate from 400kHz to about 100Hz. This will leave room for flight loop to run.
+ * Reduce overal refresh rate from 400Hz to about 100Hz, if possible. This would leave room for flight loop new implementations to run.
  * Migrate the main loop to C, still calling the routines in Assembly;
  * Start to migrate each mainloop routine to C;
  * ....
