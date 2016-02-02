@@ -8,13 +8,6 @@ The idea behind this migration is that I think having the code written in C will
 
 The research can be found here: http://daltonmatos.com/pages/avrgcc-avrasm2-en.html 
 
-The scripts and tools to automate the mixedcode building is in another project in my Github profile: https://github.com/daltonmatos/avrgcc-mixed-with-avrasm2 
-
-The main script is: ``experiments/build-ihex.sh`` inside this repository.
-
-Below you will find a suggestion on the necessary steps to accomplish this migration.
-
-
 # Building the project
 
 There is a Makefile that builds all necessary parts of the project. Things you need to know brefore running make:
