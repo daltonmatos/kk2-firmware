@@ -19,7 +19,7 @@ To build the project:
  * ``cd`` into the cloned project
  * run ``make``
 
-A new binary will be available at ``bin/kk2++.elf`` if you need to disassembly and a ``bin/kk2++.hex`` file will be ready to be flashed into the micro-controller's memory.
+A new binary will be available at ``bin/kk2++.elf`` (if you need to disassembly) and a ``bin/kk2++.hex`` file will be ready to be flashed into the micro-controller's memory. All intermediate objectswill also be avilable inside ``bin/`` folder.
 
 
 # Migration Roadmap
