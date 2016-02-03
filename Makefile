@@ -22,6 +22,8 @@ display/st7565.o \
 io.o \
 fp-math-168.S \
 b168.o \
+layout.o \
+menu.o \
 )
 
 # Symbols used by the Assembly code but that are implemented in C

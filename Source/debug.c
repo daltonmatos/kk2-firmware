@@ -12,13 +12,22 @@
 
 extern void load_temp();
 
+void setup_buttons(){
+  DDRB = 0x0A;
+  PORTB = 0xF5;
+}
+
 void main(){
 
   setup_display();
   lcd_load_contrast();
   PixelType = 1;
   FontSelector = f6x8;
+  setup_buttons();
 
+  /* Code to be debugged here */
+
+  lcd_clear();
   lcd_update();
   while (1){}
 
