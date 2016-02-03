@@ -11,6 +11,7 @@ const char _char_data[] PROGMEM = {
 };
 
 const char _nxtchng[] PROGMEM = " NEXT CHANGE";
+const char _nxt[] PROGMEM = " NEXT";
 
 const char ver1[] PROGMEM = "VERSION";
 const char ver2[] PROGMEM = "KK2.1.x AiO";
@@ -114,3 +115,23 @@ const char srm2[] PROGMEM = "Mode: ";
 const char dg2_settings_title[] PROGMEM = "DG2 SWITCH SETUP";
 const char dgs1[] PROGMEM = "Stay Armed/Spin:";
 const char dgs2[] PROGMEM = "Digital Output :";
+
+/* Show Motor Layout */
+const char servo[] PROGMEM = "Servo.";
+const char esc[] PROGMEM = "ESC";
+const char unused_motor[] PROGMEM = "Unused.";
+const char _high[] PROGMEM = "HIGH";
+const char _low[] PROGMEM = "LOW";
+const char _all[] PROGMEM = "ALL";
+const char motor_label[] PROGMEM = "Motor:";
+const char direction_label0[] PROGMEM = "Direction";
+const char direction_label1[] PROGMEM = "seen from";
+const char direction_label2[] PROGMEM = "above:";
+const char _CCW[] PROGMEM = "CCW";
+const char _CW[] PROGMEM = "CW";
+
+const char back_next[] PROGMEM = "BACK  NEXT";
+
+const char noaccess[] PROGMEM = "NO ACCESS";
+const char no_motor_layout0[] PROGMEM = "A Motor Layout must";
+const char no_motor_layout1[] PROGMEM = "be loaded first.";

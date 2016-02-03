@@ -7,7 +7,7 @@
 #define uint16_t_ptr(a) ((uint16_t *) (a))
 #define EEPROM16_VARIABLE(addr) ((uint16_t_ptr(addr)))
 
-
+#define EeMixerTable EEPROM_VARIABLE(0x0004)
 /* 
 * Aileron gains EEProm address: 0x44 to 0x4B
 * Elevator gains address: 0x4C to 0x53
@@ -80,7 +80,7 @@
 #define eeButtonBeep EEPROM_VARIABLE(0x00AE)
 
 #define eeSensorsCalibrated EEPROM_VARIABLE(0x00BE)
-
+#define eeMotorLayoutOK EEPROM_VARIABLE(0x00bf)
 #define eeMpuFilter EEPROM_VARIABLE(0x00CA)
 #define eeMpuGyroCfg EEPROM_VARIABLE(0x00CB)
 #define eeMpuAccCfg EEPROM_VARIABLE(0x00CC)

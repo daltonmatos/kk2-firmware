@@ -116,7 +116,6 @@ entrypoints: .dw Main, CppmMain, SBusMain, SatelliteMain, SatelliteMain
 .include "logic.asm"
 .include "auxsettings.asm"
 .include "loader.asm"
-.include "layout.asm"
 .include "throttlecal.asm"
 .include "eeinit.asm"
 .include "sensorcal.asm"

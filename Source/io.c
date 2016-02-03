@@ -96,10 +96,22 @@ void _highlight_current_print(uint8_t len, uint8_t x, uint8_t y, uint8_t hilight
 
 extern char backprev;
 extern char _nxtchng;
+extern char _ok;
+extern char _nxt;
 
 void print_std_footer(){
     print_string(&backprev, 0, 57);
     print_string(&_nxtchng, X1, 57);
+}
+
+void print_ok_footer(){
+    print_string(&_ok, 114, 57);
+}
+
+void print_back_nxt_ok_footer(){
+    print_string(&backprev, 0, 57);
+    print_string(&_nxt, 60, 57);
+    print_string(&_ok, 114, 57);
 }
 
 uint8_t strlen_p(const char *str){

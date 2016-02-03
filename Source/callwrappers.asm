@@ -107,6 +107,12 @@ SBusDG2SwitchSetup:
   safe_call_c sbus_dg2settings
   ret
 
+show_layout:
+  ret
+MotorLayout:
+  safe_call_c show_layout
+  ret
+
 ; Used in rxmode screen
 stdrx:	.db "Standard RX", 0
 cppm:	.db "CPPM (aka. PPM)", 0

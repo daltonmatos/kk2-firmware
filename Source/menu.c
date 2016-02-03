@@ -13,7 +13,13 @@ void __attribute__((optimize("O0"))) _menu_render_screen(menu_t *data, uint8_t s
   lcd_clear();
   FontSelector = f6x8;
 
-  print_title(data->title);
+  if (data->title){
+    print_title(data->title);
+  }
+
+  if (data->footer_callback){
+    data->footer_callback();
+  }
 
   if (data->render_callback){
     data->render_callback(selected_item);
@@ -23,9 +29,6 @@ void __attribute__((optimize("O0"))) _menu_render_screen(menu_t *data, uint8_t s
     }
   }
 
-  if (data->footer_callback){
-    data->footer_callback();
-  }
   lcd_update();
 }
 

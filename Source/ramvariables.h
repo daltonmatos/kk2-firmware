@@ -9,6 +9,9 @@
 #define uint16_t_ptr(a) ((uint16_t *) (a))
 #define RAM16_VARIABLE(addr) (*(uint16_t_ptr(addr)))
 
+#define RamMixerTable_addr 0x0500
+#define RamMixerTable ((int8_t *)(RamMixerTable_addr))
+
 #define Temp          ((b168_t *) 0x0540)
 #define Temp2         ((b168_t *) 0x0543)
 #define Temper        ((b168_t *) 0x0546)
