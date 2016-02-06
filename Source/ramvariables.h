@@ -2,6 +2,7 @@
 #define RAM_VARIABLES_H
 
 #include "b168.h"
+#include "menu.h"
 
 #define uint8_t_prt(a) ((uint8_t *) (a))
 #define RAM_VARIABLE(addr) (*(uint8_t_prt(addr)))
@@ -55,5 +56,7 @@
 
 #define DG2Functions RAM_VARIABLE(0x07d9)
 #define UserProfile RAM_VARIABLE(0x0803)
+
+#define MenuData ((menu_t *) 0x0807)
 
 #endif

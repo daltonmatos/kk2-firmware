@@ -6,8 +6,8 @@ typedef struct {
   const char* title;
   const char* footer;
   void (*footer_callback)();
-  const char *options;
-  const uint8_t initial_option;
+  char *options;
+  uint8_t initial_option;
   uint8_t total_options;
   void (*render_callback)(uint8_t);
   void (*ok_callback)(uint8_t);

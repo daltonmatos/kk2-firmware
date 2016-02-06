@@ -8,7 +8,7 @@
 #include "menu.h"
 
 extern const char adv1; // [] PROGMEM = "ADVANCED"
-extern const char _adv_options;
+extern char _adv_options;
 extern const char updown;
 
 extern void asm_ChannelMapping();
@@ -36,16 +36,14 @@ void make_call(uint8_t selected){
 
 void advanced_settings(){
 
-  menu_t data = {
-    .title = &adv1,
-    .footer_callback = &print_std_footer,
-    .options = &_adv_options,
-    .ok_callback = &make_call,
-    .render_callback = 0,
-    .total_options = 4,
-    .initial_option = 0,
-  };
+  MenuData->title = &adv1;
+  MenuData->footer_callback = &print_std_footer;
+  MenuData->options = &_adv_options;
+  MenuData->ok_callback = &make_call;
+  MenuData->render_callback = 0;
+  MenuData->total_options = 4;
+  MenuData->initial_option = 0;
 
-  render_menu(&data);
+  render_menu(MenuData);
 
 }

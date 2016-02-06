@@ -54,15 +54,16 @@ void _ss_ok_callback(uint8_t selected_item){
 
 void stick_scaling(){
 
-  menu_t data = {
-    .title = &ss_title,
-    .footer_callback = &print_std_footer,
-    .options = 0,
-    .ok_callback = &_ss_ok_callback,
-    .render_callback = &_ss_render,
-    .total_options = 5,
-  };
-  render_menu(&data);
+  MenuData->title = &ss_title;
+  MenuData->footer = 0;
+  MenuData->footer_callback = &print_std_footer;
+  MenuData->options = 0;
+  MenuData->initial_option = 0;
+  MenuData->ok_callback = &_ss_ok_callback;
+  MenuData->render_callback = &_ss_render;
+  MenuData->total_options = 5;
+
+  render_menu(MenuData);
 
 }
 

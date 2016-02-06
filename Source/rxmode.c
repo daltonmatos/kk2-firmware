@@ -59,15 +59,13 @@ void _rxmode_ok_callback(uint8_t selected_item){
 
 void select_rx_mode(){
 
-  menu_t data = {
-    .title = &srm1,
-    .footer_callback = &print_std_footer,
-    .options = 0,
-    .render_callback = &_rxmode_render,
-    .ok_callback = &_rxmode_ok_callback,
-    .total_options = 5,
-    .initial_option = RxMode,
-  };
+  MenuData->title = &srm1;
+  MenuData->footer_callback = &print_std_footer;
+  MenuData->options = 0;
+  MenuData->render_callback = &_rxmode_render;
+  MenuData->ok_callback = &_rxmode_ok_callback;
+  MenuData->total_options = 5;
+  MenuData->initial_option = RxMode;
   
-  render_menu(&data);
+  render_menu(MenuData);
 }

@@ -6,7 +6,7 @@
 #include "constants.h"
 #include "menu.h"
 
-extern const char isp10;
+extern char isp10;
 extern const char isp1;
 extern const char updown;
 
@@ -35,14 +35,13 @@ void ok_callback(uint8_t item){
 
 void initial_setup(){
 
-  menu_t data = {
-    .title = &isp1,
-    .footer_callback = &print_std_footer,
-    .options = &isp10,
-    .ok_callback = &ok_callback,
-    .render_callback = 0,
-    .total_options = 4,
-    .initial_option = 0,
-  };
-  render_menu(&data);
+  MenuData->title = &isp1;
+  MenuData->footer_callback = &print_std_footer;
+  MenuData->options = &isp10;
+  MenuData->ok_callback = &ok_callback;
+  MenuData->render_callback = 0;
+  MenuData->total_options = 4;
+  MenuData->initial_option = 0;
+
+  render_menu(MenuData);
 }

@@ -24,8 +24,6 @@ void _sbus_render(uint8_t selected_item){
   
   print_string_2(dg2functions & _BV(DG2_STAY_ARMED_BIT) ? &yes : &no, 102, 11, selected_item == 0 ? HIGHLIGHT_TO_THE_END_OF_LINE : HIGHLIGHT_NONE);
   print_string_2(dg2functions & _BV(DG2_DIGITAL_OUTPUT_BIT) ? &yes : &no, 102, 20, selected_item == 1 ? HIGHLIGHT_TO_THE_END_OF_LINE : HIGHLIGHT_NONE);
-
-  print_number(dg2functions, 0, 40);
 }
 
 
@@ -47,16 +45,14 @@ void _sbus_ok_callback(uint8_t selected_item){
 
 void sbus_dg2settings(){
 
-  menu_t data = {
-    .title = &dg2_settings_title,
-    .footer_callback = &print_std_footer,
-    .options = 0,
-    .ok_callback = &_sbus_ok_callback,
-    .render_callback = &_sbus_render,
-    .total_options = 2,
-    .initial_option = 0,
-  };
+  MenuData->title = &dg2_settings_title;
+  MenuData->footer_callback = &print_std_footer;
+  MenuData->options = 0;
+  MenuData->ok_callback = &_sbus_ok_callback;
+  MenuData->render_callback = &_sbus_render;
+  MenuData->total_options = 2;
+  MenuData->initial_option = 0;
 
-  render_menu(&data);
+  render_menu(MenuData);
 
 }

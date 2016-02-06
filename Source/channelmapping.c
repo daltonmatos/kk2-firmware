@@ -105,22 +105,18 @@ void _cm_show_channelmaping_error(){
 
 void channel_mapping(){
 
-  uint8_t mapping_ok = 1;
   _cm_copy_mapping_to_sram();
-
   
-  menu_t data = {
-    .title = &cm_title,
-    .footer_callback = &print_std_footer,
-    .options = 0,
-    .ok_callback = &_cm_ok_cb,
-    .render_callback = &_cm_render,
-    .total_options = 8,
-    .initial_option = 0,
-  };
+  MenuData->title = &cm_title;
+  MenuData->footer_callback = &print_std_footer;
+  MenuData->options = 0;
+  MenuData->ok_callback = &_cm_ok_cb;
+  MenuData->render_callback = &_cm_render;
+  MenuData->total_options = 8;
+  MenuData->initial_option = 0;
 
   while (1){
-    render_menu(&data);
+    render_menu(MenuData);
     
     if (!_cm_mapping_is_ok()){
       _cm_show_channelmaping_error();

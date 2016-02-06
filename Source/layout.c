@@ -139,16 +139,13 @@ void layout_render(uint8_t selected_motor){
 
 void show_layout(){
   
-  menu_t data = {
-    .title = 0,
-    .footer_callback = &print_back_nxt_ok_footer,
-    .options = 0,
-    .ok_callback = &layout_render,
-    .render_callback = &layout_render,
-    .total_options = 9,
-    .initial_option = 9,
-  };
-
+  MenuData->title = 0;
+  MenuData->footer_callback = &print_back_nxt_ok_footer;
+  MenuData->options = 0;
+  MenuData->ok_callback = &layout_render;
+  MenuData->render_callback = &layout_render;
+  MenuData->total_options = 9;
+  MenuData->initial_option = 9;
 
   int8_t layout_loaded = eeprom_read_byte(eeMotorLayoutOK);
 
@@ -166,5 +163,5 @@ void show_layout(){
   }
 
   load_mixer_table();
-  render_menu(&data);
+  render_menu(MenuData);
 }

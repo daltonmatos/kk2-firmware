@@ -8,7 +8,7 @@
 
 extern const char ef1; // "EXTRA", 0
 extern const char updown;
-extern const char _extra_options;
+extern char _extra_options;
 
 extern void asm_MotorCheck();
 extern void asm_SerialDebug();
@@ -30,15 +30,13 @@ void _extra_make_call(uint8_t selected){
 
 void extra_features(){
   
-  menu_t data = {
-    .title = &ef1,
-    .footer_callback = &print_std_footer,
-    .options = &_extra_options,
-    .ok_callback = &_extra_make_call,
-    .render_callback = 0,
-    .total_options = 3,
-    .initial_option = 0,
-  };
+  MenuData->title = &ef1;
+  MenuData->footer_callback = &print_std_footer;
+  MenuData->options = &_extra_options;
+  MenuData->ok_callback = &_extra_make_call;
+  MenuData->render_callback = 0;
+  MenuData->total_options = 3;
+  MenuData->initial_option = 0;
   
-  render_menu(&data);
+  render_menu(MenuData);
 }
