@@ -52,27 +52,4 @@ void gimbal_mode(){
   }
 
 }
-//	;--- Get gimbal controller mode from EEPROM ---
-//
-//GetGimbalControllerMode:
-//
-//	ldz eeGimbalMode
-//	call ReadEeprom			;read from profile #1 only
-//	sts flagGimbalMode, t
-//	ret
-//
-//
-//
-//	;--- Reset gimbal controller mode ---
-//
-//ResetGimbalControllerMode:
-//
-//	clr t
-//	ldz eeGimbalMode
-//	call WriteEeprom		;save in profile #1 only
-//	ret
-//
-//
-//
-//.undef OldSetting
-//
+
