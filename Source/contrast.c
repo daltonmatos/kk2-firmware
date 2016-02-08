@@ -16,16 +16,16 @@ extern const char affects_all_profiles;
 void _ctr_render(){
 
     lcd_clear();
-    FontSelector = f12x16;
-    print_string(&con1, 46, 0); /* LCD */
-
     FontSelector = f6x8;
+    //print_string_2(&con1, 46, 1, HIGHLIGHT_FULL_LINE); /* LCD */
+    print_title(&con1);
+
     print_string(&con2, 0, 26); /* LCD Contrast: */
 
     print_string(&con6, 0, 57); /* Footer */
 
     print_string_2(&affects_all_profiles, 3, 48, HIGHLIGHT_FULL_LINE);
-    print_number(LcdContrast, 14*16, 26);
+    print_number(LcdContrast, 90, 26);
 }
 
 void c_contrast(){
