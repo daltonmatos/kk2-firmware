@@ -51,7 +51,7 @@ A new binary will be available at ``bin/kk2++.elf`` (if you need to disassembly)
      * ~~Select RX Mode~~
    * Receiver Test
    * Sensor Test
-   * Show Motor Layout
+   * ~~Show Motor Layout~~
    * User Profile
    * ~~Extra Features~~
      * Check Motor Outputs
@@ -60,7 +60,7 @@ A new binary will be available at ``bin/kk2++.elf`` (if you need to disassembly)
    * ~~ESC Calibration~~
    * ~~Version Screen~~ Migrated
    * ~~LCD Contrast Screen~~ Migrated
-   * LCD Display driver
+   * ~~LCD Display driver~~
      * ~~LcdClear~~
      * ~~LcdUpdate~~
      * ~~PrintChar~~
