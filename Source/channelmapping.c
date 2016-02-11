@@ -39,7 +39,8 @@ void _cm_copy_mapping_to_sram(){
   uint16_t eeprom_addr = _cm_eeprom_base_addr();
 
   for (uint8_t c=0; c < 8; c++){
-    RAM_VARIABLE(ADD_TO_U16(MappedChannel1_addr, c)) = eepromP_read_byte(EEPROM_VARIABLE(ADD_TO_U16(eeprom_addr, c)));
+    /* Mapped channels are stored in RAM from 0 to 7 */
+    MappedChannelArray[c] = eepromP_read_byte(EEPROM_VARIABLE(ADD_TO_U16(eeprom_addr, c))) - 1;
   }
 
 }
@@ -52,36 +53,37 @@ void _cm_render(uint8_t selected_item){
   print_string(&rudd, 0, 37);
   print_string(&aux, 0, 46);
 
-  print_number_2(MappedChannel1, 55, 11, selected_item == 0 ? HIGHLIGHT_STRING : HIGHLIGHT_NONE);
-  print_number_2(MappedChannel2, 55, 19, selected_item == 1 ? HIGHLIGHT_STRING : HIGHLIGHT_NONE);
-  print_number_2(MappedChannel3, 55, 28, selected_item == 2 ? HIGHLIGHT_STRING : HIGHLIGHT_NONE);
-  print_number_2(MappedChannel4, 55, 37, selected_item == 3 ? HIGHLIGHT_STRING : HIGHLIGHT_NONE);
-  print_number_2(MappedChannel5, 55, 46, selected_item == 4 ? HIGHLIGHT_STRING : HIGHLIGHT_NONE);
+  print_number_2(MappedChannel1 + 1, 55, 11, selected_item == 0 ? HIGHLIGHT_STRING : HIGHLIGHT_NONE);
+  print_number_2(MappedChannel2 + 1, 55, 19, selected_item == 1 ? HIGHLIGHT_STRING : HIGHLIGHT_NONE);
+  print_number_2(MappedChannel3 + 1, 55, 28, selected_item == 2 ? HIGHLIGHT_STRING : HIGHLIGHT_NONE);
+  print_number_2(MappedChannel4 + 1, 55, 37, selected_item == 3 ? HIGHLIGHT_STRING : HIGHLIGHT_NONE);
+  print_number_2(MappedChannel5 + 1, 55, 46, selected_item == 4 ? HIGHLIGHT_STRING : HIGHLIGHT_NONE);
 
   print_string(&aux2, 70, 11);
   print_string(&aux3, 70, 19);
   print_string(&aux4, 70, 28);
   
-  print_number_2(MappedChannel6, 100, 11, selected_item == 5 ? HIGHLIGHT_STRING : HIGHLIGHT_NONE);
-  print_number_2(MappedChannel7, 100, 19, selected_item == 6 ? HIGHLIGHT_STRING : HIGHLIGHT_NONE);
-  print_number_2(MappedChannel8, 100, 28, selected_item == 7 ? HIGHLIGHT_STRING : HIGHLIGHT_NONE);
+  print_number_2(MappedChannel6 + 1, 100, 11, selected_item == 5 ? HIGHLIGHT_STRING : HIGHLIGHT_NONE);
+  print_number_2(MappedChannel7 + 1, 100, 19, selected_item == 6 ? HIGHLIGHT_STRING : HIGHLIGHT_NONE);
+  print_number_2(MappedChannel8 + 1, 100, 28, selected_item == 7 ? HIGHLIGHT_STRING : HIGHLIGHT_NONE);
 
 }
 
 void _cm_ok_cb(uint8_t selected_item){
 
-  uint16_t ch = asm_NumEdit(RAM_VARIABLE(ADD_TO_U16(MappedChannel1_addr, selected_item)) , 1, 8);
+  uint16_t ch = asm_NumEdit(MappedChannelArray[selected_item] + 1, 1, 8);
 
-  RAM_VARIABLE(ADD_TO_U16(MappedChannel1_addr, selected_item)) = (uint8_t) ch;
+  MappedChannelArray[selected_item] = ((uint8_t) ch) - 1;
   eepromP_update_byte(EEPROM_VARIABLE(ADD_TO_U16(_cm_eeprom_base_addr(), selected_item)) , (uint8_t) ch);
 
 }
 
 uint8_t _cm_mapping_is_ok(){
   uint8_t bitmap = 0;
+  uint16_t eeprom_addr = _cm_eeprom_base_addr();
 
   for (uint8_t ch=0; ch < 8; ch++){
-    uint8_t ch_val = RAM_VARIABLE(ADD_TO_U16(MappedChannel1_addr, ch));
+    uint8_t ch_val = eepromP_read_byte(EEPROM_VARIABLE(ADD_TO_U16(eeprom_addr, ch)));
     if (ch_val){
       bitmap |= _BV(ch_val - 1);
     }
@@ -124,5 +126,6 @@ void channel_mapping(){
       break;
     }
   }
+  _cm_copy_mapping_to_sram();
 }
 

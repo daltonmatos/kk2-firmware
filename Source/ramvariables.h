@@ -45,6 +45,7 @@
 
 
 #define MappedChannel1_addr 0x07c2
+#define MappedChannelArray ((uint8_t *) (MappedChannel1_addr))
 #define MappedChannel1 RAM_VARIABLE(MappedChannel1_addr)
 #define MappedChannel2 RAM_VARIABLE(0x07c3)
 #define MappedChannel3 RAM_VARIABLE(0x07c4)
