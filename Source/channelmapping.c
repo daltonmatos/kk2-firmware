@@ -46,6 +46,12 @@ void _cm_copy_mapping_to_sram(){
 }
 
 void _cm_render(uint8_t selected_item){
+  uint8_t channel_value = 0;
+  uint8_t channel_value_show = 0;
+  uint8_t volatile ch = 0;
+  uint8_t volatile item = selected_item;
+  uint8_t x = 0;
+  uint8_t y = 0;
 
   print_string(&ail, 0, 11);
   print_string(&ele, 0, 19);
@@ -53,20 +59,22 @@ void _cm_render(uint8_t selected_item){
   print_string(&rudd, 0, 37);
   print_string(&aux, 0, 46);
 
-  print_number_2(MappedChannel1 + 1, 55, 11, selected_item == 0 ? HIGHLIGHT_STRING : HIGHLIGHT_NONE);
-  print_number_2(MappedChannel2 + 1, 55, 19, selected_item == 1 ? HIGHLIGHT_STRING : HIGHLIGHT_NONE);
-  print_number_2(MappedChannel3 + 1, 55, 28, selected_item == 2 ? HIGHLIGHT_STRING : HIGHLIGHT_NONE);
-  print_number_2(MappedChannel4 + 1, 55, 37, selected_item == 3 ? HIGHLIGHT_STRING : HIGHLIGHT_NONE);
-  print_number_2(MappedChannel5 + 1, 55, 46, selected_item == 4 ? HIGHLIGHT_STRING : HIGHLIGHT_NONE);
-
   print_string(&aux2, 70, 11);
   print_string(&aux3, 70, 19);
   print_string(&aux4, 70, 28);
-  
-  print_number_2(MappedChannel6 + 1, 100, 11, selected_item == 5 ? HIGHLIGHT_STRING : HIGHLIGHT_NONE);
-  print_number_2(MappedChannel7 + 1, 100, 19, selected_item == 6 ? HIGHLIGHT_STRING : HIGHLIGHT_NONE);
-  print_number_2(MappedChannel8 + 1, 100, 28, selected_item == 7 ? HIGHLIGHT_STRING : HIGHLIGHT_NONE);
 
+  for(ch = 0; ch < 8; ch++){
+    channel_value = MappedChannelArray[ch];
+    channel_value_show = channel_value + 1;
+    if (ch < 5){
+      x = 55;
+      y = (ch * 8) + 11;
+    }else {
+      x = 100;
+      y = ((ch - 5) * 8) + 11;
+    }
+    print_number_2(channel_value_show, x, y, selected_item == ch ? HIGHLIGHT_STRING : HIGHLIGHT_NONE);
+  }
 }
 
 void _cm_ok_cb(uint8_t selected_item){
