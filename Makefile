@@ -40,7 +40,7 @@ $(BIN_DIR)/kk2++.hex: $(BIN_DIR)/kk2++.elf $(OBJECTS) $(BIN_DIR)/flashvariables.
 		$(BIN_DIR)/kk2++.asm.hex.bin.elf \
 		$(filter-out $(BIN_DIR)/flashvariables.o, $(OUTPUT_OBJECTS:.S=.o)) $(BIN_DIR)/flashvariables.o
 	avr-objcopy -I elf32-avr -O ihex -j .text -j .data $(BIN_DIR)/kk2++.elf $(BIN_DIR)/kk2++.hex 
-
+	make size
 
 $(BIN_DIR)/kk2++.asm.hex: $(ASM_SOURCES)
 	$(AVRASM2) $(SRC_DIR)/kk2++.asm -fI -o $@ -l $@.lst -m $@.map
