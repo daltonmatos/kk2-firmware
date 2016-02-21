@@ -76,5 +76,13 @@ Of course, each migration step must leave a code that's able to fly a Quad. Curr
 
 If you like AVR micro controllers and would like to help this project, don't hesitate to get in touch and/or start openning pull requests to help make it happen!
 
+# Flight Log
+
+ Here I will try to document all flights made with this code, what problems they had and any relevant results.
+
+## 2016-02-21: 
+commit: 257ee6d5e385cc648cd40d7ea9513f02cf81be65 Show final size ater project build  
+**It flies!!!** Same response as the original firmware: Roll, Pitch, yaw. I tried a "throtle punch" and crashed. The error log says: *CPPM Sync Error*. The behavior of the code seems to be different when no load is on the motors. Without the props it is possible to arm and go full throttle, but with props I had this CPPM Sync problem. Too bad I didn't do any bench test before this first flight. Lesson learned! =D  
+**Results:** 3 props broken. =D
 
 Dalton Barreto, http://daltonmatos.com
