@@ -95,12 +95,6 @@ MiscSettings:
   safe_call_c misc_settings
   ret
 
-channel_mapping:
-  nop
-ChannelMapping:
-  safe_call_c channel_mapping
-  ret
-
 sbus_dg2settings:
   ret
 SBusDG2SwitchSetup:
@@ -199,10 +193,6 @@ asm_NumEdit:
   mov r25, r1
   mov r24, r0
   clr r1
-  ret
-
-asm_ChannelMapping:
-  safe_called_from_c ChannelMapping
   ret
 
 asm_MixerEditor:
