@@ -2,12 +2,14 @@
 
 .include "bindwrappers.asm"
 
+#ifdef STANDALONE_GIMBAL_CONTROLLER
 ; Wrappers to migrated routines
 gimbal_mode:
   nop
 GimbalMode:
   safe_call_c gimbal_mode
   ret
+#endif
 
 esc_calibration_warning:
   nop
@@ -55,10 +57,17 @@ Contrast:
   ret
 
 ef2: .db "Check Motor Outputs", 0
+#ifdef STANDALONE_GIMBAL_CONTROLLER
 ef3: .db "Gimbal Controller", 0
+#endif
 ef4: .db "View Serial RX Data", 0
 
-_extra_options: .dw ef2*2, ef3*2, ef4*2
+_extra_options: 
+  .dw ef2*2
+#ifdef STANDALONE_GIMBAL_CONTROLLER
+  .dw ef3*2
+#endif
+  .dw ef4*2
 
 extra_features:
   nop

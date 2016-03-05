@@ -99,8 +99,10 @@ entrypoints: .dw Main, CppmMain, SBusMain, SatelliteMain, SatelliteMain
 .include "sat_readrx.asm"
 
 .include "gimbal.asm"
+#ifdef STANDALONE_GIMBAL_CONTROLLER
 .include "gimbal_main.asm"
 .include "gimbal_mainmenu.asm"
+#endif
 
 .include "motorcheck.asm"
 .include "errorlog.asm"

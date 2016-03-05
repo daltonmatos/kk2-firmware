@@ -1,3 +1,4 @@
+#ifdef STANDALONE_GIMBAL_CONTROLLER
 #include <avr/io.h>
 #include <avr/eeprom.h>
 
@@ -53,3 +54,4 @@ void gimbal_mode(){
 
 }
 
+#endif

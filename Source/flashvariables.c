@@ -53,12 +53,14 @@ const char nextsel[] PROGMEM = " NEXT SELECT"; /* original name: nxtsel */
 const char _saved[] PROGMEM = "SAVED"; /* original name: saved */
 const char _ok[] PROGMEM = "OK"; /* original name: ok */
 
+#ifdef STANDALONE_GIMBAL_CONTROLLER
 /* Gimbal Mode Confirmation Screen */
 const char gbm1[] PROGMEM = "GIMBAL";
 const char gbm2[] PROGMEM = "Use this board as a";
 const char gbm3[] PROGMEM = "stand-alone (servo)";
 const char gbm4[] PROGMEM = "gimbal controller?";
 const char _yesno[] PROGMEM = "YES  NO";
+#endif
 
 /* Confirmation Dialog */
 const char confirm[] PROGMEM = "CONFIRM";

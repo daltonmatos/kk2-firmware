@@ -79,13 +79,14 @@ SBusMain:
 
 	call GyroCal
 
-
+#ifdef STANDALONE_GIMBAL_CONTROLLER
 	;--- Gimbal controller mode ---
 
 	;call GetGimbalControllerMode ; Not needed, called in main.c
 	rvbrflagfalse flagGimbalMode, bm10
 
 	jmp GimbalMain
+#endif
 
 
 bm10:	;--- ESC calibration ----

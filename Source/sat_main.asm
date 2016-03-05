@@ -90,12 +90,14 @@ SatelliteMain:
 	call SatUsartInit
 
 
+#ifdef STANDALONE_GIMBAL_CONTROLLER
 	;--- Gimbal controller mode ---
 
 	;call GetGimbalControllerMode ; Not needed, called in main.c
 	rvbrflagfalse flagGimbalMode, am10
 
 	jmp GimbalMain
+#endif
 
 
 am10:	;--- ESC calibration ----

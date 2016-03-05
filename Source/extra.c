@@ -19,15 +19,24 @@ void _extra_make_call(uint8_t selected){
     case 0:
       asm_MotorCheck();
       break;
+#ifdef STANDALONE_GIMBAL_CONTROLLER
     case 1:
       gimbal_mode();
       break;
     case 2:
+#endif
+#ifndef STANDALONE_GIMBAL_CONTROLLER
+    case 1:
+#endif
       asm_SerialDebug();
       break;
   }
 }
 
 void extra_features(){
-  render_menu(3, &ef1, &_extra_options, &_extra_make_call);
+  uint8_t options = 3;
+#ifndef STANDALONE_GIMBAL_CONTROLLER
+  options--;
+#endif
+  render_menu(options, &ef1, &_extra_options, &_extra_make_call);
 }

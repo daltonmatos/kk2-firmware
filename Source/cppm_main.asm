@@ -91,12 +91,14 @@ CppmMain:
 	call GyroCal
 
 
+#ifdef STANDALONE_GIMBAL_CONTROLLER
 	;--- Gimbal controller mode ---
 
 	;call GetGimbalControllerMode ; Not needed, called in main.c
 	rvbrflagfalse flagGimbalMode, cm10
 
 	jmp GimbalMain
+#endif
 
 
 cm10:	;--- ESC calibration ----
