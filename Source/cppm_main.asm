@@ -159,7 +159,9 @@ cm1:	call PwmStart			;runtime between PwmStart and B interrupt (in PwmEnd) must 
 	call Arming
 	call Logic
 	call AddAuxStickScaling
+#ifdef IN_FLIGHT_TUNING
 	call RemoteTuning
+#endif
 	call Imu
 	call Mixer
 	call GimbalStab

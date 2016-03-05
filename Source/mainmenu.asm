@@ -8,6 +8,9 @@ men23:	ldy men1 * 2
 	lds xh, MainMenuCursorYposSave
 
 	ldi t, 18		;number of menu items
+#ifndef IN_FLIGHT_TUNING
+  dec t
+#endif
 
 	call Menu
 
@@ -42,7 +45,10 @@ men22:	lsl xl			;No, calculate index    Z = *men18 * 2 + xl * 2
 
 
 
-men1:	.db "Quick Tuning        "
+men1:	
+#ifdef IN_FLIGHT_TUNING
+  .db "Quick Tuning        "
+#endif
 	.db "PI Editor           "
 	.db "Self-level Settings "
 	.db "Stick Scaling       "
@@ -62,7 +68,10 @@ men1:	.db "Quick Tuning        "
 	.db "LCD Contrast        "
 
 
-men18:	.dw QuickTuning
+men18:	
+#ifdef IN_FLIGHT_TUNING
+  .dw QuickTuning
+#endif
 	.dw PiEditor
 	.dw SelflevelSettings
 	.dw StickScaling

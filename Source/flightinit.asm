@@ -73,7 +73,9 @@ fli3:	rcall LoadGimbalSettings
 
 
 	rcall ReadLinkRollPitchFlag
+#ifdef IN_FLIGHT_TUNING
 	call CheckTuningMode
+#endif
 	call LoadAuxSwitchSetup
 	call LoadBatteryVoltageOffset
 	call LoadDG2Settings

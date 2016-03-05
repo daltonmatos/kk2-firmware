@@ -8,6 +8,9 @@ sam23:	ldy sam1 * 2
 	lds xh, MainMenuCursorYposSave
 
 	ldi t, 18		;number of menu items
+#ifndef IN_FLIGHT_TUNING
+  dec t
+#endif
 
 	call Menu
 
@@ -42,7 +45,10 @@ sam22:	lsl xl			;No, calculate index    Z = *sam18 * 2 + xl * 2
 
 
 
-sam1:	.db "Remote Tuning       "
+sam1:	
+#ifdef IN_FLIGHT_TUNING
+  .db "Remote Tuning       "
+#endif
 	.db "PI Editor           "
 	.db "Self-level Settings "
 	.db "Stick Scaling       "
@@ -62,7 +68,10 @@ sam1:	.db "Remote Tuning       "
 	.db "LCD Contrast        "
 
 
-sam18:	.dw RemoteTuningDlg
+sam18:	
+#ifdef IN_FLIGHT_TUNING
+  .dw RemoteTuningDlg
+#endif
 	.dw PiEditor
 	.dw SelflevelSettings
 	.dw StickScaling

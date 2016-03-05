@@ -2,7 +2,9 @@
 SRC_DIR = Source
 BIN_DIR = bin
 
-CC_FLAGS = -Os -std=gnu99
+FEATURES = #-D IN_FLIGHT_TUNING
+CC_FLAGS = -Os -std=gnu99 $(FEATURES)
+AVRASM_FLAGS = $(FEATURES)
 
 SRC_GIT_VERSION=$(shell git rev-parse HEAD | cut -c 1-7)
 
@@ -43,7 +45,7 @@ $(BIN_DIR)/kk2++.hex: $(BIN_DIR)/kk2++.elf $(OBJECTS) $(BIN_DIR)/flashvariables.
 	make size
 
 $(BIN_DIR)/kk2++.asm.hex: $(ASM_SOURCES)
-	$(AVRASM2) $(SRC_DIR)/kk2++.asm -fI -o $@ -l $@.lst -m $@.map
+	$(AVRASM2) $(SRC_DIR)/kk2++.asm -fI -o $@ -l $@.lst -m $@.map $(AVRASM_FLAGS)
 
 $(BIN_DIR)/kk2++.elf: $(BIN_DIR)/kk2++.asm.hex
 	avr-objcopy -j .sec1 -I ihex -O binary $(BIN_DIR)/kk2++.asm.hex $(BIN_DIR)/kk2++.asm.hex.bin

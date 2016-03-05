@@ -105,8 +105,10 @@ entrypoints: .dw Main, CppmMain, SBusMain, SatelliteMain, SatelliteMain
 .include "motorcheck.asm"
 .include "errorlog.asm"
 .include "main.asm"
+#ifdef IN_FLIGHT_TUNING
 .include "tuning.asm"
 .include "quicktuning.asm"
+#endif
 .include "userprofile.asm"
 .include "trigonometry.asm"
 .include "setuphw.asm"

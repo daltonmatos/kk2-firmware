@@ -1,6 +1,6 @@
 
 
-
+#ifdef IN_FLIGHT_TUNING
 RemoteTuningDlg:
 
 	call LoadParameterTable			;load PI gains from EEPROM
@@ -151,8 +151,6 @@ tun4:	.db "Input Rate : ", 0
 tun7:	.db 76, 0, 127, 9
 
 test:	.db "Test", 0, 0
-aux2:	.db "Aux2", 0, 0
-aux3:	.db "Aux3", 0, 0
 rgain:	.db "R Gain", 0, 0
 ptrim:	.db "P Trim", 0, 0
 rtrim:	.db "R Trim", 0, 0
@@ -556,4 +554,4 @@ CheckTuningMode:
 ctm1:	ret
 
 
-
+#endif

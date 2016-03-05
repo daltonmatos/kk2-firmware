@@ -288,6 +288,8 @@ aux7:	.db 23, 0, 79, 9
 .undef AuxItem
 
 
+aux2:	.db "Aux2", 0, 0
+aux3:	.db "Aux3", 0, 0
 
 	;--- AUX stick scaling offset ---
 

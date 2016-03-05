@@ -1,6 +1,6 @@
 
 	;--- Quick tuning ---
-
+#ifdef IN_FLIGHT_TUNING
 QuickTuning:
 
 	b16clr Tuned7
@@ -484,4 +484,4 @@ qtf1:	lds t, StatusBits			;allow the LED to flash when status bits are set
 	LedOn
 
 qtf3:	ret
-
+#endif
