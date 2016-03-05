@@ -34,14 +34,5 @@ void ok_callback(uint8_t item){
 }
 
 void initial_setup(){
-
-  MenuData->title = &isp1;
-  MenuData->footer_callback = &print_std_footer;
-  MenuData->options = &isp10;
-  MenuData->ok_callback = &ok_callback;
-  MenuData->render_callback = 0;
-  MenuData->total_options = 4;
-  MenuData->initial_option = 0;
-
-  render_menu(MenuData);
+  render_menu(4, &isp1, &isp10, &ok_callback);
 }

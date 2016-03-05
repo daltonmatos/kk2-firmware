@@ -59,6 +59,7 @@ ef3: .db "Gimbal Controller", 0
 ef4: .db "View Serial RX Data", 0
 
 _extra_options: .dw ef2*2, ef3*2, ef4*2
+
 extra_features:
   nop
 ExtraFeatures:

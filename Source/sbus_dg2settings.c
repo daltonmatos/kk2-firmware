@@ -45,14 +45,14 @@ void _sbus_ok_callback(uint8_t selected_item){
 
 void sbus_dg2settings(){
 
-  MenuData->title = &dg2_settings_title;
-  MenuData->footer_callback = &print_std_footer;
-  MenuData->options = 0;
-  MenuData->ok_callback = &_sbus_ok_callback;
-  MenuData->render_callback = &_sbus_render;
-  MenuData->total_options = 2;
-  MenuData->initial_option = 0;
+  ScreenData->title = &dg2_settings_title;
+  ScreenData->footer_callback = &print_std_footer;
+  ScreenData->options = 0;
+  ScreenData->ok_callback = &_sbus_ok_callback;
+  ScreenData->render_callback = &_sbus_render;
+  ScreenData->total_options = 2;
+  ScreenData->initial_option = 0;
 
-  render_menu(MenuData);
+  render_screen(ScreenData);
 
 }

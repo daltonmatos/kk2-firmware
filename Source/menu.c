@@ -23,42 +23,75 @@ void __attribute__((optimize("O0"))) _menu_render_screen(menu_t *data, uint8_t s
 
   if (data->render_callback){
     data->render_callback(selected_item);
-  }else{
-    for (op=0; op < data->total_options; op++){
-      print_string_2((char *) pgm_read_word(data->options + op*2), 0, 11 + 9*op, op == selected_item ? HIGHLIGHT_FULL_LINE : HIGHLIGHT_NONE);  
-    }
   }
-
   lcd_update();
 }
 
 
-void __attribute__((optimize("O0"))) render_menu(menu_t *data){
+void __read_input(uint8_t max_value){
 
-  uint8_t selected_item = data->initial_option;
-  //uint8_t selected_item = 0;
-  uint8_t pressed = 0;
+    MenuState->key_pressed = wait_for_button(BUTTON_ANY);
 
-  _menu_render_screen(data, selected_item);
-  
-  while ((pressed = wait_for_button(BUTTON_ANY)) != BUTTON_BACK){
-
-    switch (pressed){
+    switch (MenuState->key_pressed){
       case BUTTON_DOWN:
-          selected_item += 1;
-          break;
+        MenuState->selected_item += 1;
+        break;
       case BUTTON_UP:
-          selected_item -= 1;
-          break;  
+        MenuState->selected_item -= 1;
+        break;  
     }
-    selected_item = constrain(selected_item, 0, data->total_options - 1);
-
-    if (pressed == BUTTON_OK){
-      data->ok_callback(selected_item);
-    }
-
-    _menu_render_screen(data, selected_item);
-  }
-
+    MenuState->selected_item = constrain(MenuState->selected_item, 0, max_value - 1);
 }
 
+
+void __input_loop(menu_t *data){
+
+    _menu_render_screen(data, MenuState->selected_item);
+
+    while (MenuState->key_pressed != BUTTON_BACK){
+      __read_input(data->total_options);
+
+      if (MenuState->key_pressed == BUTTON_OK){
+        data->ok_callback(MenuState->selected_item);
+      }
+
+      _menu_render_screen(data, MenuState->selected_item);
+    }
+}
+
+
+void render_screen(menu_t *data){
+  MenuState->key_pressed = 0;
+  MenuState->selected_item = data->initial_option;
+  __input_loop(data);
+}
+
+void __render_options(uint8_t total, const char* volatile title, char * volatile str_addr){
+    uint8_t volatile op = 0;
+    FontSelector = f6x8;
+    PixelType = 0;
+    lcd_clear();
+    print_title(title);
+    print_std_footer();
+    for (op=0; op < total; op++){
+      print_string_2((char *) pgm_read_word(str_addr + op*2), 0, 11 + 9*op, op == MenuState->selected_item ? HIGHLIGHT_FULL_LINE : HIGHLIGHT_NONE);  
+    }
+    lcd_update();
+}
+
+
+
+void render_menu(uint8_t total_options, const char* volatile title,  char * volatile str_addr, _ok_callback volatile cb){
+  MenuState->key_pressed = 0;
+  MenuState->selected_item = 0;
+  __render_options(total_options, title, str_addr);
+
+  while (MenuState->key_pressed != BUTTON_BACK){
+    __read_input(total_options);
+    if (MenuState->key_pressed == BUTTON_OK){
+      cb(MenuState->selected_item);
+    }
+    __render_options(total_options, title, str_addr);
+  }
+  return;
+}

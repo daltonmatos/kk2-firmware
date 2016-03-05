@@ -17,7 +17,7 @@ extern void board_rotation();
 extern void sensor_settings();
 
 
-void make_call(uint8_t selected){
+void _adv_make_call(uint8_t selected){
   switch (selected){
     case 0:
       channel_mapping();
@@ -36,14 +36,6 @@ void make_call(uint8_t selected){
 
 void advanced_settings(){
 
-  MenuData->title = &adv1;
-  MenuData->footer_callback = &print_std_footer;
-  MenuData->options = &_adv_options;
-  MenuData->ok_callback = &make_call;
-  MenuData->render_callback = 0;
-  MenuData->total_options = 4;
-  MenuData->initial_option = 0;
-
-  render_menu(MenuData);
+  render_menu(4, &adv1, &_adv_options, &_adv_make_call);
 
 }

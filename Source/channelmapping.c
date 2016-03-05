@@ -117,16 +117,16 @@ void channel_mapping(){
 
   _cm_copy_mapping_to_sram();
   
-  MenuData->title = &cm_title;
-  MenuData->footer_callback = &print_std_footer;
-  MenuData->options = 0;
-  MenuData->ok_callback = &_cm_ok_cb;
-  MenuData->render_callback = &_cm_render;
-  MenuData->total_options = 8;
-  MenuData->initial_option = 0;
+  ScreenData->title = &cm_title;
+  ScreenData->footer_callback = &print_std_footer;
+  ScreenData->options = 0;
+  ScreenData->ok_callback = &_cm_ok_cb;
+  ScreenData->render_callback = &_cm_render;
+  ScreenData->total_options = 8;
+  ScreenData->initial_option = 0;
 
   while (1){
-    render_menu(MenuData);
+    render_screen(ScreenData);
     
     if (!_cm_mapping_is_ok()){
       _cm_show_channelmaping_error();

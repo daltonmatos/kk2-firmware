@@ -58,6 +58,7 @@
 #define DG2Functions RAM_VARIABLE(0x07d9)
 #define UserProfile RAM_VARIABLE(0x0803)
 
-#define MenuData ((menu_t *) 0x0807)
+#define MenuState ((menu_state_t *) 0x0807)
+#define ScreenData ((menu_t *) 0x0809)
 
 #endif
