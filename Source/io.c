@@ -98,6 +98,8 @@ extern char backprev;
 extern char _nxtchng;
 extern char _ok;
 extern char _nxt;
+extern char back;
+extern char change;
 
 void print_std_footer(){
     print_string(&backprev, 0, 57);
@@ -112,6 +114,11 @@ void print_back_nxt_ok_footer(){
     print_string(&backprev, 0, 57);
     print_string(&_nxt, 60, 57);
     print_string(&_ok, 114, 57);
+}
+
+void print_back_chg_footer(){
+    print_string(&back, 0, 57);
+    print_string(&change, 90, 57);
 }
 
 uint8_t strlen_p(const char *str){
