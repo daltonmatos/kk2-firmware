@@ -18,7 +18,6 @@ const char ver2[] PROGMEM = "KK2.1.x AiO";
 
 const char con1[] PROGMEM = "LCD";
 const char con2[] PROGMEM = "LCD Contrast: ";
-const char con6[] PROGMEM = "BACK  UP   DOWN  SAVE";
 
 const char affects_all_profiles[] PROGMEM = "AFFECTS ALL PROFILES";
 const char colon_and_space[] PROGMEM = ": ";

@@ -13,46 +13,35 @@ extern const char con2;
 extern const char con6;
 extern const char affects_all_profiles;
 
-void _ctr_render(){
+void _ctr_render(uint8_t volatile selected_item){
 
-    lcd_clear();
-    FontSelector = f6x8;
-    //print_string_2(&con1, 46, 1, HIGHLIGHT_FULL_LINE); /* LCD */
-    print_title(&con1);
-
+    constrain(selected_item, 25, 45);
     print_string(&con2, 0, 26); /* LCD Contrast: */
 
-    print_string(&con6, 0, 57); /* Footer */
-
     print_string_2(&affects_all_profiles, 3, 48, HIGHLIGHT_FULL_LINE);
-    print_number(LcdContrast, 90, 26);
+    print_number(selected_item, 90, 26);
+}
+
+void _c_ok_callback(uint8_t selected_item){
+
+  LcdContrast = MenuState->selected_item;
+  constrain(LcdContrast, 25, 46);
+  eeprom_write_byte(eeLcdContrast, LcdContrast);
+  _ctr_render(0);
+  lcd_update();
 }
 
 void c_contrast(){
 
-  uint8_t pressed = 0;
+  ScreenData->title = &con1;
+  ScreenData->footer_callback = &print_std_footer;
+  ScreenData->ok_callback = &_c_ok_callback;
+  ScreenData->render_callback = &_ctr_render;
+  ScreenData->total_options = 45;
+  ScreenData->initial_option = LcdContrast;
 
-  _ctr_render();
-  lcd_update();
-  while ((pressed = wait_for_button(BUTTON_ANY)) != BUTTON_BACK) {
-
-    switch (pressed){
-      case BUTTON_UP:
-        LcdContrast = (LcdContrast + 1) > 46 ? 46 : LcdContrast + 1;
-        break;
-      case BUTTON_DOWN:
-        LcdContrast = (LcdContrast - 1) < 25 ? 25 : LcdContrast - 1;
-        break;
-      case BUTTON_OK:
-        eeprom_write_byte(eeLcdContrast, LcdContrast);
-        return;
-        break;
-    }
-    _ctr_render();
-    lcd_update();
-  }
+  render_screen(ScreenData);
 
   LcdContrast = eeprom_read_byte(eeLcdContrast);
 
-  return;
 }
