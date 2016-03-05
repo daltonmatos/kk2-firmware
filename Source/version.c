@@ -14,11 +14,7 @@ extern const char  ver10;
 
 void show_version(){
 
-  PixelType = 1;
-  FontSelector = f12x16;
-  print_string(&ver1, 22, 0);
-
-  FontSelector = f6x8;
+  print_title(&ver1);
 
   print_string(&ver2, 0, 19);
   print_string(&srm2, 0, 30);
