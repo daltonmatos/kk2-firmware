@@ -33,6 +33,8 @@ uint8_t print_string(const char *str_addr, uint8_t x, uint8_t y);
 void print_string_2(const char *str_addr, uint8_t x, uint8_t y, uint8_t hilight);
 uint8_t print_number(int16_t number, uint8_t x, uint8_t y);
 uint8_t print_number_2(int16_t number, uint8_t x, uint8_t y, uint8_t hilight);
+int16_t num_edit(int16_t number, int16_t min, int16_t max);
+
 
 uint8_t wait_for_button(uint8_t button_mask);
 uint8_t show_confirmation_dlg(const char *str);

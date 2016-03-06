@@ -61,7 +61,7 @@ void _sl_ok_callback(uint8_t selected_item){
 
 
     eepromP_update_word(uint16_t_ptr(((int16_t) eeSelflevelPgain + selected_item*2)), 
-                        asm_NumEdit(eepromP_read_word(uint16_t_ptr((int16_t) eeSelflevelPgain + selected_item*2)), min, max));
+                        num_edit((int16_t) eepromP_read_word(uint16_t_ptr((int16_t) eeSelflevelPgain + selected_item*2)), min, max));
 
 }
 

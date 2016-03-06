@@ -79,7 +79,7 @@ void _cm_render(uint8_t selected_item){
 
 void _cm_ok_cb(uint8_t selected_item){
 
-  uint16_t ch = asm_NumEdit(MappedChannelArray[selected_item] + 1, 1, 8);
+  uint16_t ch = num_edit(MappedChannelArray[selected_item] + 1, 1, 8);
 
   MappedChannelArray[selected_item] = ((uint8_t) ch) - 1;
   eepromP_update_byte(EEPROM_VARIABLE(ADD_TO_U16(_cm_eeprom_base_addr(), selected_item)) , (uint8_t) ch);

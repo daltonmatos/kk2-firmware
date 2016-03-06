@@ -55,6 +55,9 @@
 #define LCD_BUFFER 0x0100
 #define LCD_BUFFER_ptr ((uint8_t *) LCD_BUFFER)
 
+#define PIXEL_TYPE_REVERSE 0
+#define PIXEL_TYPE_ON 1
+#define PIXEL_TYPE_OFF 2
 
 #define swap(a, b) { uint8_t t = a; a = b; b = t; }
 void setpixel(uint8_t *buff, uint8_t x, uint8_t y, uint8_t color);

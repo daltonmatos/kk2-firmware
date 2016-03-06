@@ -2,7 +2,7 @@
 SRC_DIR = Source
 BIN_DIR = bin
 
-__FEATURES = -IN_FLIGHT_TUNING -STANDALONE_GIMBAL_CONTROLLER
+__FEATURES = -IN_FLIGHT_TUNING -STANDALONE_GIMBAL_CONTROLLER -C_NUMEDIT
 FEATURES = $(subst +,-D ,$(subst -,-U ,$(__FEATURES)))
 CC_FLAGS = -Os -std=gnu99 $(FEATURES)
 AVRASM_FLAGS = $(FEATURES)
@@ -23,9 +23,7 @@ debug.o \
 flashvariables.o \
 display/st7565.o \
 io.o \
-fp-math-168.S \
-b168.o \
-layout.o \
+settingsa.o \
 menu.o \
 )
 

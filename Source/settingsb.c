@@ -67,7 +67,7 @@ void _ms_oK_callback(uint8_t selected_item){
       }
 
       eepromP_update_word(uint16_t_ptr(((int16_t) eeEscLowLimit + MenuState->selected_item*2)), 
-                          asm_NumEdit(eepromP_read_word(uint16_t_ptr((int16_t) eeEscLowLimit + MenuState->selected_item*2)), 0, _ms_max(MenuState->selected_item)));
+                          num_edit((int16_t) eepromP_read_word(uint16_t_ptr((int16_t) eeEscLowLimit + MenuState->selected_item*2)), 0, _ms_max(MenuState->selected_item)));
       if (flagGimbalMode){
         MenuState->selected_item -= 2;
       }

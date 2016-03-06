@@ -102,8 +102,8 @@ extern char backprev;
 extern char _nxtchng;
 extern char _ok;
 extern char _nxt;
-extern char back;
-extern char change;
+extern char _back;
+extern char _change;
 
 void print_std_footer(){
     print_string(&backprev, 0, 57);
@@ -121,8 +121,8 @@ void print_back_nxt_ok_footer(){
 }
 
 void print_back_chg_footer(){
-    print_string(&back, 0, 57);
-    print_string(&change, 90, 57);
+    print_string(&_back, 0, 57);
+    print_string(&_change, 90, 57);
 }
 
 uint8_t strlen_p(const char *str){
@@ -382,4 +382,84 @@ void print_char(const char ch){
   uint16_t char_offset = (ch - table_offset) * char_bytes;
   _sprite(font_address + char_offset, char_width, char_height, char_bytes, X1, Y1);
   X1 = X1 + char_width;
+}
+
+#define BUTTON_DELAY 64
+#define WINDOW_X1 30
+#define WINDOW_Y1 19
+#define WINDOW_X2 98
+#define WINDOW_Y2 42
+
+extern const char numedit_footer;
+
+int16_t __attribute__((optimize("O0"))) num_edit(int16_t number, int16_t min, int16_t max){
+
+#ifndef C_NUMEDIT
+  return asm_NumEdit(number, min, max);
+#endif
+#ifdef C_NUMEDIT
+  uint8_t rate = 1;
+  uint8_t volatile button = 0;
+  int16_t volatile value = number;
+  uint8_t counter = BUTTON_DELAY;
+  release_buttons();
+
+  while (button != BUTTON_OK){
+    PixelType = PIXEL_TYPE_ON;
+    __fillrect(WINDOW_X1 - 2, WINDOW_Y1 - 2 , WINDOW_X2 + 2, WINDOW_Y2 + 2);
+
+    PixelType = PIXEL_TYPE_OFF;
+    __fillrect(WINDOW_X1, WINDOW_Y1, WINDOW_X2, WINDOW_Y2);
+
+    PixelType = PIXEL_TYPE_ON;
+    value = value < min ? min : value;
+    value = value > max ? max : value;
+    
+    FontSelector = f12x16;
+    PixelType = 1;
+    print_number(value, 34, 24);
+    FontSelector = f6x8;
+    PixelType = 1;
+    PixelType = PIXEL_TYPE_OFF;
+    __fillrect(0, 57, 127, 64);
+    PixelType = PIXEL_TYPE_ON;
+    print_string(&numedit_footer, 0, 57);
+    lcd_update();
+ 
+    while ((button = get_buttons() != BUTTON_NONE) && counter){
+      counter--;
+    }
+    
+    while ((button = get_buttons()) == BUTTON_NONE) {
+      rate = 0;
+      counter = BUTTON_DELAY;
+    }
+
+    if (!counter){
+      if (rate == 255){
+        rate = 255;
+      }else{
+        rate++;
+      }
+    
+    }
+    counter = BUTTON_DELAY;
+    button = get_buttons();
+    
+    if (button & BUTTON_UP){
+      value -= rate;  
+    }
+    
+    if (button & BUTTON_DOWN){
+      value += rate;  
+    }
+    
+    if (button & BUTTON_BACK){
+      value = min < 0 ? 0 : min;
+    }
+
+    lcd_update();
+  }
+  return value;
+#endif
 }

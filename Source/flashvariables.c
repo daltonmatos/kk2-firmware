@@ -12,6 +12,9 @@ const char _char_data[] PROGMEM = {
 
 const char _nxtchng[] PROGMEM = " NEXT CHANGE";
 const char _nxt[] PROGMEM = " NEXT";
+const char _back[] PROGMEM = "BACK";
+const char _change[] PROGMEM = "CHANGE";
+const char numedit_footer[] PROGMEM = "CLR  DOWN   UP   DONE";
 
 const char ver1[] PROGMEM = "VERSION";
 const char ver2[] PROGMEM = "KK2.1.x AiO";

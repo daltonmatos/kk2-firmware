@@ -49,7 +49,7 @@ void _ss_render(uint8_t selected_item){
 
 void _ss_ok_callback(uint8_t selected_item){
       eepromP_update_word(uint16_t_ptr(((int16_t) eeStickScaleRoll + selected_item*2)), 
-                          asm_NumEdit(eepromP_read_word(uint16_t_ptr((int16_t) eeStickScaleRoll + selected_item*2)), 0, 500));
+                          num_edit(eepromP_read_word(uint16_t_ptr((int16_t) eeStickScaleRoll + selected_item*2)), 0, 500));
 }
 
 void stick_scaling(){
@@ -64,6 +64,5 @@ void stick_scaling(){
   ScreenData->total_options = 5;
 
   render_screen(ScreenData);
-
 }
 

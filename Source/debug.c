@@ -17,6 +17,7 @@ void setup_buttons(){
   PORTB = 0xF5;
 }
 
+
 void main(){
 
   setup_display();
@@ -26,6 +27,10 @@ void main(){
   setup_buttons();
 
   /* Code to be debugged here */
+
+
+  stick_scaling();
+
 
   lcd_clear();
   lcd_update();
