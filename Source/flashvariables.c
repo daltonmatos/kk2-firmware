@@ -88,6 +88,7 @@ const uint8_t acc[]  PROGMEM = {2, 4, 8, 16};
 const char sqz3[] PROGMEM = "ACC Trim Roll";
 const char sqz4[] PROGMEM = "ACC Trim Pitch";
 const char sqz5[] PROGMEM = "SL Mixing Rate";
+const char selflevel_title[] PROGMEM = "SELF-LEVEL";
 
 /* Stick-scaling Screen */
 const char ss_title[] PROGMEM = "STICK SCALING";

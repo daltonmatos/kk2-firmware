@@ -11,6 +11,7 @@ extern const char plimit;
 extern const char sqz3;
 extern const char sqz4;
 extern const char sqz5;
+extern const char selflevel_title;
 
 extern const char nxtchng;
 extern const char bckprev;
@@ -20,78 +21,59 @@ extern const char colon_and_space;
 
 void _sl_render(uint8_t selected_item){
 
-  lcd_clear();
-  FontSelector = f6x8;
+  print_string(&pgain, 0, 11);
+  print_string(&plimit, 0, 20);
+  print_string(&sqz3, 0, 29);
+  print_string(&sqz4, 0, 38);
+  print_string(&sqz5, 0, 47);
 
-  print_string(&pgain, 0, 0);
-  print_string(&plimit, 0, 9);
-  print_string(&sqz3, 0, 18);
-  print_string(&sqz4, 0, 27);
-  print_string(&sqz5, 0, 36);
+  print_string(&colon_and_space, 84, 11);
+  print_string(&colon_and_space, 84, 20);
+  print_string(&colon_and_space, 84, 29);
+  print_string(&colon_and_space, 84, 38);
+  print_string(&colon_and_space, 84, 47);
 
-  print_string(&colon_and_space, 84, 1);
-  print_string(&colon_and_space, 84, 10);
-  print_string(&colon_and_space, 84, 19);
-  print_string(&colon_and_space, 84, 28);
-  print_string(&colon_and_space, 84, 37);
+  print_number_2(eepromP_read_word(eeSelflevelPgain), 94, 11, selected_item == 0 ? HIGHLIGHT_TO_THE_END_OF_LINE : HIGHLIGHT_NONE);
+  print_number_2(eepromP_read_word(eeSelflevelPlimit), 94, 20, selected_item == 1 ? HIGHLIGHT_TO_THE_END_OF_LINE : HIGHLIGHT_NONE);
+  print_number_2(eepromP_read_word(eeAccTrimRoll), 94, 29, selected_item == 2 ? HIGHLIGHT_TO_THE_END_OF_LINE : HIGHLIGHT_NONE);
+  print_number_2(eepromP_read_word(eeAccTrimPitch), 94, 38, selected_item == 3 ? HIGHLIGHT_TO_THE_END_OF_LINE : HIGHLIGHT_NONE);
+  print_number_2(eepromP_read_word(eeSlMixRate), 94, 47, selected_item == 4 ? HIGHLIGHT_TO_THE_END_OF_LINE : HIGHLIGHT_NONE);
 
-  print_number_2(eepromP_read_word(eeSelflevelPgain), 94, 1, selected_item == 0 ? HIGHLIGHT_TO_THE_END_OF_LINE : HIGHLIGHT_NONE);
-  print_number_2(eepromP_read_word(eeSelflevelPlimit), 94, 10, selected_item == 1 ? HIGHLIGHT_TO_THE_END_OF_LINE : HIGHLIGHT_NONE);
-  print_number_2(eepromP_read_word(eeAccTrimRoll), 94, 19, selected_item == 2 ? HIGHLIGHT_TO_THE_END_OF_LINE : HIGHLIGHT_NONE);
-  print_number_2(eepromP_read_word(eeAccTrimPitch), 94, 28, selected_item == 3 ? HIGHLIGHT_TO_THE_END_OF_LINE : HIGHLIGHT_NONE);
-  print_number_2(eepromP_read_word(eeSlMixRate), 94, 37, selected_item == 4 ? HIGHLIGHT_TO_THE_END_OF_LINE : HIGHLIGHT_NONE);
-
-  print_string(&bckprev, 0, 57);
-  print_string(&nxtchng, 55, 57);
 }
 
+void _sl_ok_callback(uint8_t selected_item){
+
+    int16_t min;
+    int16_t max;
+    switch (selected_item){
+      case 0:
+      case 1:
+        min = 0; max = 900;
+        break;
+      case 2:
+      case 3:
+        min = -900; max = 900;
+        break;
+      case 4:
+        min = 5; max = 50;
+        break;
+    }
+
+
+    eepromP_update_word(uint16_t_ptr(((int16_t) eeSelflevelPgain + selected_item*2)), 
+                        asm_NumEdit(eepromP_read_word(uint16_t_ptr((int16_t) eeSelflevelPgain + selected_item*2)), min, max));
+
+}
 
 void selflevel_settings(){
 
-  int8_t pressed = 0;
-  uint8_t selected_item = 0;
-  int16_t min = 0;
-  int16_t max = 0;
+  ScreenData->title = &selflevel_title;
+  ScreenData->footer_callback = &print_std_footer;
+  ScreenData->initial_option = 0;
+  ScreenData->ok_callback = &_sl_ok_callback;
+  ScreenData->render_callback = &_sl_render;
+  ScreenData->total_options = 5;
 
-  _sl_render(selected_item);
-  lcd_update();
-
-  while ((pressed = wait_for_button(BUTTON_ANY)) != BUTTON_BACK){
-
-    switch (pressed){
-      case BUTTON_DOWN:
-        selected_item++;
-        break;
-      case BUTTON_UP:
-        selected_item--;
-        break;
-    }
-
-    selected_item = constrain(selected_item, 0, 4);
-
-    if (pressed == BUTTON_OK){
-      switch (selected_item){
-        case 0:
-        case 1:
-          min = 0; max = 900;
-          break;
-        case 2:
-        case 3:
-          min = -900; max = 900;
-          break;
-        case 4:
-          min = 5; max = 50;
-          break;
-      }
-
-
-      eepromP_update_word(uint16_t_ptr(((int16_t) eeSelflevelPgain + selected_item*2)), 
-                          asm_NumEdit(eepromP_read_word(uint16_t_ptr((int16_t) eeSelflevelPgain + selected_item*2)), min, max));
-    }
-
-    _sl_render(selected_item);
-    lcd_update();
-
-  }
+  render_screen(ScreenData);
 
 }
