@@ -91,6 +91,10 @@ void _highlight_current_print(uint8_t len, uint8_t x, uint8_t y, uint8_t hilight
     case HIGHLIGHT_FROM_BEGINNING_OF_LINE:
       print_selector(0, y-1, x + (len * char_width), y + char_height);
       break;
+    
+  }
+  if (hilight_type > HIGHLIGHT_CUSTOM){
+    print_selector(x-2, y-1, x + hilight_type, y + char_height);
   }
 }
 
