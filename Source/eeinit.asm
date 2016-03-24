@@ -22,7 +22,6 @@ EeInit:
 	call WriteEeprom
 
 	call DisableEscCalibration	;initialize variables that are used in profile #1 only
-	call ResetBatteryVoltageOffset
 	call ResetErrorLogging
 
 	call setup_mpu6050
@@ -71,13 +70,33 @@ CheckEeSignature:
 	brne ces1
 
 	call GetEeVariable8
-	cpi xl, 0x04
-	brne ces1
+	cpi xl, 0x06
+	brne ces2
 
 	clr xl				;signature is OK
 	ret
 
 ces1:	ser xl				;bad signature
+	ret
+
+ces2:	cpi xl, 0x04			;upgrade from older firmware version?
+	brne ces1
+
+	call LoadAuxSwitchSetup		;yes, swap AUX switch functions and SS offsets
+	ldy AuxPos1SS
+	ldz eeAuxPos1Function
+	call SaveAuxSwitchSetup
+	ldy AuxPos1Function
+	call SaveAuxSwitchSetup
+
+	clr t				;select the normal home screen
+	ldz eeBigHomeScreen
+	call WriteEepromP
+
+	ldz eeTpa1P			;write default TPA settings and update the EEPROM signature
+	set
+	rcall iup10
+	clr xl
 	ret
 
 
@@ -122,6 +141,11 @@ iup8:	movw z, y
 	adiw y, 1
 	dec Counter
 	brne iup8
+
+
+	ldx 2				;battery voltage offset for KK2.1.5 = 2
+	ldz eeBatteryVoltageOffset
+	call StoreEePVariable16
 
 
 	ldx 60
@@ -187,7 +211,8 @@ iup8:	movw z, y
 	call StoreEePVariable8		;eeAutoDisarm (set to YES)
 	call StoreEePVariable8		;eeButtonBeep (set to YES)
 	call StoreEePVariable8		;eeArmingBeeps (set to YES)
-	call StoreEePVariable8		;eeUnused2
+	clr xl
+	call StoreEePVariable8		;eeBigHomeScreen (set to NO)
 
 
 	ldx 0
@@ -206,11 +231,6 @@ iup8:	movw z, y
 
 
 	clr xl
-	call StoreEePVariable8		;eeAuxPos1SS
-	call StoreEePVariable8		;eeAuxPos2SS
-	call StoreEePVariable8		;eeAuxPos3SS
-	call StoreEePVariable8		;eeAuxPos4SS
-	call StoreEePVariable8		;eeAuxPos5SS
 	call StoreEePVariable8		;eeAuxPos1Function (set to Acro)
 	ldi xl, 3
 	call StoreEePVariable8		;eeAuxPos2Function (set to Alarm)
@@ -220,6 +240,12 @@ iup8:	movw z, y
 	call StoreEePVariable8		;eeAuxPos4Function (set to Alarm)
 	ldi xl, 2
 	call StoreEePVariable8		;eeAuxPos5Function (set to Normal SL)
+	clr xl
+	call StoreEePVariable8		;eeAuxPos1SS
+	call StoreEePVariable8		;eeAuxPos2SS
+	call StoreEePVariable8		;eeAuxPos3SS
+	call StoreEePVariable8		;eeAuxPos4SS
+	call StoreEePVariable8		;eeAuxPos5SS
 
 
 	clr xl
@@ -234,6 +260,28 @@ iup8:	movw z, y
 	call StoreEePVariable8		;eeDG2Functions
 
 
+	clt				;the T flag will be set when upgrading from older firmware version
+
+iup10:	ldi xl, 128
+	call StoreEePVariable8		;eeTpa1P (set to 1.0)
+	call StoreEePVariable8		;eeTpa1I (set to 1.0)
+	call StoreEePVariable8		;eeTpa2P (set to 1.0)
+	call StoreEePVariable8		;eeTpa2I (set to 1.0)
+	call StoreEePVariable8		;eeTpa3P (set to 1.0)
+	call StoreEePVariable8		;eeTpa3I (set to 1.0)
+	call StoreEePVariable8		;eeTpa4P (set to 1.0)
+	call StoreEePVariable8		;eeTpa4I (set to 1.0)
+	call StoreEePVariable8		;eeTpa5P (set to 1.0)
+	call StoreEePVariable8		;eeTpa5I (set to 1.0)
+
+
+	call StoreEePVariable8		;eeTSSA1 (set to 1.0)
+	call StoreEePVariable8		;eeTSSA2 (set to 1.0)
+	call StoreEePVariable8		;eeTSSA3 (set to 1.0)
+	call StoreEePVariable8		;eeTSSA4 (set to 1.0)
+	call StoreEePVariable8		;eeTSSA5 (set to 1.0)
+
+
 	ldz 0				;EEPROM signature
 	ldi xl, 0x21
 	call StoreEePVariable8
@@ -241,11 +289,15 @@ iup8:	movw z, y
 	call StoreEePVariable8
 	ldi xl, 0xAA
 	call StoreEePVariable8
-	ldi xl, 0x04
+	ldi xl, 0x06
 	call StoreEePVariable8
 
+	brtc iup11
 
-	;--- User profile #1 ---
+	ret				;abort when upgrading from older firmware version
+
+
+iup11:	;--- User profile #1 ---
 
 	lds t, UserProfile		;skip this section for user profile 2 - 4
 	tst t
@@ -380,10 +432,12 @@ InitialSetup:
 
 isp11:	call LcdClear12x16
 
-	lrv X1, 34			;setup
+	;header
+	lrv X1, 34
 	ldz isp1*2
 	call PrintHeader
 
+	;disclaimer text
 	ldi t, 4
 	ldz isp10*2
 	call PrintStringArray
@@ -391,7 +445,7 @@ isp11:	call LcdClear12x16
 	;footer
 	call PrintMenuFooter
 
-	;print selector
+	;selector
 	ldzarray isp7*2, 4, Counter
 	call PrintSelector
 

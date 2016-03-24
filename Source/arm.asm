@@ -6,14 +6,18 @@
 
 Arming:
 
-	rvflagand flagA, flagThrottleZero, flagAutoDisarm	;auto disarm logic
+	rvbrflagfalse flagMotorSpin, arm8	;keep motors spinning and prevent accidental disarming in mid-air
+
+	rvsetflagfalse flagThrottleZero
+
+arm8:	rvflagand flagA, flagThrottleZero, flagAutoDisarm	;auto disarm logic
 	rvflagand flagA, flagA, flagArmed
 	rvbrflagtrue flagA, arm10	
 
 	b16clr AutoDisarmDelay					;if throttle is non-zero or auto disarm is off, clear counter
 	rjmp arm12
 
-arm10:	b16inc AutoDisarmDelay					;if throttle is zero and autodisarm is on, inc counter
+arm10:	b16inc AutoDisarmDelay					;if throttle is zero and auto disarm is on, inc counter
 	b16ldi Temp, 400 * 20
 	b16cmp AutoDisarmDelay, Temp				;counter = 20 sec?
 	brne arm12
@@ -59,6 +63,8 @@ arm7:	ret
 
 arm5:	rvbrflagfalse flagAileronCentered, arm7	;skip arming if the aileron/elevator stick isn't centered
 	rvbrflagfalse flagElevatorCentered, arm7
+
+	rvbrflagfalse flagHomeScreen, arm7	;skip arming unless the SAFE screen is displayed
 
 	rvsetflagtrue flagArmed			;arm
 	b16ldi BeeperDelay, 300

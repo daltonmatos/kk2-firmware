@@ -31,7 +31,7 @@
 
 .equ	AccLowLimit 		= -120
 .equ	AccHighLimit	 	= 120
-.equ	AccZHighLimit	 	= 330
+.equ	AccZHighLimit	 	= 338
 
 .equ	MpuAcc16g		= 0x18
 .equ	MpuAcc8g		= 0x10
@@ -47,7 +47,7 @@
 
 .equ	AccNotCalibrated	= 0x01
 .equ	SanityCheckFailed	= 0x02
-.equ	RxSignalLost		= 0x03	;this bit pattern has 1st priority
+.equ	RxSignalLost		= 0x03	;this bit pattern has top priority
 .equ	NoMotorLayout		= 0x04
 .equ	LvaWarning		= 0x08	;this bit will not prevent arming
 

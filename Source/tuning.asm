@@ -274,19 +274,18 @@ LoadTuningRate:
 ltr1:	cpi xl, 1				;low?
 	brne ltr2
 
-	b16ldi Temp, 0.15			;low rate
+	b16ldi TuningRateValue, 0.15		;low rate
 	rjmp ltr4
 
 ltr2:	cpi xl, 2				;medium?
 	brne ltr3
 
-	b16ldi Temp, 0.45			;medium rate
+	b16ldi TuningRateValue, 0.45		;medium rate
 	rjmp ltr4
 
-ltr3:	b16ldi Temp, 0.75			;high rate
+ltr3:	b16ldi TuningRateValue, 0.75		;high rate
 
 ltr4:	sts TuningRate, xl
-	b16mov TuningRateValue, Temp
 	ret
 
 

@@ -86,10 +86,10 @@ qt15:	ldi t, ' '				;second part of the parameter label (e.g. "P gain")
 	or t, xl
 	breq qt13
 
-	lds t, StatusCounter			;flashing status text banner
+	lds t, StatusFlag			;flashing status text banner
 	inc t
-	sts StatusCounter, t
 	andi t, 0x01
+	sts StatusFlag, t
 	breq qt13
 
 	ldz qt7*2				;highlight the status text
@@ -118,10 +118,10 @@ qt12:	call LcdUpdate
 
 qt50:	;flight loop
 	call PwmStart				;runtime between PwmStart and B interrupt (in PwmEnd) must not exeed 1.5ms
-	call GetRxChannels
+	call GetStdRxChannels
 	call Arming
-	call QtLogic
-	call RemoteQuickTuning
+	rcall QtLogic
+	rcall RemoteQuickTuning
 	call Imu
 	call Mixer
 	call GimbalStab
@@ -142,10 +142,9 @@ qt52:	rvbrflagfalse flagLcdUpdate, qt53	;update LCD once if flagLcdUpdate is tru
 	rvsetflagfalse flagLcdUpdate
 	rjmp qt10
 
-qt53:	rvbrflagfalse flagArmed, qt54		;skip buttonreading if armed
-	rjmp qt50
+qt53:	rvbrflagtrue flagArmed, qt50		;skip buttonreading when armed
 
-qt54:	load t, pinb				;read buttons
+	load t, pinb				;read buttons
 	com t
 	swap t
 	andi t, 0x0F				;button pressed?

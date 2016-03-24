@@ -54,7 +54,10 @@ esc6:	ldi t, 2			;step 1
 	rvsetflagfalse flagThrottleZero
 
 esc2:	call PwmStart
-	rcall SetAllOutputValues
+	b16mov2 Out1, Out2, Temp
+	b16mov2 Out3, Out4, Temp
+	b16mov2 Out5, Out6, Temp
+	b16mov2 Out7, Out8, Temp
 	call PwmEnd
 
 	load t, pinb			;read buttons. Cannot use 'GetButtons' here because of delay
@@ -95,22 +98,6 @@ esc4:	LedOff				;done
 
 
 
-	;--- Set all output values to the same value ---
-
-SetAllOutputValues:
-
-	b16mov Out1, Temp
-	b16mov Out2, Temp
-	b16mov Out3, Temp
-	b16mov Out4, Temp
-	b16mov Out5, Temp
-	b16mov Out6, Temp
-	b16mov Out7, Temp
-	b16mov Out8, Temp
-	ret
-
-
-
 	;--- Disable ESC calibration ---
 
 DisableEscCalibration:
@@ -133,9 +120,7 @@ EscCalWarning:
 
 	ret				;no, user cancelled
 
-war13:	call LcdClear12x16
-
-	call PrintWarningHeader
+war13:	call PrintWarningHeader
 
 	ldi t, 4			;print text
 	ldz war10*2

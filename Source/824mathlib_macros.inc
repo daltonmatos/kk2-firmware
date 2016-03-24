@@ -24,7 +24,6 @@
 	lds t, @1 + 3
 	sts @0 + 3, t
 
-
 .endmacro
 
 

@@ -2,24 +2,32 @@
 
 UpdateFlightDisplay:
 
+	rvsetflagfalse flagHomeScreen
+
 	rvsetflagtrue flagMutePwm
 
 	call LcdClear12x16
 
+	rvbrflagtrue flagGimbalMode, udp5	;skip ahead when in gimbal controller mode
 
-	;--- Logged error ---
-
+	;error log
 	call ErrorLog				;will show the error log if any error has been logged
 	brcc udp1
 
 	rjmp udp21				;the error log is displayed so we'll just skip to the end
 
+udp1:	;battery log
+	call BatteryLog				;will show the battery log when activated
+	brcc udp2
 
-udp1:	;--- Print armed status ---
+	rjmp udp21				;the battery log is displayed so we'll just skip to the end
 
+udp2:	rvsetflagtrue flagHomeScreen
+
+	;armed status
 	rvbrflagfalse flagArmed, udp3
 
-	lrv X1, 34				;Armed
+	lrv X1, 34				;armed
 	lrv Y1, 22
 	ldz armed*2
 	call PrintHeader
@@ -31,26 +39,23 @@ udp1:	;--- Print armed status ---
 	call PrintMotto
 	rjmp udp21
 
-udp3:	lrv X1, 38				;Safe
+udp3:	ldz eeBigHomeScreen
+	call ReadEepromP
+	brflagfalse t, udp5
+
+	rjmp BigHomeScreen
+
+udp5:	lrv X1, 38				;safe
 	ldz safe*2
 	call PrintString
 
-
-	;--- Print user profile selection ---
-
+	;user profile
 	lrv X1, 102
-	ldi t, 'P'
-	call PrintChar
-	ldi t, '1'
-	lds xl, UserProfile
-	add t, xl
-	call PrintChar
+	rcall PrintUserProfile
 	lrv FontSelector, f6x8
 	lrv X1, 0
 
-
-	;--- Gimbal controller mode ---
-
+	;gimbal controller mode
 	rvbrflagfalse flagGimbalMode, udp4
 
 	lrv Y1, 17				;stand-alone gimbal controller mode
@@ -68,17 +73,13 @@ udp3:	lrv X1, 38				;Safe
 	lrv Y1, 44				;LVA setting and footer
 	rjmp udp20
 
-
-udp4:	;--- Flight timer ---
-
+udp4:	;flight timer
 	lrv Y1, 1
 	lds xl, Timer1min
 	lds yl, Timer1sec
 	rcall PrintTimer
 
-
-	;--- Print status ---
-
+	;status message
 	lrv X1, 0
 	lrv Y1, 17
 	ldz ok*2				;default string is "OK"
@@ -109,18 +110,16 @@ udp24:	ldz tunmode*2
 	call PrintFromStringArray
 	rjmp udp51
 
-udp25:	lds t, StatusCounter			;flashing status text banner
+udp25:	lds t, StatusFlag			;flashing status text banner
 	inc t
-	sts StatusCounter, t
 	andi t, 0x01
+	sts StatusFlag, t
 	breq udp51
 
 	ldz udp8*2				;highlight the status text
 	call PrintSelector
 
-
-udp51:	;--- Print flight mode and stick scaling offset ---
-
+udp51:	;flight mode and stick scaling offset
 	lrv X1, 0				;flight mode
 	lrv Y1, 27
 	ldz flmode*2
@@ -128,15 +127,17 @@ udp51:	;--- Print flight mode and stick scaling offset ---
 
 	lrv X1, 84				;stick scaling offset selected from AUX switch position
 	lds t, AuxStickScaling
-	tst t					;skip printing when zero
+	andi t, 0x03				;skip printing when zero
 	breq udp54
-
+	
+	push t
+	ldz ss*2
+	call PrintString
+	pop t
 	ldz auxss*2
 	call PrintFromStringArray
 
-
-udp54:	;--- Print battery voltages ---
-
+udp54:	;battery voltages
 	lrv X1, 0				;live battery voltage
 	call LineFeed
 	ldz batt*2
@@ -155,11 +156,9 @@ udp20:	lrv X1, 0				;LVA setting
 	b16mov Temper, BattAlarmVoltage
 	rcall PrintVoltage
 
-
-	;--- Print footer ---
-
-	lrv X1, 36				;footer
-	lrv Y1, 57
+	;footer
+udp23:	lrv Y1, 57
+	lrv X1, 36
 	ldz upd1*2
 	call PrintString
 
@@ -199,6 +198,8 @@ PrintDecimal:
 
 	ldi t, '.'
 	call PrintChar
+
+PrintDecimalNoDP:
 
 	mov xl, yh				;print the fractional part (one digit)
 	clr xh
@@ -247,17 +248,30 @@ PrintFlightMode:
 	rvbrflagfalse flagSlOn, pfm1
 
 	ldz selflvl*2				;(normal) SL
-	call PrintString
-	ret
+	rjmp pfm3
 
 pfm1:	rvbrflagfalse flagSlStickMixing, pfm2
 
 	ldz slmix*2				;SL mix
-	call PrintString
-	ret
+	rjmp pfm3
 
 pfm2:	ldz acro*2				;acro
-	call PrintString
+
+pfm3:	call PrintString
+	ret
+
+
+
+	;--- Print user profile ---
+
+PrintUserProfile:
+
+	ldi t, 'P'
+	call PrintChar
+	ldi t, '1'
+	lds xl, UserProfile
+	add t, xl
+	call PrintChar
 	ret
 
 
@@ -292,6 +306,7 @@ sta9:	.db "RX signal was lost!", 0
 
 sta11:	.db "Check aileron level.", 0, 0
 sta12:	.db "Check elevator level.", 0
+sta13:	.db "Motor Spin is active.", 0
 
 sta21:	.db "No CPPM input!", 0, 0
 
@@ -315,7 +330,12 @@ LoadStatusString:
 
 	rvbrflagtrue flagThrottleZero, lss8	;no critical flags are set so we'll display a warning if throttle is above idle
 
+	rvbrflagtrue flagMotorSpin, lss12	;display a warning when the Motor Spin feature is active
+
 	ldz sta8*2				;check throttle level
+	ret
+
+lss12:	ldz sta13*2				;motor spin is active
 	ret
 
 lss8:	rvbrflagtrue flagAileronCentered, lss9
@@ -453,4 +473,96 @@ GetSatStatus:
 gss1:	ldz sta41*2				;no Satellite input
 	ret
 
+
+
+	;--- Print an alternative home screen using large font ---
+
+BigHomeScreen:
+
+	;status message
+	rcall LoadStatusString
+	brtc bhs11
+
+	pushz					;display status message screen
+	call PrintWarningHeader
+
+	lrv X1, 115				;user profile (normal font)
+	lrv Y1, 1
+	rcall PrintUserProfile
+
+	lrv X1, 0				;status message (normal font)
+	lrv Y1, 17
+	popz
+	call PrintString
+
+	lds t, StatusBits			;show flight mode only when the Motor Spin warning is displayed
+	cbr t, LvaWarning
+	brne bhs10
+
+	rvbrflagfalse flagMotorSpin, bhs10
+
+	lrv X1, 0				;flight mode
+	lrv Y1, 35
+	ldz flmode*2
+	rcall PrintFlightMode
+
+	lrv X1, 84				;stick scaling offset
+	lds t, AuxStickScaling
+	andi t, 0x03				;skip printing when zero
+	breq bhs10
+
+	push t
+	ldz ss*2
+	call PrintString
+	pop t
+	ldz auxss*2
+	call PrintFromStringArray
+
+bhs10:	rjmp udp23				;footer
+
+bhs11:	;flight timer
+	lrv X1, 0
+	lds xl, Timer1min
+	lds yl, Timer1sec
+	rcall PrintTimer
+
+	;user profile
+	lrv X1, 103
+	rcall PrintUserProfile
+
+	;flight mode
+	lrv X1, 0
+	lrv Y1, 17
+	ldz null*2				;print no label
+	rcall PrintFlightMode
+
+	;stick scaling offset
+	lrv X1, 91
+	lds t, AuxStickScaling
+	andi t, 0x03				;skip printing when zero
+	breq bhs13
+
+	ldz auxss*2
+	call PrintFromStringArray
+
+bhs13:	;live battery voltage
+	lrv X1, 0
+	lrv Y1, 34
+	b16mov Temper, BatteryVoltage
+	rcall PrintVoltage
+
+	;logged battery voltage
+	lrv X1, 67
+	b16mov Temper, BatteryVoltageLogged
+	b16ldi Temp, 400
+	b16cmp Temper, Temp
+	brge bhs15
+
+	lrv X1, 79				;less than 10V
+
+bhs15:	rcall PrintVoltage
+
+	;footer
+	lrv FontSelector, f6x8
+	rjmp udp23
 

@@ -39,7 +39,8 @@ stt22:	;labels				;normal mode
 	ldi t, 4
 
 stt21:	push t
-	lrv X1, 108
+	lrv X1, 96
+	call PrintColonAndSpace	
 	call GetEePVariable16
  	call PrintNumberLF
 	pop t
@@ -61,7 +62,7 @@ stt21:	push t
 	brne stt8
 
 	call LoadStickDeadZone
-	ret	
+	ret
 
 stt8:	cpi t, 0x04			;PREV?
 	brne stt9
@@ -107,13 +108,13 @@ stt14:	rjmp stt11
 
 
 
-stt1:	.db "Minimum Throttle: ", 0, 0
-stt2:	.db "Stick Dead Zone : ", 0, 0
-stt5:	.db "Alarm 1/10 Volts: ", 0, 0
-stt6:	.db "Servo Filter    : ", 0, 0
+stt1:	.db "Minimum Throttle", 0, 0	;also used in error message (sanity check)
+stt2:	.db "Stick Dead Zone", 0
+stt5:	.db "Alarm 1/10 Volts", 0, 0
+stt6:	.db "Servo Filter", 0, 0
 
 stt20:	.dw stt1*2, stt2*2
-stt23:	.dw stt5*2, stt6*2
+stt23:	.dw stt5*2, stt6*2		;gimbal controller mode
 
 
 stt7:	.db 107, 0, 127, 9

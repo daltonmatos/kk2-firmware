@@ -4,6 +4,8 @@
 
 GimbalSettings:
 
+	clr Item
+
 	call LoadMixerTable		;display a warning if output type on M7/M8 is set to 'ESC'
 	call UpdateOutputTypeAndRate
 	lds t, OutputTypeBitmask
@@ -45,7 +47,7 @@ gbs11:	call LcdClear6x8
 	ldz nxtchng*2
 	call PrintString
 
-	;print selector
+	;selector
 	ldzarray gbs7*2, 4, Item
 	call PrintSelector
 
@@ -222,8 +224,6 @@ PrintGimbalValue:
 
 ShowEscWarning:
 
-	call LcdClear12x16
-
 	call PrintWarningHeader
 
 	ldi t, 3			;print warning text
@@ -249,14 +249,18 @@ ShowEscWarning:
 
 GimbalStab:
 
+	set						;the T flag is used to indicate the number of gimbal servos being used (default is 2)
+
 	b16clr Temp					;gimbal will be deactivated if both gains are zero. This allows OCTOs to be used
 	b16cmp CamRollGain, Temp
-	breq gbs26
-	rjmp gbs22
-
-gbs26:	b16cmp CamPitchGain, Temp
 	brne gbs22
+
+	b16cmp CamPitchGain, Temp
+	brne gbs23
+
 	ret
+
+gbs23:	clt						;because gimbal roll gain is zero we'll only be running the pitch servo
 
 gbs22:	lds t, TuningMode				;use center offset position when tuning mode is active
 	tst t
@@ -292,7 +296,11 @@ gbs27:	b16add RxAux2, RxAux2, CamPitchOffset		;add gimbal parameter offsets
 	b16mul CamRoll, EulerAngleRoll, CamRollGain	;calculate camera angles
 	b16mul CamPitch, EulerAnglePitch, CamPitchGain
 
-gbs25:	rvbrflagtrue CamServoMixing, gbs20
+gbs25:	brts gbs26					;jump for gimbal with dual servos
+
+	rjmp gbs28					;jump for gimbal with single (pitch) servo
+
+gbs26:	rvbrflagtrue CamServoMixing, gbs20
 	rjmp gbs24					;jump for regular output
 
 gbs20:	b16mov Temp, CamRoll				;differential mixing
@@ -308,8 +316,10 @@ gbs20:	b16mov Temp, CamRoll				;differential mixing
 	b16sub NewCamPitchOffset, NewCamPitchOffset, Temp
 
 gbs24:	b16add Out7, CamRoll, NewCamRollOffset		;outputs will be set only when FC is armed and throttle is applied
-	b16add Out8, CamPitch, NewCamPitchOffset
-
-	b16mov Offset7, Out7				;makes it possible to adjust the gimbal in 'SAFE' mode also
-	b16mov Offset8, Out8				;(offset is used in 'SAFE' mode and in 'ARMED' mode until throttle is applied)
+	b16mov Offset7, Out7				;offsets are used in 'SAFE' mode and in 'ARMED' mode until throttle is applied
+							;setting both to the same value makes it possible to adjust the gimbal in 'SAFE' mode
+gbs28:	b16add Out8, CamPitch, NewCamPitchOffset
+	b16mov Offset8, Out8
 	ret
+
+

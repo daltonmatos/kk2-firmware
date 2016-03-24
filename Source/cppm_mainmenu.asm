@@ -2,64 +2,63 @@
 
 CppmMainMenu:
 
-cmm23:	ldy cmm1 * 2
+cmm23:	ldy cmm1*2
 
 	lds xl, MainMenuListYposSave
 	lds xh, MainMenuCursorYposSave
 
-	ldi t, 18		;number of menu items
-
+	ldi t, 19			;number of menu items
 	call Menu
 
 	sts MainMenuListYposSave, yl
 	sts MainMenuCursorYposSave, yh
 
-	brcs cmm22		;BACK pressed?
-	ret			;Yes, return
-	
-cmm22:	lsl xl			;No, calculate index    Z = *cmm18 * 2 + xl * 2
-	ldz cmm18 * 2
+	brcs cmm22			;BACK pressed?
+
+	ret				;yes, return
+
+cmm22:	lsl xl				;no, calculate index    Z = *cmm18 * 2 + xl * 2
+	ldz cmm18*2
 	add zl, xl
 	clr t
 	adc zh, t
 
-	lpm xl, z+		;x = (Z)
+	lpm xl, z+			;x = (Z)
 	lpm xh, z
-	
-	movw z, x		;z = x
-	
-	icall			;go to choosen menu item code  (sound like an apple product!  lawlz)
+
+	movw z, x			;z = x
+
+	icall				;go to choosen menu item code  (sound like an apple product!  lawlz)
 
 	call Beep
 
-	call LcdClear		;blank screen
-	call LcdUpdate	
+	call LcdClear			;blank screen
+	call LcdUpdate
 
 	call ReleaseButtons
-	
-	jmp cmm23
+	rjmp cmm23
 
 
 
-
-cmm1:	.db "Remote Tuning       "
-	.db "PI Editor           "
-	.db "Self-level Settings "
-	.db "Stick Scaling       "
-	.db "Mode Settings       "
-	.db "Misc. Settings      "
-	.db "Gimbal Settings     "
-	.db "Advanced Settings   "
-	.db "AUX Switch Setup    "
-	.db "Initial Setup       "
-	.db "Receiver Test       "
-	.db "Sensor Test         "
-	.db "Show Motor Layout   "
-	.db "User Profile        "
-	.db "Extra Features      "
-	.db "ESC Calibration     "
-	.db "Version Information "
-	.db "LCD Contrast        "
+cmm1:	.dw mRTun*2			;Remote Tuning
+	.dw mPIEd*2			;PI Editor
+	.dw mSLvl*2			;Self-level Settings
+	.dw mSS*2			;Stick Scaling
+	.dw mMode*2			;Mode Settings
+	.dw mMisc*2			;Misc. Settings
+	.dw mGimbl*2			;Gimbal Settings
+	.dw mAdv*2			;Advanced Settings
+	.dw mExp*2			;Expert Settings
+	.dw mAux*2			;AUX Switch Setup
+	.dw mInit*2			;Initial Setup
+	.dw mRxTst*2			;Receiver Test
+	.dw mSensT*2			;Sensor Test
+	.dw mMLay*2			;Show Motor Layout
+	.dw mUserP*2			;User Profile
+	.dw mExtra*2			;Extra Features
+	.dw mECal*2			;ESC Calibration
+	.dw mVer*2			;Version Information
+	.dw mLcd*2			;LCD Contrast
 
 
 cmm18:	.dw RemoteTuningDlg
@@ -70,6 +69,7 @@ cmm18:	.dw RemoteTuningDlg
 	.dw MiscSettings
 	.dw GimbalSettings
 	.dw AdvancedSettings
+	.dw ExpertSettings
 	.dw AuxSwitchSetup
 	.dw InitialSetup
 	.dw RxTest

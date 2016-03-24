@@ -55,23 +55,29 @@ sbf1:	ret
 
 SBusFeatures:
 
-	lds t, Channel18		;get DG2 switch position
-	tst t
-	brne ref1
+	lds yh, Channel18		;get DG2 switch position and update the T flag
+	bst yh, 0
 
-	sbi DigitalOutPin		;off. Reset digital output (aux)
-	rjmp ref3
-
-ref1:	lds yl, DG2Functions		;on. Handle active functions
+	lds yl, DG2Functions		;motor spin
 	lsr yl
 	brcc ref2
 
-	rvsetflagfalse flagThrottleZero	;keep motors spinning and prevent accidental disarming in mid-air
+	clr t				;off is assumed
+	brtc ref1
 
-ref2:	lsr yl
-	brcc ref3
+	ser t				;on
 
-	cbi DigitalOutPin		;set digital output (aux)
+ref1:	sts flagMotorSpin, t		;OBSERVE: Will override the Motor Spin state set from the AUX switch
 
-ref3:	ret
+ref2:	lsr yl				;digital output
+	brcc ref4
+
+	brtc ref3
+
+	cbi DigitalOutPin		;on
+	ret
+
+ref3:	sbi DigitalOutPin		;off
+
+ref4:	ret
 

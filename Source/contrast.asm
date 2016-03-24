@@ -18,9 +18,10 @@ con11:	call LcdClear12x16
 	call PrintHeader
 
 	lrv X1, 0			;LCD contrast
-	lrv Y1, 26
-	ldz con2*2
+	call LineFeed
+	ldz mLcd*2
 	call PrintString
+	call PrintColonAndSpace
 	clr xh
 	lds xl, LcdContrast
 	clr yh
@@ -80,7 +81,6 @@ con20:	rjmp con11
 
 
 con1:	.db "LCD", 0
-con2:	.db "LCD Contrast: ", 0, 0
 con6:	.db "BACK  UP   DOWN  SAVE", 0
 
 

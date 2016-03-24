@@ -1,8 +1,8 @@
 
 FlightInit:
 
-	rcall LoadMixerTable			;copy Mixertable from EE to RAM
-	rcall LoadParameterTable		;copy and scale PI gain and limits from EE to 16.8 variables
+	rcall LoadMixerTable			;copy Mixertable from EEPROM to RAM
+	rcall LoadParameterTable		;copy and scale PI gain and limits from EEPROM to 16.8 variables
 	rcall UpdateOutputTypeAndRate
 
 
@@ -14,15 +14,15 @@ fli8:	b16store_array FilteredOut1, Temp
 	rvcpi Index, 8
 	brne fli8
 
-
-	ldz eeBoardOrientation			;eeBoardOrientation
+	;board orientation
+	ldz eeBoardOrientation
 	call ReadEeprom
 	sts BoardOrientation, t
 
-
+	;self-level
 	rcall LoadSelfLevelSettings
 
-
+	;misc. settings
 	rcall LoadEscLowLimit			;eeEscLowLimit
 	rcall LoadStickDeadZone			;eeStickDeadZone
 
@@ -35,7 +35,7 @@ fli8:	b16store_array FilteredOut1, Temp
 	b16sub ServoFilter, Temper, Temp
 	b16fdiv ServoFilter, 7
 
-
+	;stick scaling
 	ldz eeStickScaleRoll
 	rcall fli2
 	rcall TempDiv16
@@ -47,17 +47,13 @@ fli8:	b16store_array FilteredOut1, Temp
 
 	rcall fli2				;eeStickScaleYaw
 	rcall TempDiv16
-	b16mov StickScaleYaw, Temp
+	b16mov2 StickScaleYaw, StickScaleYawOrg, Temp
 
 	rcall fli2				;eeStickScaleThrottle
 	rcall TempDiv16
 	b16mov StickScaleThrottle, Temp
 
-	rcall fli2				;eeStickScaleSlMixing
-	rcall TempDiv100
-	b16mov MixFactor, Temp
-
-
+	;channel mapping
 	ldy MappedChannel1
 	rcall GetEeChannelMapping
 	rcall LoadMappedChannel			;eeChannelRoll		or eeSatChannelRoll
@@ -86,18 +82,22 @@ fli3:	rcall LoadGimbalSettings
 	call GetEePVariable168
 	b16store AccZZero
 
-
+	;mode settings
 	rcall ReadLinkRollPitchFlag
-	call CheckTuningMode
-	call LoadAuxSwitchSetup
-	call LoadBatteryVoltageOffset
-	call LoadDG2Settings
 
 	ldz eeAutoDisarm
 	call ReadEepromP
 	sts flagAutoDisarm, t
 
+	;remaining settings
+	call CheckTuningMode
+	call LoadAuxSwitchSetup
+	call LoadBatteryVoltageOffset
+	call LoadDG2Settings
+	call LoadTPASettings
+	call LoadTSSASettings
 
+	;reset variables
 	ser t					;make sure the AUX switch function will be updated
 	sts AuxSwitchPositionOld, t
 
@@ -108,8 +108,11 @@ fli3:	rcall LoadGimbalSettings
 
 	lrv RxTimeoutLimit, TimeoutLimit
 
+
 	clr t
 	sts flagMutePwm, t
+
+	sts flagMotorSpin, t
 
 	sts flagArmed, t
 	sts flagArmedOldState, t
@@ -138,42 +141,34 @@ fli3:	rcall LoadGimbalSettings
 	b16set EulerAngleRoll
 	b16set EulerAnglePitch
 
-	rcall Initialize3dVector		;set 3d vector to point straigth up
-
+	sts flagBatteryLog, t
 	b16ldi BatteryVoltageLowpass, 1023
+
+	rcall Initialize3dVector		;set 3d vector to point straigth up
 
 
 	;--- ACC ---
-
-	ldi yh, 8				;ACC SW Filter
-	clr xl
-	clr xh
-	b16store AccSWFilter
 
 	lds t, MpuAccCfg
 	cpi t, MpuAcc2g
 	brne fli22
 
-	b16ldi AccZTest, 128			;2g
-	b16ldi TiltAngMult, 0.33
+	b16ldi TiltAngMult, 0.33		;2g
 	rjmp fli30
 
 fli22:	cpi t, MpuAcc4g
 	brne fli24
 
-	b16ldi AccZTest, 64			;4g
-	b16ldi TiltAngMult, 0.66
+	b16ldi TiltAngMult, 0.66		;4g
 	rjmp fli30
 
 fli24:	cpi t, MpuAcc8g
 	brne fli26
 
-	b16ldi AccZTest, 32			;8g
-	b16ldi TiltAngMult, 1.32
+	b16ldi TiltAngMult, 1.32		;8g
 	rjmp fli30
 
-fli26:	b16ldi AccZTest, 16			;16g
-	b16ldi TiltAngMult, 2.64
+fli26:	b16ldi TiltAngMult, 2.64		;16g
 
 
 fli30:	;--- Gyro ---
@@ -229,7 +224,7 @@ TempDiv16:
 
 TempDiv100:
 
-	b16ldi Temper, 0.3203125		;0.3125 * 0.03203125 = 0.010009765 which is much closer to 0.01 than 0.0078125 (= b16ldi Temp, 0.01)
+	b16ldi Temper, 0.3203125		;0.3203125 * 0.03125 = 0.010009765 which is much closer to 0.01 than 0.0078125 (= b16ldi Temp, 0.01)
 	b16mul Temp, Temp, Temper
 	b16ldi Temper, 0.03125
 	b16mul Temp, Temp, Temper
@@ -260,11 +255,6 @@ mad7:	.db "Sensor raw data", 0
 
 SanityCheck:
 
-	call LcdClear6x8
-
-	lrv X1, 0
-	lrv Y1, 26
-
 	call AdcRead
 
 	CheckLimit GyroRoll, -400, 400, san3
@@ -288,33 +278,46 @@ SanityCheck:
 
 	CheckLimit EscLowLimit, 0, 1001, san1				;20%
 
+	call CheckTPAValues
+	brts san4
+
+	call CheckTSSAValues
+	brts san5
+
 	ret 				;no errors, return
 
-san1:	ldz stt1*2			;print "Minimum Throttle"
-	call PrintString
-	rjmp san4
+san1:	ldz stt1*2			;error "Minimum Throttle"
+	rjmp san10
 
-san2:	ldz mad5*2			;print "Sensor calibration"
-	call PrintString
-	rjmp san4
+san2:	ldz mad5*2			;error "Sensor calibration"
+	rjmp san10
 
-san3:	ldz mad7*2			;print "Sensor raw data"
-	call PrintString
+san3:	ldz mad7*2			;error "Sensor raw data"
+	rjmp san10
 
-san4:	setstatusbit SanityCheckFailed
+san4:	ldz xps2*2			;error "TPA Settings"
+	rjmp san10
 
-	;footer
-	call PrintContinueFooter
+san5:	ldz xps3*2			;error "TSSA Settings"
+
+san10:	pushz
+	setstatusbit SanityCheckFailed
 
 	;header
-	lrv Y1, 0
-	lrv FontSelector, f12x16
 	call PrintWarningHeader
 
 	lrv X1, 0			;print "Data out of limits:"
 	ldz mad1*2
 	call PrintString
 
+	;error message
+	lrv X1, 0
+	call LineFeed
+	popz
+	call PrintString
+
+	;footer
+	call PrintContinueFooter
 	call LcdUpdate
 
 	call WaitForOkButton		;CONTINUE?
@@ -434,14 +437,12 @@ LoadSelfLevelSettings:
 	b16mul SelflevelPlimit, Temp, Temper
 
 	rcall fli2				;eeAccTrimRoll
-	b16mov AccTrimRollOrg, Temp
-	b16fdiv Temp, 2
-	b16mov AccTrimRoll, Temp
+	b16mov2 AccTrimRoll, AccTrimRollOrg, Temp
+	b16fdiv AccTrimRoll, 2
 
 	rcall fli2				;eeAccTrimPitch
-	b16mov AccTrimPitchOrg, Temp
-	b16fdiv Temp, 2
-	b16mov AccTrimPitch, Temp
+	b16mov2 AccTrimPitch, AccTrimPitchOrg, Temp
+	b16fdiv AccTrimPitch, 2
 
 	rcall fli2				;eeSlMixRate
 	rcall TempDiv100
@@ -542,17 +543,6 @@ ReadLinkRollPitchFlag:
 	ldz eeLinkRollPitch
 	call ReadEepromP
 	sts flagRollPitchLink, t
-	ret
-
-
-
-	;--- Read the S.Bus DG2 settings from EEPROM ---
-
-LoadDG2Settings:
-
-	ldz eeDG2Functions
-	call ReadEepromP
-	sts DG2Functions, t
 	ret
 
 

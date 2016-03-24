@@ -183,16 +183,14 @@ med13:	.db "Type:",0
 med14:	.db "Rate:",0
 med16:	.db "Servo",0
 med17:	.db "ESC",0
-med18:	.db "High",0,0
-med19:	.db "Low",0
 
 
 med10:	.dw thr*2, ail*2, ele*2, rudd*2, ofs*2
 type:	.dw med16*2, med17*2			;servo, ESC
-rate:	.dw med19*2, med18*2			;low, high
+rate:	.dw ratel*2, rateh*2			;low, high
 
 nad1:	.db "NO ACCESS", 0
-nad3:	.db "A Motor Layout must", 0
+nad3:	.db "A motor layout must", 0
 nad4:	.db "be loaded first.", 0, 0
 
 nad5:	.db "User profile #1 must", 0, 0

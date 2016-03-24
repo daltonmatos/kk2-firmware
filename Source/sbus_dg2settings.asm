@@ -7,9 +7,9 @@
 SBusDG2SwitchSetup:
 
 	clr Item
-	call LoadDG2Settings
+	rcall LoadDG2Settings
 	lds OldValue, DG2Functions
-	ldi Xoffset, 96
+	ldi Xoffset, 84
 
 dgs11:	call LcdClear6x8
 
@@ -28,7 +28,7 @@ dgs11:	call LcdClear6x8
 	call PrintStdFooter
 
 	;print selector
-	ldzarray stt7*2, 4, Item
+	ldzarray dgs7*2, 4, Item
 	call PrintSelector
 
 	call LcdUpdate
@@ -40,13 +40,13 @@ dgs11:	call LcdClear6x8
 
 	lds t, DG2Functions		;save to EEPROM if the value was modified
 	cp t, OldValue
-	breq dgs7
+	breq dgs16
 
 	ldz eeDG2Functions
 	mov xl, t
 	call StoreEePVariable8
 
-dgs7:	ret	
+dgs16:	ret	
 
 dgs8:	cpi t, 0x04			;PREV?
 	brne dgs9
@@ -81,10 +81,13 @@ dgs14:	rjmp dgs11
 
 
 
-dgs1:	.db "Stay Armed/Spin", 0
+dgs1:	.db "Motor Spin", 0, 0
 dgs2:	.db "Digital Output", 0, 0
 
 dgs10:	.dw dgs1*2, dgs2*2
+
+dgs7:	.db 95, 0, 115, 9
+	.db 95, 9, 115, 18
 
 
 
@@ -95,12 +98,23 @@ PrintDG2Function:
 	sts X1, Xoffset
 	call PrintColonAndSpace
 	mov t, yl
-	ldz yesno*2
 	andi t, 0x01
+	ldz yesno*2
 	call PrintFromStringArray
 
 	call LineFeed			;prepare for the next line
 	lsr yl
+	ret
+
+
+
+	;--- Load DG2 settings from EEPROM ---
+
+LoadDG2Settings:
+
+	ldz eeDG2Functions
+	call ReadEepromP
+	sts DG2Functions, t
 	ret
 
 

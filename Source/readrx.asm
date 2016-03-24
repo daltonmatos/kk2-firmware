@@ -1,7 +1,5 @@
 
 
-
-
 IsrRoll:
 
 	in SregSaver, sreg
@@ -14,7 +12,7 @@ IsrRoll:
 	lds tt, tcnt1h
 	sts RollStartH, tt
 	
-	clr tt
+	clr tt				;clear timeout counter
 	sts RollDcnt, tt
 
 	out sreg, SregSaver		;exit	
@@ -47,7 +45,7 @@ IsrPitch:
 	lds tt, tcnt1h
 	sts PitchStartH, tt
 
-	clr tt
+	clr tt				;clear timeout counter
 	sts PitchDcnt, tt
 	
 	out sreg, SregSaver		;exit	
@@ -95,7 +93,7 @@ IsrThrottle:
 	lds tt, tcnt1h
 	sts ThrottleStartH, tt
 	
-	clr tt
+	clr tt				;clear timeout counter
 	sts ThrottleDcnt, tt
 
 	out sreg, SregSaver		;exit	
@@ -249,7 +247,7 @@ GetStdRxChannels:
 	rcall IsChannelCentered
 	sts flagAileronCentered, yl
 
-	
+
 	;--- Pitch ---
 
 	lds r0, MappedChannel2		;get elevator channel value
@@ -368,18 +366,18 @@ rx24:	;--- AUX2 ---
 	;--- AUX4 ---
 
 	lds r0, MappedChannel8		;get aux4 channel value
-	call GetSafeChannelValue
-	call Sanitize
+	rcall GetSafeChannelValue
+	rcall Sanitize
 
 	clr yl				;position #1
 	ldz -400
-	cp  xl, zl
+	cp xl, zl
 	cpc xh, zh
 	brlt rx38
 
 	inc yl				;position #2
 	ldz 400
-	cp  xl, zl
+	cp xl, zl
 	cpc xh, zh
 	brlt rx38
 

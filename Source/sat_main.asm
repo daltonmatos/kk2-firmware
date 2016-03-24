@@ -25,7 +25,7 @@ SatelliteMain:
 	lrv LoadMenuCursorYposSave, 0
 	lrv LoadMenuListYposSave, 0
 
-	b16ldi BatteryVoltageLogged, 1023
+	b16ldi BatteryVoltageOffsetOrg, 2000
 
 	b16ldi FlightTimer, 398		;tuned for better accuracy (1 second)
 
@@ -185,10 +185,9 @@ am11:	rvbrflagfalse flagLcdUpdate, am3;update LCD once if flagLcdUpdate is true
 	rvsetflagfalse flagLcdUpdate
 	call UpdateFlightDisplay
 
-am3:	rvbrflagfalse flagArmed, am7	;skip buttonreading if armed
-	rjmp am1
+am3:	rvbrflagtrue flagArmed, am1	;skip buttonreading when armed
 
-am7:	load t, pinb			;read buttons
+	load t, pinb			;read buttons
 	com t
 	swap t
 	andi t, 0x0F			;any button pushed?
@@ -223,8 +222,12 @@ am6:	rvbrflagtrue Mode, am8		;abort if the button hasn't been released since sta
 
 	;--- User profile ---
 
+	mov yl, t			;register YL is used for button input in ChangeUserProfile
+	call Beep
+	rvbrflagfalse flagHomeScreen, am7
+
 	call ChangeUserProfile
-	rjmp am2
+	rjmp am14
 
 
 am9:	;--- Error log ---
@@ -238,10 +241,22 @@ am14:	rvsetflagtrue Mode		;will wait for the button to be released
 
 am13:	call Beep
 	call ToggleErrorLogState	;toggle error logging state when the setup screen is displayed
-	rjmp am14
+	brcs am7
+
+
+	;--- Battery log ---
+
+	lds t, flagBatteryLog		;display/exit the battery log screen
+	com t
+	sts flagBatteryLog, t
+
+am7:	rvsetflagtrue Mode		;will wait for the button to be released
+	rjmp am1
 
 
 am12:	;--- Menu ---
+
+	rvbrflagfalse flagHomeScreen, am7
 
 	BuzzerOff			;will prevent constant beeping in menu when 'Button Beep' is disabled
 	cbi LvaOutputPin		;will avoid constant high level on external LVA output pin
@@ -250,5 +265,5 @@ am12:	;--- Menu ---
 	call SatMainMenu
 	call StopPwmQuiet
 	call StopLedSeq
-	rjmp am2
+	rjmp am14
 

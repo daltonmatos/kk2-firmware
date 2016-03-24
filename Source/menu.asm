@@ -35,28 +35,20 @@ men3:	mov t, ListYpos		;print the 'down' symbol if not on the bottom of the list
 men4:	lrv FontSelector, f6x8	;print the menu lines.
 
 	lrv Y1, 8
-	ldi counter, 5
+	clr Counter
 
+men6:	lrv X1, 0
 	movw z, y
-	ldi t, 20
-	mul t, ListYpos
-	add zl, r0
-	adc zh, r1
-
-men6:	lrv X1, 0 
-	ldi xl, 20
-
-men5:	lpm t, z+
-	call PrintChar
-	dec xl
-	brne men5
-	
+	mov t, ListYpos
+	add t, Counter
+	call PrintFromStringArray
 	rvadd Y1, 8
 
-	dec Counter
+	inc Counter
+	cpi Counter, 5
 	brne men6
 
-	ldi t,8			;highligth the choosen line
+	ldi t, 8		;highligth the chosen line
 	mul t, CursorYpos
 	mov t, r0
 	subi t, -7

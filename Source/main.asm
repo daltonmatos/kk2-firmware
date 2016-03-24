@@ -27,7 +27,7 @@ Main:
 	lrv LoadMenuCursorYposSave, 0
 	lrv LoadMenuListYposSave, 0
 
-	b16ldi BatteryVoltageLogged, 1023
+	b16ldi BatteryVoltageOffsetOrg, 2000
 
 	b16ldi FlightTimer, 398		;tuned for better accuracy (1 second)
 
@@ -183,10 +183,9 @@ ma11:	rvbrflagfalse flagLcdUpdate, ma3;update LCD once if flagLcdUpdate is true
 	rvsetflagfalse flagLcdUpdate
 	call UpdateFlightDisplay
 
-ma3:	rvbrflagfalse flagArmed, ma7	;skip buttonreading if armed
-	rjmp ma1
+ma3:	rvbrflagtrue flagArmed, ma1	;skip buttonreading when armed
 
-ma7:	load t, pinb			;read buttons
+	load t, pinb			;read buttons
 	com t
 	swap t
 	andi t, 0x0F			;any button pushed?
@@ -221,8 +220,12 @@ ma6:	rvbrflagtrue Mode, ma8		;abort if the button hasn't been released since sta
 
 	;--- User profile ---
 
+	mov yl, t			;register YL is used for button input in ChangeUserProfile
+	call Beep
+	rvbrflagfalse flagHomeScreen, ma7
+
 	call ChangeUserProfile
-	rjmp ma2
+	rjmp ma14
 
 
 ma9:	;--- Error log ---
@@ -236,10 +239,22 @@ ma14:	rvsetflagtrue Mode		;will wait for the button to be released
 
 ma13:	call Beep
 	call ToggleErrorLogState	;toggle error logging state when the setup screen is displayed
-	rjmp ma14
+	brcs ma7
+
+
+	;--- Battery log ---
+
+	lds t, flagBatteryLog		;display/exit the battery log screen
+	com t
+	sts flagBatteryLog, t
+
+ma7:	rvsetflagtrue Mode		;will wait for the button to be released
+	rjmp ma1
 
 
 ma12:	;--- Menu ---
+
+	rvbrflagfalse flagHomeScreen, ma7
 
 	BuzzerOff			;will prevent constant beeping in menu when 'Button Beep' is disabled
 	call StartLedSeq		;the LED flashing sequence will indicate current user profile selection
@@ -247,5 +262,5 @@ ma12:	;--- Menu ---
 	call MainMenu
 	call StopPwmQuiet
 	call StopLedSeq
-	rjmp ma2
+	rjmp ma14
 

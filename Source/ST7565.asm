@@ -201,7 +201,7 @@ PrintHeader:
 
 
 PrintWarningHeader:
-
+	rcall LcdClear12x16
 	lrv X1, 16
 	ldz warning*2
 	rcall PrintHeader
@@ -338,11 +338,12 @@ psa1:	push t
 
 
 PrintString:
-print2:	lpm t, z+
+	lpm t, z+
 	tst t
 	breq print1
+
 	rcall PrintChar
-	rjmp print2
+	rjmp PrintString
 
 print1: ret
 
@@ -939,6 +940,30 @@ nxtsel:	.db " NEXT SELECT", 0, 0
 change:	.db "CHANGE", 0, 0
 ok:	.db "OK", 0, 0			;also used as status text (in sensortest.asm and flightdisplay.asm)
 
+	;menu items
+mQTun:	.db "Quick Tuning", 0, 0
+mRTun:	.db "Remote Tuning", 0
+mPIEd:	.db "PI Editor", 0
+mSLvl:	.db "Self-level Settings", 0
+mSS:	.db "Stick Scaling", 0
+mMode:	.db "Mode Settings", 0
+mMisc:	.db "Misc. Settings", 0, 0
+mGimbl:	.db "Gimbal Settings", 0
+mExGM:	.db "Exit Gimbal Mode", 0, 0
+mAdv:	.db "Advanced Settings", 0
+mExp:	.db "Expert Settings", 0
+mAux:	.db "AUX Switch Setup", 0, 0
+mDg2:	.db "DG2 Switch Setup", 0, 0
+mInit:	.db "Initial Setup", 0
+mRxTst:	.db "Receiver Test", 0
+mSensT:	.db "Sensor Test", 0
+mMLay:	.db "Show Motor Layout", 0
+mUserP:	.db "User Profile", 0, 0
+mExtra:	.db "Extra Features", 0, 0
+mECal:	.db "ESC Calibration", 0
+mVer:	.db "Version Information", 0
+mLcd:	.db "LCD Contrast", 0, 0
+
 	;other texts
 motto:	.db "Fly safe!       RC911", 0
 rusure:	.db "Are you sure?", 0
@@ -972,13 +997,19 @@ pos2:	.db "Pos 2", 0
 pos3:	.db "Pos 3", 0
 pos4:	.db "Pos 4", 0
 pos5:	.db "Pos 5", 0
+ratel:	.db "Low",0
+ratem:	.db "Medium", 0, 0
+rateh:	.db "High",0,0
+ratemin:.db "Minimum", 0
+ratemax:.db "Maximum", 0
 rate1:	.db "LOW", 0
 rate2:	.db "MEDIUM", 0, 0
 rate3:	.db "HIGH", 0, 0
-ss0:	.db "SS +0", 0
-ss20:	.db "SS +20", 0, 0
-ss30:	.db "SS +30", 0, 0
-ss50:	.db "SS +50", 0, 0
+ss:	.db "SS ", 0
+ss0:	.db "+0", 0, 0
+ss20:	.db "+20", 0
+ss30:	.db "+30", 0
+ss50:	.db "+50", 0
 
 	;arrays
 yesno:	.dw no*2, yes*2

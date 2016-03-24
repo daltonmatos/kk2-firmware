@@ -1,31 +1,34 @@
-KK2.1++ All-in-One R5 firmware by RC911
+KK2.1++ All-in-One R6 firmware by RC911
 
 
-Features (Revision 5)
+Features (Revision 6)
 =====================
 This custom firmware is based on the original KK2.0 1V6 firmware by Rolf Bakke. It has the following additional features:
 - Supports traditional receivers, CPPM (aka. PPM), Futaba S.Bus and Spektrum Satellite (DSM2/DSMX) units.
-- SL Stick Mixing mode with adjustable rate setting. This will give a soft transition from Self-level to ACRO mode based on aileron/elevator stick deflection. It will be displayed on the SAFE screen as "SL Mix" when active. Read the instructions below.
-- ESC calibration is done without a transmitter and it is sufficient to hold down a single button. This will help users with slow binding receivers do ESC calibration in a simple and safe way. This feature is now a lot safer since ESC calibration must be enabled through the menu before it can be accessed. Read the instructions below to learn the new ESC calibration routine.
+- SL Mix flight mode with adjustable rate setting gives a soft transition from Self-level to Acro mode based on aileron/elevator stick input. Read the instructions below.
+- ESC calibration is done without a transmitter and it is sufficient to hold down a single button. This will help users with slow binding receivers do ESC calibration in a simple and safe way. ESC calibration must be enabled through the menu before it can be accessed. Read the instructions below to learn the new ESC calibration routine.
 - Board orientation can be set to 0 (default), 90, 180 or 270 degrees. This setting is found on the 'Advanced' sub-menu. Some code was borrowed from Steveis.
 - Supports boards with reversed button order.
 - Multiple user profiles selectable from the SAFE screen allow separate settings for aerobatics, aerial photo, battery types and more. Read the instructions below.
-- Customizable AUX switch functions with support for 5 switch positions. Read the instructions below.
+- Customizable AUX switch functions with support for 5 switch positions. Available functions: Flight Mode, Lost Model Alarm, Motor Spin and Stick Scaling Offset.
+- In S.Bus mode, a switch assigned to DG2 (aka. channel 18) can control the following functions: Motor Spin and Digital Output.
+- Motor Spin feature that will keep motors spinning at zero throttle and prevent disarming in mid-air. Controlled from the AUX switch.
+- TPA (Throttle PI Adjustment) with separate factors for P and I at 5 throttle levels.
+- TSSA (Throttle Stick Scaling Adjustment) at 5 throttle levels.
 - Remote tuning of PI gains, ACC trim and gimbal gains using AUX2 and AUX3. PS: This feature is available for CPPM, S.Bus and Satellite only.
 - Quick Tuning lets you edit several settings on an alternative "SAFE" screen. You can arm and test-fly your settings from the TUNING screen. PS: This feature is available for traditional receivers only and it even supports remote tuning if you map the AUX channel to AUX2.
 - Channel mapping configurable for 8 input channels (in all RX modes). This enables receivers with less than 8 channels to access AUX2, AUX3 and AUX4 features.
-- In S.Bus mode a switch assigned to DG2 (aka. channel 18) can control additional functions (i.e. Stay armed/spin motors and set digital output).
 - Quiet ESCs while browsing the KK2 menu and editing settings.
 - Servo jitter has been reduced on M7 and M8 and motor layouts for Dualcopter and Tricopter were changed to take advantage of this.
 - PWM output resolution has increased from 555 to 625 steps on M1 - M6 and from 555 to 2500 steps on M7 and M8. You may have to increase all Stick Scaling values by 10 - 15% because of this.
 - Motors and ESCs can be easily checked for correct wiring. Read more about the 'Check Motor Outputs' feature below.
-- Alarm (i.e. 'Lost Model Alarm') can be activated from the AUX switch. It will also sound after 20 seconds (i.e. after the Auto Disarm countdown).
 - Remote gimbal offset control using AUX2 and AUX3. Based on Steveis' firmware, but with some changes of my own. PS: In standard RX mode you can map the AUX input to AUX2 or AUX3 to control a single axis.
-- Support for gimbals with differential mixing (in addition to normal gimbals). Differential mixing code borrowed from Brontide's firmware.
+- Support for gimbals with differential mixing (in addition to normal gimbals). Differential mixing code was borrowed from Brontide's firmware.
 - Stand-alone (servo) gimbal controller mode. Read the instructions below.
 - Adjustable stick 'dead zone' for the aileron, elevator and yaw input channels. Read the instructions below.
 - Flight timer (displayed on the SAFE screen) runs while armed and throttle is above idle.
-- The Version Info screen is accessible from the main menu and is not displayed during start-up. The selected RX mode is displayed here as well.
+- An alternative home/SAFE screen with large font can be selected for better readability on small screens.
+- A Version Info screen is accessible from the main menu and is not displayed during start-up. The selected RX mode is displayed here as well.
 - Button and arming beeps can be turned off individually.
 - Adjustable LCD contrast.
 - Battery voltage is logged and displayed on the SAFE screen.
@@ -64,7 +67,7 @@ This should bind/link the satellite unit to your transmitter and configure it to
 
 Initial setup
 =============
-A SETUP menu is displayed after a factory reset and whenever user profile #1 is reset. It is also accessible from the KK2 menu (select "Initial Setup"). This screen acts like a sub-menu where you can access the most basic settings like "Load Motor Layout", "ACC Calibration", "Trim Battery Voltage" and "Select RX Mode". Most of these menu items can only be accessed from user profile #1 though.
+A SETUP menu is displayed after a factory reset and whenever user profile #1 is reset. It is also accessible from the KK2 menu (select "Initial Setup"). This screen acts like a sub-menu where you can access the most basic settings like "Load Motor Layout", "ACC Calibration", "Trim Battery Voltage" and "Select RX Mode". Some of these menu items can only be accessed from user profile #1 though.
 
 
 Battery voltage offset
@@ -73,6 +76,8 @@ Because of hardware changes between the KK2.1 and KK2.1.5 boards I had to make t
 
 If you have a voltmeter you can input the voltage directly with 1/10V accuracy. No need to select one of the default offsets first. For maximum accuracy you can correct the offset in 0.025V steps afterwards.
 If, for example, your KK2 board shows 12.3V while your voltmeter reads 12.55V you should select "Modify Voltage (1/10)" and input 125 as the value (for 12.5V), then select "Adjust Offset Value" and increase this value by 2 (every increment adds 0.025V). This will trim the battery voltage offset with maximum accuracy and the monitored battery voltage is then read as 12.55V although it will be displayed as 12.5V.
+
+Some KK2 boards may have an unlinear ADC input circuit and this can make it impossible to get an accurate voltage reading for both 11.1V (3S) and 14.8V (4S) batteries. This problem can quite easily be solved by using one user profile for 3S batteries and another user profile for 4S batteries. You will then have to calibrate the battery voltage offset for each user profile.
 
 
 ESC calibration routine (no transmitter required)
@@ -117,13 +122,12 @@ Observe:
 - The motor speed is set from the Minimum Throttle parameter on the 'Misc. Settings' screen. Its value range is 0 - 20% so make sure it is set at a level where all motors will spin.
 - Servos are not affected by this feature.
 - For the "V-Tail Hunter" motor layout the motors should spin up in a "Z" pattern.
-- For motor layouts, like "Y6", having motors on two levels (top and bottom) all motors on the first level should spin up before any motor on the next level starts spinning.
 
 
 User profiles
 =============
 Four user profiles are available in this firmware version. This allows most settings (including MPU6050 sensor settings) to be adjusted for different flying styles, batteries, weather conditions and more.
-User profiles are selected using the two middle buttons at the SAFE screen and there's an indicator for selected user profile in the upper right corner of the screen (P1 - P4). There's also a new menu item called "User Profile" where you can specify the default start-up profile, import data from a different user profile and reset the current user profile.
+User profiles are selected using the two middle buttons at the SAFE screen and there's an indicator for selected user profile in the upper right corner of the screen (P1 - P4). There's also a menu item called "User Profile" where you can specify the default start-up profile, import data from a different user profile and reset the current user profile.
 
 ATTENTION:
 A user profile can be configured so that your model behaves very differently from the profile you normally use, so before take-off always make sure that you have the correct profile selected! Also remember that the default user profile is selected on every start-up!
@@ -131,15 +135,15 @@ A user profile can be configured so that your model behaves very differently fro
 Observe:
 - The very first time you select a new user profile it will need a second or two to initialize, but after that it will change instantly.
 - The "Factory Reset" menu item has been removed since the "Reset active profile" function on the User Profile screen now does the same thing for the active user profile.
-- Resetting profile #1 will affect all user profiles since this one holds all important settings (i.e. Mixer values, RX mode, battery voltage offset and LCD contrast).
+- Resetting profile #1 will affect all user profiles since this one holds a few important settings (i.e. Mixer values, RX mode and LCD contrast).
 - A few menu items can only be accessed from user profile #1. A "No access" message will be displayed if you do try.
 - Importing data to profile #1 from other user profiles is not allowed. This profile can only be edited manually.
-- The LED on the KK2 board will flash to indicate which profile is currently active while in the menu. It will flash twice for profile #2, three times for #3 and four times for #4.
+- The LED on the KK2 board will flash to indicate which profile is currently active while in the menu. It will flash twice for profile #2, three times for #3 and four times for #4. For profile #1 the LED will remain off.
 
 
 AUX switch setup
 ================
-From the AUX Switch Setup screen you can select which function (Acro, SL Mixing, Normal SL or Alarm) should be active depending on the AUX switch position. You can also assign a stick scaling offset (aileron and elevator +0, +20, +30 or +50) for each position. Select the item you want to modify and then press the CHANGE button to cycle through the available settings.
+From the AUX Switch Setup screen you can select which flight mode (Acro, SL Mixing, Normal SL, Alarm, Acro!, SL Mix! or Normal SL!) should be active depending on the AUX switch position. You can also activate Motor Spin (indicated by a special exclamation mark behind the flight mode) and assign a stick scaling offset (aileron, elevator and rudder +0, +20, +30 or +50) for each position. Select the item you want to modify and then press the CHANGE button to cycle through the available settings.
 The selected flight mode and stick scaling offset is displayed on the SAFE screen.
 
 Observe:
@@ -152,11 +156,21 @@ Observe:
 - The selected stick scaling offset is not displayed on the SAFE screen when set to zero (default).
 
 
-SL stick mixing
-===============
-SL Mix mode can be activated from a switch assigned to the AUX input channel and the mixing rate is set from the Self-level Settings screen. The mixing rate parameter is still related to your SL P-gain setting so you should tune the SL P-gain first. A value of 5 corresponds to the LOW setting used in the old KK2.0 version, 10 corresponds to MEDIUM and 20 to HIGH, but you can even go as high as 50 if your SL P-gain is very high.
+Motor Spin
+==========
+This feature will keep motors spinning at zero throttle input and also prevent accidental disarming in mid-air. It is controlled from the AUX switch (or the DG2 switch in S.Bus mode). On the AUX Switch Setup screen you specify which switch position(s) should activate the Motor Spin feature. This will be indicated by a special excamation mark behind the selected flight mode. The following flight modes will activate the Motor Spin feature: Acro!, SL Mix! and Normal SL!
+See the 'AUX switch setup' section above for more information.
 
-The Stick Scaling parameter called "SL Mixing" lets you adjust the stick input sensitivity for SL Mix mode relative to Acro or normal SL mode. If you feel that SL Mix mode is less responsive compared to Acro mode you can increase this value. To make SL Mix mode act more like normal SL mode you should lower this value. In any case you should adjust the stick scaling parameters to suit your flying style in Acro or Normal SL mode before adjusting the "SL Mixing" parameter. Leave it at 100% (default) if you only use SL Mix mode.
+Observe:
+- The Motor Spin feature will prevent arming and disarming. This requires at least one position on your AUX switch where Motor Spin is disabled and this position must be selected to arm/disarm.
+- A status message will be displayed on the home/SAFE screen when the Motor Spin feature is active.
+- The lowest motor speed is set from the Minimum Throttle parameter on the 'Misc. Settings' screen. Its value range is 0 - 20% so make sure it is set at a level where all motors will spin.
+- S.Bus users can choose to activate the Motor Spin feature from the DG2 switch as before and doing so will override any Motor Spin setting on the AUX Switch Setup screen.
+
+
+SL Mix
+======
+The SL Mix flight mode can be activated from a switch assigned to the AUX input channel and the mixing rate is set from the Self-level Settings screen. The mixing rate parameter is linked to your SL P-gain setting so you should tune the SL P-gain first. A value of 5 corresponds to the LOW setting used in the old KK2.0 version, 10 corresponds to MEDIUM and 20 to HIGH, but you can even go as high as 50 if your SL P-gain is very high.
 
 I use this mode all the time now and found that it is great for practicing aerobatics. If you get in trouble (e.g. lose orientation) you can just center the aileron/elevator stick and the model will level itself. Another advantage is that you don't have to ramp up your 'Stick Scaling' values or mess with PI limits for flying around (compared to Normal Self-level mode).
 
@@ -167,6 +181,36 @@ Observe:
 - If your model has built up any momentum, it will not stop moving immediately after centering the aileron/elevator stick! Take it slow if you're at beginner level.
 - This mode will work best for transmitters configured to use mode 2 or 3 (i.e. with aileron and elevator on the same stick).
 - Avoid using this mode if your model requires excessive stick trimming (e.g. when center of gravity is too far off). This will affect the SL mixing. In other words: You should only use this mode on a well-balanced model.
+
+
+TPA (Throttle PI Adjustment)
+============================
+TPA can be used to remove oscillations or wobbles at certain throttle stick positions.
+The TPA settings are accessed from the Expert Settings sub-menu and has one factor for P-gain and one factor for I-gain for each of the five throttle stick positions: Minimum (0-20%), Low (20-40%), Medium (40-60%), High (60-80%) and Maximum (80-100%). Factors can be set from 0.1 to 1.5 in steps of 0.1. The default setting is 1.0 for all TPA factors.
+
+ATTENTION:
+Do normal PI tuning (with all TPA factors set to 1.0) first! Only if normal PI tuning fails to remove oscillations or wobbles at certain throttle stick levels should you try editing the TPA factors. You should always be careful when modifying the TPA factors as very low or high P-gains can make your model difficult to control!
+
+Observe:
+- The current throttle stick position is indicated by a black dot in the leftmost column on the settings screen and will help you determine which setting to modify.
+- The TPA factors will only affect aileron, elevator and rudder PI gains. SL P-gain is not affected.
+- Remote Tuning and Quick Tuning will be affected by TPA, so beware of this when using those features to tune your model.
+
+
+TSSA (Throttle Stick Scaling Adjustment)
+========================================
+TSSA can be used to increase or lower stick sensitivity (i.e. stick scaling) at certain throttle stick positions.
+The TSSA settings are accessed from the Expert Settings sub-menu and has one stick scaling factor for each of the five throttle stick positions. Factors can be set from 0.1 to 1.5 in steps of 0.1. The default setting is 1.0 for all TSSA factors.
+TSSA and TPA share the same throttle position ladder and have a similar user interface, so read the TPA section above for more information regarding this.
+
+Formula: Total stick scaling = (Original stick scaling + Aux stick scaling offset) * TSSA factor
+
+ATTENTION:
+For safety reasons, TSSA is linked to the Motor Spin feature. This means that TSSA will be disabled when Motor Spin is off so that arming can be done safely even when using a high TSSA factor at minimum throttle position. When using the TSSA feature it is recommended to wait until your model is hovering at a safe distance and height before switching Motor Spin (and TSSA) on and off. 
+
+Observe:
+- The current throttle stick position is indicated by a black dot in the leftmost column on the settings screen and will help you determine which setting to modify.
+- You may have to increase the MPU sensor settings (gyro and ACC range) when using TCSS factors above 1.0.
 
 
 Lost model alarm
@@ -208,7 +252,7 @@ Observe:
 - Roll and pitch gains are set from the Gimbal Settings screen. Values in the range of 500 to 600 are common. A negative value will reverse the servo direction.
 - Select gimbal mixing mode according to your gimbal type. 'Diff' is used for SSG (Super Simple Gimbal) and 'None' is for normal gimbal with one servo for roll and one for pitch.
 - Offsets cannot be adjusted while navigating the KK2 menus. This can only be done during flight and at the SAFE screen.
-- Most Mixer Editor values (e.g. Offset) for M6 and M7 have no effect on the gimbal, but output type and rate will.
+- Most Mixer Editor values (e.g. Offset) for M7 and M8 have no effect on the gimbal, but output type and rate will.
 - To access this feature using a standard RX you will have to map the AUX input to either AUX2 (pitch) or AUX3 (roll).
 
 
@@ -350,7 +394,7 @@ The LCD contrast can be adjusted within a limited range. Go to the LCD Contrast 
 
 Observe:
 - Pushing the BACK button will reload the last saved contrast setting.
-- If you should end up with an unreadable screen, you can hold down button 1 while connecting your flight battery to reset the LCD contrast value.
+- If you should end up with an unreadable screen, you can hold down button #1 while connecting your flight battery to reset the LCD contrast value.
 
 
 Sensor settings
@@ -391,19 +435,21 @@ These are the default parameter values that will be set initially and during a u
 
 PI gains/limits:  50, 100, 25, 20 (for aileron and elevator) and 50, 20, 50, 10 (for rudder)
 Self-level:       60, 20, 0, 0, 10
-Stick scaling:    30, 30, 50, 90, 100
-Mode settings:    Yes, Yes, Yes, Yes
+Stick scaling:    30, 30, 50, 90
+Mode settings:    Yes, Yes, Yes, Yes, No
 Misc. settings:   10, 0, 0, 0, 50
 Channel mapping:  1, 2, 3, 4, 5, 6, 7, 8 (for std. RX, CPPM and S.Bus) and 2, 3, 1, 4, 5, 6, 7, 8 (for DSM2 and DSMX)
-MPU Settings:     256 Hz, 500 deg/s, 4 g
+MPU settings:     256 Hz, 500 deg/s, 4 g
+TPA settings:     P=1.0 and I=1.0 for all 5 throttle positions
+TSSA settings:    SS=1.0 for all 5 throttle positions.
 Gimbal settings:  0, 0, 0, 0, None, 0, 0
 AUX switch setup: Acro SS +0, Alarm SS +0, SL Mix SS +0, Alarm SS +0, Normal SL SS +0
 DG2 switch setup: No, No (for S.Bus only)
+Battery offset:   2 (default value for KK2.1.5, HC and Mini)
 Tuning rate:      Medium
 
 For user profile #1 a few other settings are reset as well:
 
-Battery offset:   2 (default value for KK2.1.5, HC and Mini)
 LCD contrast:     36
 RX mode:          Standard RX
 Controller mode:  Normal (Stand-alone gimbal mode is disabled)

@@ -32,8 +32,12 @@ ReadBatteryVoltage:
 	lds yl, BatteryVoltageOffset + 1
 	add xl, yl
 	adc xh, yh
+	brpl adc20
 
-	clr yh
+	clr xh				;negative battery voltages (due to negative offset) will cause LVA problems. Set to zero instead
+	clr xl
+
+adc20:	clr yh
 	b16store BatteryVoltage
 	ret
 

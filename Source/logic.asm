@@ -111,10 +111,19 @@ asp2:	clr t					;reset flags
 	sts flagSlOn, t
 	sts flagSlStickMixing, t
 	sts flagAlarmOn, t
+	sts flagMotorSpin, t
 
 	ld t, x					;get the function ID
+	mov xl, t
+	andi t, 0x03
 
-	lds xl, AuxFunctionOld			;produce a short beep when the AUX function (flight mode + alarm + stick scaling) changes
+	andi xl, 0x04				;is the Motor Spin feature active?
+	breq asp7
+
+	ser xl					;yes
+	sts flagMotorSpin, xl
+
+asp7:	lds xl, AuxFunctionOld			;produce a short beep when the AUX function (flight mode + alarm + stick scaling) changes
 	swap zl
 	or zl, t
 	sts AuxFunctionOld, zl

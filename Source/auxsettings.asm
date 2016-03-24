@@ -54,42 +54,28 @@ aux23:	call PrintChar
 	cpi t, 5
 	brne aux15
 
-	lrv Y1, 1			;aux position 1 function
-	lds t, AuxPos1Function
+	;functions
+	lrv Y1, 1
+	ldy AuxPos1Function
+	rcall PrintAuxFnValue
+	rcall PrintAuxFnValue
+	rcall PrintAuxFnValue
+	rcall PrintAuxFnValue
 	rcall PrintAuxFnValue
 
-	lds t, AuxPos2Function		;aux position 2 function
-	rcall PrintAuxFnValue
-
-	lds t, AuxPos3Function		;aux position 3 function
-	rcall PrintAuxFnValue
-
-	lds t, AuxPos4Function		;aux position 4 function
-	rcall PrintAuxFnValue
-
-	lds t, AuxPos5Function		;aux position 5 function
-	rcall PrintAuxFnValue
-
-	lrv Y1, 1			;aux position 1 stick scaling
-	lds t, AuxPos1SS
+	;stick scaling offsets
+	lrv Y1, 1
+	ldy AuxPos1SS
 	rcall PrintAuxSSValue
-
-	lds t, AuxPos2SS		;aux position 2 stick scaling
 	rcall PrintAuxSSValue
-
-	lds t, AuxPos3SS		;aux position 3 stick scaling
 	rcall PrintAuxSSValue
-
-	lds t, AuxPos4SS		;aux position 4 stick scaling
 	rcall PrintAuxSSValue
-
-	lds t, AuxPos5SS		;aux position 5 stick scaling
 	rcall PrintAuxSSValue
 
 	;footer
 	call PrintStdFooter
 
-	;print selector
+	;selector
 	ldzarray aux7*2, 4, AuxItem
 	call PrintSelector
 
@@ -110,40 +96,16 @@ aux18:	call GetButtons
 	andi t, 0x01
 	breq aux17
 
-	lds xl, AuxPos1Function		;save AUX functions to EEPROM
+	ldy AuxPos1Function		;save AUX functions to EEPROM
 	ldz eeAuxPos1Function
-	call StoreEePVariable8
-
-	lds xl, AuxPos2Function
-	call StoreEePVariable8		;eeAuxPos2Function
-
-	lds xl, AuxPos3Function
-	call StoreEePVariable8		;eeAuxPos3Function
-
-	lds xl, AuxPos4Function
-	call StoreEePVariable8		;eeAuxPos4Function
-
-	lds xl, AuxPos5Function
-	call StoreEePVariable8		;eeAuxPos5Function
+	rcall SaveAuxSwitchSetup
 
 aux17:	andi Changes, 0x02
 	breq aux24
 
-	lds xl, AuxPos1SS		;save AUX stick scaling offsets to EEPROM
+	ldy AuxPos1SS			;save AUX stick scaling offsets to EEPROM
 	ldz eeAuxPos1SS
-	call StoreEePVariable8
-
-	lds xl, AuxPos2SS
-	call StoreEePVariable8		;eeAuxPos2SS
-
-	lds xl, AuxPos3SS
-	call StoreEePVariable8		;eeAuxPos3SS
-
-	lds xl, AuxPos4SS
-	call StoreEePVariable8		;eeAuxPos4SS
-
-	lds xl, AuxPos5SS
-	call StoreEePVariable8		;eeAuxPos5SS
+	rcall SaveAuxSwitchSetup
 
 aux24:	ret
 
@@ -195,7 +157,14 @@ aux20:	ld t, x				;fetch and increase the variable
 	cpi t, 4
 	brlt aux21
 
-	clr t
+	mov yl, AuxItem
+	andi yl, 0x01
+	brne aux27
+
+	cpi t, 7
+	brlt aux21
+
+aux27:	clr t
 
 aux21:	st x, t
 	rjmp aux16
@@ -208,13 +177,22 @@ aux19:	rjmp aux11
 
 PrintAuxFnValue:
 
-	push t				;register T holds the item index
 	lrv X1, 12
 	call PrintColonAndSpace
-	pop t
+	ld t, y+			;register Y (input parameter) points to the item index (RAM variable)
+	push t
+	andi t, 0x03
 	ldz auxfn*2
 	call PrintFromStringArray
-	call LineFeed
+
+	pop t				;print custom symbol when the Motor Spin feature is active
+	andi t, 0x04
+	breq paf1
+
+	ldi t, 0x7F
+	call PrintChar
+
+paf1:	call LineFeed
 	ret
 
 
@@ -223,9 +201,12 @@ PrintAuxFnValue:
 
 PrintAuxSSValue:
 
-	push t				;register T holds the item index
 	lrv X1, 91
-	pop t
+	ldz ss*2
+	call PrintString
+
+	ld t, y+			;register Y (input parameter) points to the item index (RAM variable)
+	andi t, 0x03
 	ldz auxss*2
 	call PrintFromStringArray
 	call LineFeed
@@ -237,50 +218,43 @@ PrintAuxSSValue:
 
 LoadAuxSwitchSetup:
 
-	ldz eeAuxPos1SS
-	call GetEePVariable8
-	sts AuxPos1SS, xl
+	ldy AuxPos1Function
+	ldz eeAuxPos1Function
+	ldi xh, 10			;number of bytes to be read
 
-	call GetEePVariable8		;eeAuxPos2SS
-	sts AuxPos2SS, xl
+lass1:	call GetEePVariable8
+	st y+, xl
+	dec xh
+	brne lass1
 
-	call GetEePVariable8		;eeAuxPos3SS
-	sts AuxPos3SS, xl
-
-	call GetEePVariable8		;eeAuxPos4SS
-	sts AuxPos4SS, xl
-
-	call GetEePVariable8		;eeAuxPos5SS
-	sts AuxPos5SS, xl
-
-	call GetEePVariable8		;eeAuxPos1Function
-	sts AuxPos1Function, xl
-
-	call GetEePVariable8		;eeAuxPos2Function
-	sts AuxPos2Function, xl
-
-	call GetEePVariable8		;eeAuxPos3Function
-	sts AuxPos3Function, xl
-
-	call GetEePVariable8		;eeAuxPos4Function
-	sts AuxPos4Function, xl
-
-	call GetEePVariable8		;eeAuxPos5Function
-	sts AuxPos5Function, xl
 	ret
 
 
 
+	;--- Save AUX switch parameters to EEPROM ---
 
-aux7:	.db 23, 0, 79, 9
+SaveAuxSwitchSetup:
+
+	ldi xh, 5			;number of bytes to be written
+
+sass1:	ld xl, y+			;register Y (input parameter) points to the RAM variable
+	call StoreEePVariable8		;register Z (input parameter) points to the EEPROM variable
+	dec xh
+	brne sass1
+
+	ret
+
+
+
+aux7:	.db 23, 0, 85, 9
 	.db 90, 0, 127, 9
-	.db 23, 9, 79, 18
+	.db 23, 9, 85, 18
 	.db 90, 9, 127, 18
-	.db 23, 18, 79, 27
+	.db 23, 18, 85, 27
 	.db 90, 18, 127, 27
-	.db 23, 27, 79, 36
+	.db 23, 27, 85, 36
 	.db 90, 27, 127, 36
-	.db 23, 36, 79, 45
+	.db 23, 36, 85, 45
 	.db 90, 36, 127, 45
 
 
@@ -308,9 +282,10 @@ ass1:	lsr yl
 
 	adiw x, 30			;increase aileron and elevator stick scaling
 
-ass2:	b16store Temp			;increase aileron and elevator stick scaling by 0 (off), 20, 30 or 50
+ass2:	b16store Temp			;increase aileron, elevator and rudder stick scaling by 0 (off), 20, 30 or 50
 	call TempDiv16
 	b16add StickScaleRoll, StickScaleRollOrg, Temp
 	b16add StickScalePitch, StickScalePitchOrg, Temp
+	b16add StickScaleYaw, StickScaleYawOrg, Temp
 	ret
 

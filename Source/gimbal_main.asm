@@ -84,7 +84,11 @@ gm6:	rvbrflagtrue Mode, gm8		;abort if the button hasn't been released since sta
 
 	;--- User profile ---
 
+	mov yl, t			;register YL is used for button input in ChangeUserProfile
+	call Beep
 	call ChangeUserProfile
+
+	rvsetflagtrue Mode		;will wait for the button to be released
 	rjmp gm2
 
 

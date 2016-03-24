@@ -5,14 +5,6 @@ AdjustBatteryVoltage:
 
 	clr Item
 
-	lds t, UserProfile		;refuse access unless user profile #1 is selected
-	tst t
-	breq abv11
-
-	ldz nadtxt2*2
-	call ShowNoAccessDlg
-	ret
-
 abv11:	push Item
 	call ReadBatteryVoltage
 	pop Item
@@ -59,6 +51,7 @@ abv19:	call Beep
 
 	cpi t, 0x08			;BACK?
 	brne abv20
+
 	ret
 
 abv20:	cpi t, 0x04			;PREV?
@@ -122,8 +115,8 @@ abv33:	b16mov Temp, BatteryVoltage	;modify voltage
 	b16add BatteryVoltageOffset, BatteryVoltageOffset, Temp
 	b16load BatteryVoltageOffset
 
-abv34:	ldz eeBatteryVoltageOffset	;save in EEPROM for profile #1 only
-	call StoreEeVariable16
+abv34:	ldz eeBatteryVoltageOffset	;store in EEPROM for the current user profile
+	call StoreEePVariable16
 	rjmp abv24
 
 
@@ -157,10 +150,19 @@ svo8:	.dw svo1*2, svo2*2, svo3*2, svo4*2
 LoadBatteryVoltageOffset:
 
 	ldz eeBatteryVoltageOffset
-	call GetEeVariable16		;load from profile #1 only
+	call GetEePVariable16
 	clr yh
 	b16store BatteryVoltageOffset
-	ret
+
+	b16loadz BatteryVoltageOffsetOrg;reset logged battery voltage when the offset has changed
+	cp xl, zl
+	cpc xh, zh
+	breq lbv1
+
+	b16ldi BatteryVoltageLogged, 1023
+	b16store BatteryVoltageOffsetOrg
+
+lbv1:	ret
 
 
 
@@ -172,8 +174,8 @@ SaveBatteryVoltageOffset:
 	clr yh
 	b16store BatteryVoltageOffset
 
-	ldz eeBatteryVoltageOffset	;store in EEPROM for profile #1 only
-	call StoreEeVariable16
+	ldz eeBatteryVoltageOffset	;store in EEPROM for the current user profile
+	call StoreEePVariable16
 
 	call LcdClear12x16
 
@@ -195,14 +197,4 @@ SaveBatteryVoltageOffset:
 	call WaitForOkButton
 	ret
 
-
-
-	;--- Write default battery voltage offset value to EEPROM ---
-
-ResetBatteryVoltageOffset:
-
-	ldx 2				;offset for KK2.1.5 = 2
-	ldz eeBatteryVoltageOffset
-	call StoreEeVariable16		;save in profile #1 only
-	ret
 

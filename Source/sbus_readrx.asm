@@ -267,11 +267,21 @@ gsc31:	;--- Channel 1 ---
 	lds xl, SBusByte9
 	lds xh, SbusByte10
 
-	ldi t, 5
-gsc58:	lsr xh
+	lsr xh
 	ror xl
-	dec t
-	brne gsc58
+	swap xl
+	swap xh
+	mov t, xh
+	andi t, 0xF0
+	andi xl, 0x0F
+	or xl, t
+	andi xh, 0x07
+
+;	ldi t, 5
+;gsc58:	lsr xh
+;	ror xl
+;	dec t
+;	brne gsc58
 
 	sts Channel8L, xl
 	sts Channel8H, xh

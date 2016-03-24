@@ -101,7 +101,7 @@ srm2:	.db "Mode: ", 0, 0
 srm4:	.db "Restart is required!", 0, 0
 
 stdrx:	.db "Standard RX", 0
-cppm:	.db "CPPM (aka. PPM)", 0
+cppm:	.db "CPPM/PPM", 0, 0
 sbus:	.db "S.Bus", 0
 dsm2:	.db "Satellite DSM2", 0, 0
 dsmx:	.db "Satellite DSMX", 0, 0

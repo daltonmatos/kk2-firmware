@@ -27,7 +27,7 @@ SBusMain:
 	lrv LoadMenuCursorYposSave, 0
 	lrv LoadMenuListYposSave, 0
 
-	b16ldi BatteryVoltageLogged, 1023
+	b16ldi BatteryVoltageOffsetOrg, 2000
 
 	b16ldi FlightTimer, 398		;tuned for better accuracy (1 second)
 
@@ -149,9 +149,9 @@ bm2:	call FlightInit
 bm1:	call PwmStart			;runtime between PwmStart and B interrupt (in PwmEnd) must not exeed 1.5ms
 	call GetSBusChannels
 	call GetSBusFlags
-	call SBusFeatures
 	call Arming
 	call Logic
+	call SBusFeatures
 	call AddAuxStickScaling
 	call RemoteTuning
 	call Imu
@@ -174,10 +174,9 @@ bm11:	rvbrflagfalse flagLcdUpdate, bm3;update LCD once if flagLcdUpdate is true
 	rvsetflagfalse flagLcdUpdate
 	call UpdateFlightDisplay
 
-bm3:	rvbrflagfalse flagArmed, bm7	;skip buttonreading if armed
-	rjmp bm1
+bm3:	rvbrflagtrue flagArmed, bm1	;skip buttonreading when armed
 
-bm7:	load t, pinb			;read buttons
+	load t, pinb			;read buttons
 	com t
 	swap t
 	andi t, 0x0F			;any button pushed?
@@ -212,8 +211,12 @@ bm6:	rvbrflagtrue Mode, bm8		;abort if the button hasn't been released since sta
 
 	;--- User profile ---
 
+	mov yl, t			;register YL is used for button input in ChangeUserProfile
+	call Beep
+	rvbrflagfalse flagHomeScreen, bm7
+
 	call ChangeUserProfile
-	rjmp bm2
+	rjmp bm14
 
 
 bm9:	;--- Error log ---
@@ -227,10 +230,22 @@ bm14:	rvsetflagtrue Mode		;will wait for the button to be released
 
 bm13:	call Beep
 	call ToggleErrorLogState	;toggle error logging state when the setup screen is displayed
-	rjmp bm14
+	brcs bm7
+
+
+	;--- Battery log ---
+
+	lds t, flagBatteryLog		;display/exit the battery log screen
+	com t
+	sts flagBatteryLog, t
+
+bm7:	rvsetflagtrue Mode		;will wait for the button to be released
+	rjmp bm1
 
 
 bm12:	;--- Menu ---
+
+	rvbrflagfalse flagHomeScreen, bm7
 
 	BuzzerOff			;will prevent constant beeping in menu when 'Button Beep' is disabled
 	cbi LvaOutputPin		;will avoid constant high level on external LVA output pin
@@ -239,5 +254,5 @@ bm12:	;--- Menu ---
 	call SBusMainMenu
 	call StopPwmQuiet
 	call StopLedSeq
-	rjmp bm2
+	rjmp bm14
 

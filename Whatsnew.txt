@@ -94,3 +94,25 @@ Revision 5:
 * Bug fixed: Uninitialized values could sometimes mess up the motor layout list on first use (i.e. immediately after a firmware upgrade).
 * Bug fixed: Stand-alone gimbal mode had a problem with item selection on the Misc. Settings screen.
 * Bug fixed: Digital output for LVA could get "stuck" when entering the menu in Stand-alone Gimbal Mode.
+
+
+Revision 6:
+-----------
+
+* Alternative home screen with large font for improved readability on small screens.
+* The Motor Spin feature can be activated from the Aux switch and is therefore available to all RX modes.
+* 5-level TPA (Throttle PI Adjustment) with separate factors for P and I gains. See the 'Expert Settings' menu item.
+* 5-level TSSA (Throttle Stick Scaling Adjustment). See the 'Expert Settings' menu item.
+* An 'Expert Settings' sub-menu was added for the TPA and TSSA settings.
+* The stick scaling offset that is set from the Aux switch will now also affect rudder.
+* Gimbal code improved to allow a single servo gimbal (i.e. pitch on M8) to be used in combination with a tricopter's tail/yaw servo on M7.
+* Battery voltage offset can now be specified for each user profile.
+* Logged battery voltage will be reset when switching between user profiles that have different battery voltage offsets.
+* New status message: "Motor Spin is active." will be displayed when the Motor Spin feature is active (arming is refused).
+* Removed the SL Mixing parameter from the Stick Scaling screen. I recommend using the AUX switch stick scaling feature instead.
+* Removed ACC SW filter code (imu.asm) and roll/pitch corrections are no longer skipped (also in imu.asm).
+* Miscellaneous GUI changes and code optimizations.
+* Bug fixed: Arming was allowed when the ERROR LOG screen was displayed.
+* Bug fixed: Switching user profile was allowed when the ERROR LOG screen was active.
+* Bug fixed: Negative battery voltages (caused by a negative offset) trigged the low voltage alarm.
+* Bug fixed: No beep was produced when the user profile buttons were pressed (on the home screen).

@@ -40,6 +40,8 @@ FixedPointVariableEnumerate168 Temp
 FixedPointVariableEnumerate168 Temp2
 FixedPointVariableEnumerate168 Temper
 
+//FixedPointVariableEnumerate168 DebugValue16
+
 FixedPointVariableEnumerate168 RxOffset
 
 FixedPointVariableEnumerate168 RxRoll
@@ -69,6 +71,7 @@ FixedPointVariableEnumerate168 AccZZero
 
 FixedPointVariableEnumerate168 BatteryVoltage
 FixedPointVariableEnumerate168 BatteryVoltageOffset
+FixedPointVariableEnumerate168 BatteryVoltageOffsetOrg
 FixedPointVariableEnumerate168 BatteryVoltageLowpass
 FixedPointVariableEnumerate168 BatteryVoltageLogged
 
@@ -111,10 +114,10 @@ FixedPointVariableEnumerate168 StickScaleRoll
 FixedPointVariableEnumerate168 StickScalePitch
 FixedPointVariableEnumerate168 StickScaleYaw
 FixedPointVariableEnumerate168 StickScaleThrottle
-FixedPointVariableEnumerate168 MixFactor
 
 FixedPointVariableEnumerate168 StickScaleRollOrg	;variables used for stick scaling offset
 FixedPointVariableEnumerate168 StickScalePitchOrg
+FixedPointVariableEnumerate168 StickScaleYawOrg
 
 FixedPointVariableEnumerate168 StickDeadZone
 
@@ -155,8 +158,6 @@ FixedPointVariableEnumerate168 SelflevelPlimit
 
 FixedPointVariableEnumerate168 BattAlarmVoltage
 
-FixedPointVariableEnumerate168 AccSWFilter
-
 FixedPointVariableEnumerate168 AccAngleRoll
 FixedPointVariableEnumerate168 AccAnglePitch
 
@@ -192,10 +193,6 @@ FixedPointVariableEnumerate168 EulerAnglePitch
 
 FixedPointVariableEnumerate168 Angle
 
-FixedPointVariableEnumerate168 AccXfilter
-FixedPointVariableEnumerate168 AccYfilter
-FixedPointVariableEnumerate168 AccZfilter
-
 FixedPointVariableEnumerate168 CamRollGain
 FixedPointVariableEnumerate168 CamRollOffset
 FixedPointVariableEnumerate168 CamPitchGain
@@ -213,7 +210,10 @@ FixedPointVariableEnumerate168 CamPitchGainOrg
 
 FixedPointVariableEnumerate168 TuningRateValue		;common input rate used for remote tuning
 
-FixedPointVariableEnumerate168 AccZTest
+FixedPointVariableEnumerate168 TPAFactorP
+FixedPointVariableEnumerate168 TPAFactorI
+FixedPointVariableEnumerate168 TSSAFactor
+
 FixedPointVariableEnumerate168 TiltAngMult
 
 FixedPointVariableEnumerate832 MagicNumber
@@ -331,12 +331,18 @@ RamVariableEnumerate8 ArmingDelay
 RamVariableEnumerate8 flagThrottleZero
 RamVariableEnumerate8 flagAileronCentered
 RamVariableEnumerate8 flagElevatorCentered
+RamVariableEnumerate8 flagMotorSpin
 
 RamVariableEnumerate8 FlashingLEDCounter
 RamVariableEnumerate8 FlashingLEDCount
 
 RamVariableEnumerate8 flagLcdUpdate
+RamVariableEnumerate8 flagHomeScreen
 RamVariableEnumerate8 flagErrorLogSetup
+
+RamVariableEnumerate8 flagBatteryLog
+RamVariableEnumerate8 BattLogTimeSec
+RamVariableEnumerate8 BattLogTimeMin
 
 RamVariableEnumerate8 flagGimbalMode
 
@@ -387,7 +393,7 @@ RamVariableEnumerate8 flagLvaBuzzerOn
 RamVariableEnumerate8 flagGeneralBuzzerOn
 
 RamVariableEnumerate8 StatusBits
-RamVariableEnumerate8 StatusCounter
+RamVariableEnumerate8 StatusFlag
 
 RamVariableEnumerate8 flagAutoDisarm
 
@@ -516,6 +522,23 @@ RamVariableEnumerate8 LedCounter
 RamVariableEnumerate8 LedSequence
 RamVariableEnumerate8 LedState
 
+RamVariableEnumerate8 Tpa1P
+RamVariableEnumerate8 Tpa1I
+RamVariableEnumerate8 Tpa2P
+RamVariableEnumerate8 Tpa2I
+RamVariableEnumerate8 Tpa3P
+RamVariableEnumerate8 Tpa3I
+RamVariableEnumerate8 Tpa4P
+RamVariableEnumerate8 Tpa4I
+RamVariableEnumerate8 Tpa5P
+RamVariableEnumerate8 Tpa5I
+
+RamVariableEnumerate8 Tssa1
+RamVariableEnumerate8 Tssa2
+RamVariableEnumerate8 Tssa3
+RamVariableEnumerate8 Tssa4
+RamVariableEnumerate8 Tssa5
+
 
 
 ;--- EEPROM registers ----			;Do not change the order of the EEPROM variables! They are read and written sequentially.
@@ -530,24 +553,24 @@ EEVariableEnumerate8 eeGimbalMode
 EEVariableEnumerate8 eeButtonsReversed
 EEVariableEnumerate8 eeBoardOrientation		;0=normal, 1=90 degrees, 2=180 degrees and 3=270 degrees
 
-EEVariableEnumerate8 eeErrorLogState
+EEVariableEnumerate8 eeErrorLogState		;error log
 EEVariableEnumerate8 eeErrorCode
 EEVariableEnumerate8 eeErrorTimeSec
 EEVariableEnumerate8 eeErrorTimeMin
 
-EEVariableEnumerate16 eeStickScaleRoll
+EEVariableEnumerate16 eeStickScaleRoll		;stick scaling
 EEVariableEnumerate16 eeStickScalePitch
 EEVariableEnumerate16 eeStickScaleYaw
 EEVariableEnumerate16 eeStickScaleThrottle
-EEVariableEnumerate16 eeStickScaleSlMixing
+EEVariableEnumerate16 eeUnusedSS
 
-EEVariableEnumerate16 eeSelflevelPgain
+EEVariableEnumerate16 eeSelflevelPgain		;self-level
 EEVariableEnumerate16 eeSelflevelPlimit
 EEVariableEnumerate16 eeAccTrimRoll
 EEVariableEnumerate16 eeAccTrimPitch
 EEVariableEnumerate16 eeSlMixRate
 
-EEVariableEnumerate16 eeEscLowLimit
+EEVariableEnumerate16 eeEscLowLimit		;misc. settings
 EEVariableEnumerate16 eeStickDeadZone
 EEVariableEnumerate16 eeBattAlarmVoltage
 EEVariableEnumerate16 eeServoFilter
@@ -575,7 +598,7 @@ EEVariableEnumerate8 eeLinkRollPitch		;true=on  false=off
 EEVariableEnumerate8 eeAutoDisarm		;true=on  false=off
 EEVariableEnumerate8 eeButtonBeep		;true=on  false=off
 EEVariableEnumerate8 eeArmingBeeps		;true=on  false=off
-EEVariableEnumerate8 eeUnused2			;true=on  false=off
+EEVariableEnumerate8 eeBigHomeScreen		;true=on  false=off
 
 EEVariableEnumerate16 eeCamRollGain
 EEVariableEnumerate16 eeCamRollOffset
@@ -588,24 +611,41 @@ EEVariableEnumerate16 eeCamPitchHomePos
 EEVariableEnumerate8 eeSensorsCalibrated
 EEVariableEnumerate8 eeMotorLayoutOk
 
+EEVariableEnumerate8 eeAuxPos1Function		;aux switch settings
+EEVariableEnumerate8 eeAuxPos2Function
+EEVariableEnumerate8 eeAuxPos3Function
+EEVariableEnumerate8 eeAuxPos4Function
+EEVariableEnumerate8 eeAuxPos5Function
 EEVariableEnumerate8 eeAuxPos1SS
 EEVariableEnumerate8 eeAuxPos2SS
 EEVariableEnumerate8 eeAuxPos3SS
 EEVariableEnumerate8 eeAuxPos4SS
 EEVariableEnumerate8 eeAuxPos5SS
-EEVariableEnumerate8 eeAuxPos1Function
-EEVariableEnumerate8 eeAuxPos2Function
-EEVariableEnumerate8 eeAuxPos3Function
-EEVariableEnumerate8 eeAuxPos4Function
-EEVariableEnumerate8 eeAuxPos5Function
 
-EEVariableEnumerate8 eeMpuFilter
+EEVariableEnumerate8 eeMpuFilter		;sensor settings
 EEVariableEnumerate8 eeMpuGyroCfg
 EEVariableEnumerate8 eeMpuAccCfg
 
 EEVariableEnumerate8 eeTuningRate
 
 EEVariableEnumerate8 eeDG2Functions
+
+EEVariableEnumerate8 eeTpa1P			;tpa ladder
+EEVariableEnumerate8 eeTpa1I
+EEVariableEnumerate8 eeTpa2P
+EEVariableEnumerate8 eeTpa2I
+EEVariableEnumerate8 eeTpa3P
+EEVariableEnumerate8 eeTpa3I
+EEVariableEnumerate8 eeTpa4P
+EEVariableEnumerate8 eeTpa4I
+EEVariableEnumerate8 eeTpa5P
+EEVariableEnumerate8 eeTpa5I
+
+EEVariableEnumerate8 eeTssa1			;tssa ladder
+EEVariableEnumerate8 eeTssa2
+EEVariableEnumerate8 eeTssa3
+EEVariableEnumerate8 eeTssa4
+EEVariableEnumerate8 eeTssa5
 
 
 

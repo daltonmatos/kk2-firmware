@@ -7,6 +7,10 @@ Lva:
 	brge lva4
 
 	b16mov BatteryVoltageLogged, BatteryVoltage
+	lds xh, Timer1min
+	lds xl, Timer1sec
+	sts BattLogTimeMin, xh
+	sts BattLogTimeSec, xl
 
 lva4:	b16sub Error, BatteryVoltage, BatteryVoltageLowpass		;lowpass filter
 	b16fdiv Error, 8
@@ -67,6 +71,8 @@ loo1:	ret
 	;--- Check the LVA setting ---
 
 CheckLvaSetting:
+
+	rvbrflagfalse flagArmed, cls1		;skip the LVA check when disarming
 
 	b16ldi Temper, 1.22			;LVA value set too low?
 	b16mul Temp, BattAlarmVoltage, Temper

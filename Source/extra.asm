@@ -20,7 +20,7 @@ ef11:	call LcdClear12x16
 	;footer
 	call PrintMenuFooter
 
-	;print selector
+	;selector
 	ldzarray isp7*2, 4, Item
 	call PrintSelector
 
@@ -39,7 +39,7 @@ ef15:	cpi t, 0x04			;PREV?
 	dec Item
 	brpl ef11
 
-	clr Item
+	ldi Item, 2
 	rjmp ef11
 
 ef20:	cpi t, 0x02			;NEXT?
@@ -49,7 +49,7 @@ ef20:	cpi t, 0x02			;NEXT?
 	cpi Item, 3
 	brlt ef11
 
-	ldi Item, 2
+	clr Item
 	rjmp ef11
 
 ef25:	cpi t, 0x01			;SELECT?

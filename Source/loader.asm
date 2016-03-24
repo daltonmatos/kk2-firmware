@@ -122,26 +122,29 @@ loa23:	mov t, MixerValue		;save mixer value
 
 loa1:	.db "Load motor layout.", 0, 0
 
-loa10:	.db "SingleCopter 1M 4S  "
-	.db "SingleCopter 2M 2S  "
-	.db "DualCopter II       "
-	.db "TriCopter II        "
-	.db "QuadroCopter x mode "
-	.db "QuadroCopter + mode "
-	.db "V-Tail              "
-	.db "V-Tail Hunter       "
-	.db "Y4                  "
-	.db "HexaCopter   x mode "
-	.db "HexaCopter   + mode "
-	.db "H6                  "
-	.db "V6                  "
-	.db "Y6                  "
-	.db "OctoCopter   x mode "
-	.db "OctoCopter   + mode "
-	.db "H8                  "
-	.db "V8                  "
-	.db "X8           x mode "
-	.db "X8           + mode "
+lm1:	.db "SingleCopter 1M 4S", 0, 0
+lm2:	.db "SingleCopter 2M 2S", 0, 0
+lm3:	.db "DualCopter II", 0
+lm4:	.db "TriCopter II", 0, 0
+lm5:	.db "Quad x", 0, 0
+lm6:	.db "Quad +", 0, 0
+lm7:	.db "V-Tail", 0, 0
+lm8:	.db "V-Tail Hunter", 0
+lm9:	.db "Y4", 0, 0
+lm10:	.db "Hexa x", 0, 0
+lm11:	.db "Hexa +", 0, 0
+lm12:	.db "H6", 0, 0
+lm13:	.db "V6", 0, 0
+lm14:	.db "Y6", 0, 0
+lm15:	.db "Octo x", 0, 0
+lm16:	.db "Octo +", 0, 0
+lm17:	.db "H8", 0, 0
+lm18:	.db "V8", 0, 0
+lm19:	.db "X8 x", 0, 0
+lm20:	.db "X8 +", 0, 0
+
+loa10:	.dw lm1*2, lm2*2, lm3*2, lm4*2, lm5*2, lm6*2, lm7*2, lm8*2, lm9*2, lm10*2
+	.dw lm11*2, lm12*2, lm13*2, lm14*2, lm15*2, lm16*2, lm17*2, lm18*2, lm19*2, lm20*2
 
 
 

@@ -192,8 +192,6 @@ dpw10:	.dw dpw1*2, dpw2*2, dpw3*2, dpw4*2
 
 DisplayPropWarning:
 
-	call LcdClear12x16
-
 	;header
 	call PrintWarningHeader
 

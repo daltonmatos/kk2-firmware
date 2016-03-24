@@ -90,7 +90,6 @@ ups20:	cpi Item, 1
 	brne ups21
 
 	rcall CopyUserProfile		;import user profile
-	call setup_mpu6050		;update the MPU
 	ldi Item, 1
 	rjmp ups10
 
@@ -236,6 +235,8 @@ cup11:	mov zh, yl
 	brne cup11
 
 	BuzzerOff			;yes
+	call setup_mpu6050		;update the MPU
+
 	clr xl				;show status dialogue (XL=0 means Success)
 	rjmp cup8
 
@@ -245,24 +246,24 @@ cup11:	mov zh, yl
 
 ChangeUserProfile:
 
-	cpi t, 0x02			;register T holds button input
+	cpi yl, 0x02			;register YL holds button input
 	breq cup2
 
-	cpi t, 0x04
+	cpi yl, 0x04
 	breq cup2
 
 	ret				;incorrect button input
 
-cup2:	lsr t
-	andi t, 0x01
+cup2:	lsr yl
+	andi yl, 0x01
 	brne cup1
 
-	ser t				;will decrease the user profile value
+	ser yl				;will decrease the user profile value
 
 cup1:	lds xl, UserProfile
-	add t, xl
-	andi t, 0x03
-	sts UserProfile, t
+	add yl, xl
+	andi yl, 0x03
+	sts UserProfile, yl
 	call EeInit			;initialize profile data when selected for the first time
 	call setup_mpu6050		;update the MPU
 	ret

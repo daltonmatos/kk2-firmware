@@ -158,6 +158,7 @@ cle2:	rvsetflagfalse flagErrorLogSetup
 
 ToggleErrorLogState:
 
+	clc
 	rvbrflagfalse flagErrorLogSetup, tel10
 
 	ldz eeErrorLogState			;setup screen is active so we'll toggle the EEPROM setting
@@ -166,6 +167,7 @@ ToggleErrorLogState:
 	call WriteEeprom
 
 	rvsetflagfalse flagErrorLogSetup	;this will "close" the setup window
+	sec
 
 tel10:	ret
 

@@ -93,6 +93,9 @@ init3:	jmp SatelliteMain	;Spektrum Satellite (DSM2 and DSMX)
 
 .include "rxmode.asm"
 .include "batteryvoltage.asm"
+.include "batterylog.asm"
+.include "tssa.asm"
+.include "tpa.asm"
 
 .include "serial_readrx.asm"
 .include "serial_rxtest.asm"
@@ -124,6 +127,7 @@ init3:	jmp SatelliteMain	;Spektrum Satellite (DSM2 and DSMX)
 .include "gimbal_mainmenu.asm"
 
 .include "advanced.asm"
+.include "expert.asm"
 .include "extra.asm"
 .include "motorcheck.asm"
 .include "boardrotation.asm"

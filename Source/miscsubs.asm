@@ -168,14 +168,14 @@ ReadEepromP:
 	lds zh, UserProfile
 
 ReadEeprom:
-re1:	skbc eecr,1, r0
-	rjmp re1
+	skbc eecr, 1, r0
+	rjmp ReadEeprom
 
-	store eearl,zl	;(Z) -> t
-	store eearh,zh
+	store eearl, zl			;(Z) -> t
+	store eearh, zh
 
 	ldi t,0x01
-	store eecr,t
+	store eecr, t
 
 	load t, eedr
 	ret
@@ -185,7 +185,7 @@ WriteEepromP:
 	lds zh, UserProfile
 
 WriteEeprom:
-	cli		;t -> (Z)
+	cli				;t -> (Z)
 
 wr1:	skbc eecr,1, r0
 	rjmp wr1

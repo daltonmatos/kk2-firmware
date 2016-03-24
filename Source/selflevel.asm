@@ -42,6 +42,7 @@ sqz16:	push t
 
 	cpi t, 0x08			;BACK?
 	brne sqz8
+
 	ret	
 
 sqz8:	cpi t, 0x04			;PREV?
@@ -69,8 +70,7 @@ sqz12:	cpi t, 0x01			;CHANGE?
 	brne sqz14
 
 	ldzarray eeSelflevelPgain, 2, Item
-	push zl
-	push zh
+	pushz
 	call GetEePVariable16
 	ldzarray sqz15*2, 4, Item
 	lpm yl, Z+
@@ -82,8 +82,7 @@ sqz12:	cpi t, 0x01			;CHANGE?
 	call NumberEdit
 	mov xl, r0
 	mov xh, r1
-	pop zh
-	pop zl
+	popz
 	call StoreEePVariable16
 
 sqz14:	rjmp sqz11

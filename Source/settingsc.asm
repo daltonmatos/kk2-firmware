@@ -22,7 +22,7 @@ sux11:	call LcdClear6x8
 	rjmp sux23
 
 sux22:	;labels
-	ldi t, 4
+	ldi t, 5
 	ldz sux20*2
 	call PrintStringArray
 
@@ -33,11 +33,12 @@ sux22:	;labels
 	rcall PrintYesNoValue			;eeAutoDisarm
 	rcall PrintYesNoValue			;eeButtonBeep
 	rcall PrintYesNoValue			;eeArmingBeeps
+	rcall PrintYesNoValue			;eeBigHomeScreen
 
 	;footer
 	call PrintStdFooter
 
-sux23:	;print selector
+sux23:	;selector
 	ldzarray sux7*2, 4, Item
 	call PrintSelector
 
@@ -80,14 +81,14 @@ sux8:	lds xl, flagGimbalMode			;skip navigation buttons in gimbal mode
 
 sux10:	rjmp sux11
 
-sux17:	ldi Item, 3
+sux17:	ldi Item, 4
 	rjmp sux11
 
 sux9:	cpi t, 0x02				;NEXT?
 	brne sux12
 
 	inc Item
-	cpi Item, 4
+	cpi Item, 5
 	breq sux16
 
 sux13:	rjmp sux11
@@ -131,14 +132,15 @@ sux1:	.db "Link Roll Pitch", 0
 sux2:	.db "Auto Disarm", 0
 sux3:	.db "Button Beep", 0
 sux4:	.db "Arming Beeps", 0, 0
+sux5:	.db "Big Home Screen", 0
 
-sux20:	.dw sux1*2, sux2*2, sux3*2, sux4*2
+sux20:	.dw sux1*2, sux2*2, sux3*2, sux4*2, sux5*2
 
 sux7:	.db 100, 0, 122, 9
 	.db 100, 9, 122, 18
 	.db 100, 18, 122, 27
 	.db 100, 27, 122, 36
-;	.db 100, 36, 122, 45
+	.db 100, 36, 122, 45
 
 
 .undef Item

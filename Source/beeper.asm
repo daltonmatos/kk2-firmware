@@ -7,7 +7,7 @@ Beeper:
 	b16cmp BeeperDelay, Temp
 	breq bee1
 
-	b16dec BeeperDelay				;No, subtract one and exit
+	b16dec BeeperDelay				;no, subtract one and exit
 	rjmp bee2
 
 
