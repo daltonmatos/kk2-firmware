@@ -237,3 +237,26 @@ asm_AdjustBatteryVoltage:
 asm_SelectRxMode:
   safe_called_from_c SelectRxMode
   ret
+
+
+_menu_opts:
+  .dw m0*2
+  .dw m1*2
+  .dw m2*2
+  .dw m3*2
+  .dw m4*2
+  .dw m5*2
+  .dw m6*2
+  .dw m7*2
+  .dw m8*2
+
+
+m0: .db "abc0", 0
+m1: .db "abc1", 0
+m2: .db "abc2", 0
+m3: .db "abc3", 0
+m4: .db "abc4", 0
+m5: .db "abc5", 0
+m6: .db "abc6", 0
+m7: .db "abc7", 0
+m8: .db "abc8", 0

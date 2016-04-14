@@ -66,32 +66,66 @@ void render_screen(menu_t *data){
   __input_loop(data);
 }
 
-void __render_options(uint8_t total, const char* volatile title, char * volatile str_addr){
+#define MAX_OPTIONS_PER_SCREEN 5
+
+void /*__attribute__((optimize("O0")))*/ __render_options(uint8_t total, uint8_t volatile offset, const char* volatile title, char * volatile str_addr){
     uint8_t volatile op = 0;
+    uint8_t volatile i = 0;
+
     FontSelector = f6x8;
     PixelType = 0;
     lcd_clear();
     print_title(title);
     print_std_footer();
-    for (op=0; op < total; op++){
-      print_string_2((char *) pgm_read_word(str_addr + op*2), 0, 11 + 9*op, op == MenuState->selected_item ? HIGHLIGHT_FULL_LINE : HIGHLIGHT_NONE);  
+    uint8_t volatile first_option = offset;
+    
+    if ((total - first_option) < MAX_OPTIONS_PER_SCREEN){
+      first_option = (MAX_OPTIONS_PER_SCREEN - (total - offset + 1));
     }
+
+    for (op=first_option; op < MAX_OPTIONS_PER_SCREEN + first_option; op++, i++){
+      print_string_2((char *)pgm_read_word(str_addr + (op * 2)), 
+          0, 
+          11 + 9*i, 
+          i == (MenuState->selected_item) ? HIGHLIGHT_FULL_LINE : HIGHLIGHT_NONE
+      );
+    }
+    print_number(MenuState->selected_item, 60, 20);
     lcd_update();
 }
 
+uint8_t max(uint8_t a, uint8_t b){
+  return a > b ? b : a;
+}
 
-
-void render_menu(uint8_t total_options, const char* volatile title,  char * volatile str_addr, _ok_callback volatile cb){
+void render_menu(uint8_t volatile total_options, const char* volatile title,  char * volatile str_addr, _ok_callback volatile cb){
   MenuState->key_pressed = 0;
   MenuState->selected_item = 0;
-  __render_options(total_options, title, str_addr);
+  uint8_t volatile offset = 0;
+  __render_options(total_options, offset, title, str_addr);
 
   while (MenuState->key_pressed != BUTTON_BACK){
     __read_input(total_options);
+
     if (MenuState->key_pressed == BUTTON_OK){
       cb(MenuState->selected_item);
     }
-    __render_options(total_options, title, str_addr);
+
+    if (MenuState->selected_item >= MAX_OPTIONS_PER_SCREEN){
+      MenuState->selected_item = MAX_OPTIONS_PER_SCREEN - 1;
+      if (offset + MAX_OPTIONS_PER_SCREEN < total_options){
+        offset++;
+      }
+    }else if (MenuState->key_pressed == BUTTON_UP && MenuState->selected_item == 0){
+      offset--;
+    }
+
+    __render_options(total_options, offset, title, str_addr);
+    print_number(total_options, 80, 20);
+    print_number(offset, 80, 30);
+    lcd_update();
+
   }
+
   return;
 }

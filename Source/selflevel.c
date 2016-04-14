@@ -18,6 +18,7 @@ extern const char bckprev;
 
 extern const char colon_and_space;
 
+extern char _menu_opts;
 
 void _sl_render(uint8_t selected_item){
 
@@ -74,6 +75,6 @@ void selflevel_settings(){
   ScreenData->render_callback = &_sl_render;
   ScreenData->total_options = 5;
 
-  render_screen(ScreenData);
+  render_menu(9, &selflevel_title, &_menu_opts, 0);
 
 }

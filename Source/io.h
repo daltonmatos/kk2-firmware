@@ -27,6 +27,7 @@ extern void asm_setup_mpu6050();
 extern int16_t asm_NumEdit(int16_t number, int16_t min, int16_t max);
 
 uint8_t constrain(int8_t value, uint8_t min, uint8_t max);
+int8_t min8(int8_t a, int8_t b);
 
 void _sprite(const char *bitmap, uint8_t w, uint8_t h, uint8_t bytes, uint8_t x, uint8_t y);
 uint8_t print_string(const char *str_addr, uint8_t x, uint8_t y);

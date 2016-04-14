@@ -19,7 +19,7 @@ typedef void (*_ok_callback)(uint8_t);
 
 typedef struct {
   uint8_t key_pressed;
-  uint8_t selected_item;
+  int8_t selected_item;
 } menu_state_t;
 
 

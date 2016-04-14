@@ -68,6 +68,12 @@ uint8_t constrain(int8_t value, uint8_t min, uint8_t max){
   return value;
 }
 
+
+int8_t min8(int8_t a, int8_t b){
+  return a < b ? a : b;
+}
+
+
 void print_selector(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2){
   PixelType = 0;
   __fillrect(x1, y1, x2, y2);
