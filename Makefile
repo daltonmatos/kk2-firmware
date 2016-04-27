@@ -35,7 +35,7 @@ gimbal_mode mode_settings sensor_settings selflevel_settings \
 stick_scaling misc_settings initial_setup __setpixel channel_mapping print_char \
 select_rx_mode sbus_dg2settings show_layout
 
-$(BIN_DIR)/kk2++.hex: $(BIN_DIR)/kk2++.elf $(OBJECTS) $(BIN_DIR)/flashvariables.o $(BIN_DIR)/kk2++.asm.hex
+$(BIN_DIR)/kk2++.hex: bindir $(BIN_DIR)/kk2++.elf $(OBJECTS) $(BIN_DIR)/flashvariables.o $(BIN_DIR)/kk2++.asm.hex
 	avr-gcc $(CC_FLAGS) -mmcu=atmega644p -DF_CPU=20000000 -nostartfiles \
 		-o $(BIN_DIR)/kk2++.elf \
 		$(BIN_DIR)/kk2++.asm.hex.bin.elf \
