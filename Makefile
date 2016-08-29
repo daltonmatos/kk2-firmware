@@ -2,7 +2,11 @@
 SRC_DIR = Source
 BIN_DIR = bin
 
-__FEATURES = -IN_FLIGHT_TUNING -STANDALONE_GIMBAL_CONTROLLER -C_NUMEDIT
+__FEATURES = \
+-IN_FLIGHT_TUNING \
+-STANDALONE_GIMBAL_CONTROLLER \
+-C_NUMEDIT
+
 FEATURES = $(subst +,-D ,$(subst -,-U ,$(__FEATURES)))
 CC_FLAGS = -Os -std=gnu99 $(FEATURES)
 AVRASM_FLAGS = $(FEATURES)
@@ -84,6 +88,7 @@ debug: $(DEBUG_OBJECTS) $(BIN_DIR)/flashvariables.o
 
 flash:
 	/usr/share/arduino/hardware/tools/avrdude -V -C /usr/share/arduino/hardware/tools/avrdude.conf -patmega644p -cusbasp -Uflash:w:$(BIN_DIR)/kk2++.hex:i
+	#avrdude -V -C /etc/avrdude.conf -patmega644p -cusbasp -Uflash:w:$(BIN_DIR)/kk2++.hex:i
 	#avrdude -V -C /usr/share/arduino/hardware/tools/avrdude.conf -patmega644p -cusbasp -Uflash:w:$(BIN_DIR)/kk2++.hex:i
 
 size:
