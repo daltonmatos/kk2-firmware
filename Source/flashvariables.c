@@ -140,3 +140,7 @@ const char back_next[] PROGMEM = "BACK  NEXT";
 const char noaccess[] PROGMEM = "NO ACCESS";
 const char no_motor_layout0[] PROGMEM = "A Motor Layout must";
 const char no_motor_layout1[] PROGMEM = "be loaded first.";
+
+/* Log Error Screen */
+
+const char _log_error_title[] PROGMEM = "ERROR LOG";

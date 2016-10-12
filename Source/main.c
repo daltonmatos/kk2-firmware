@@ -8,6 +8,8 @@
 #include "flashvariables.h"
 #include "display/st7565.h"
 #include "channelmapping.h"
+#include "io.h"
+#include "errorlog.h"
 
 typedef void (*entrypoint_ptr)();
 
@@ -35,7 +37,12 @@ int c_main(){
     _cm_show_channelmaping_error();
     channel_mapping();
   }
-  
+
+
+  if (get_buttons() == BUTTON_BACK){
+    error_log();
+  }
+
   ((entrypoint_ptr) pgm_read_word(&entrypoints + RxMode*2))();
 
 }
