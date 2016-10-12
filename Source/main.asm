@@ -130,7 +130,7 @@ ma10:	;--- ESC calibration ----
 
 ma5:	rvsetflagtrue Mode		;will prevent buttons held down during start-up from opening the menu or changing user profile
 
-
+#ifdef ADJUSTABLE_CONTRAST
 	;--- Reset LCD contrast when button #1 is held down ---
 
 	call GetButtons
@@ -138,6 +138,7 @@ ma5:	rvsetflagtrue Mode		;will prevent buttons held down during start-up from op
 	brne ma15
 
 	call SetDefaultLcdContrast
+#endif
 
 
 	;--- Display the Error Log setup screen when button #4 is held down ---
