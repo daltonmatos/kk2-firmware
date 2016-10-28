@@ -52,8 +52,9 @@ gmm1:	.db "Mode Settings       "
 	.db "User Profile        "
 	.db "Exit Gimbal Mode    "
 	.db "Version Information "
+#ifdef ADJUSTABLE_CONTRAST
 	.db "LCD Contrast        "
-
+#endif
 
 gmm18:	.dw ModeSettings
 	.dw MiscSettings
@@ -65,6 +66,8 @@ gmm18:	.dw ModeSettings
 	.dw UserProfileSetup
 	.dw GimbalMode
 	.dw ShowVersion
+#ifdef ADJUSTABLE_CONTRAST
 	.dw Contrast
+#endif
 
 

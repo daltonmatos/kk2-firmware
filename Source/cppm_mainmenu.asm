@@ -65,8 +65,9 @@ cmm1:
 	.db "Extra Features      "
 	.db "ESC Calibration     "
 	.db "Version Information "
+#ifdef ADJUSTABLE_CONTRAST
 	.db "LCD Contrast        "
-
+#endif
 
 cmm18:	
 #ifdef IN_FLIGHT_TUNING
@@ -88,6 +89,7 @@ cmm18:
 	.dw ExtraFeatures
 	.dw EscCalWarning
 	.dw ShowVersion
+#ifdef ADJUSTABLE_CONTRAST
 	.dw Contrast
-
+#endif
 

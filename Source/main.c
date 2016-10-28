@@ -21,7 +21,11 @@ int c_main(){
   flagGimbalMode = eeprom_read_byte(eeGimbalMode);
 
   setup_display();
+#ifdef ADJUSTABLE_CONTRAST
   lcd_load_contrast();
+#else 
+  SetDefaultLcdContrast();
+#endif
 
   /* Setup input buttons.
    * This is here for now, until we have a full setup_hardware() function

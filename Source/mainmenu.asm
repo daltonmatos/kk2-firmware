@@ -65,7 +65,9 @@ men1:
 	.db "Extra Features      "
 	.db "ESC Calibration     "
 	.db "Version Information "
+#ifdef ADJUSTABLE_CONTRAST
 	.db "LCD Contrast        "
+#endif
 
 
 men18:	
@@ -88,6 +90,8 @@ men18:
 	.dw ExtraFeatures
 	.dw EscCalWarning
 	.dw ShowVersion
+#ifdef ADJUSTABLE_CONTRAST
 	.dw Contrast
+#endif
 
 

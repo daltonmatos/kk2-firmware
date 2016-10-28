@@ -50,11 +50,13 @@ AdvancedSettings:
   safe_call_c advanced_settings
   ret
 
+#ifdef ADJUSTABLE_CONTRAST
 c_contrast:
   nop
 Contrast:
   safe_call_c c_contrast
   ret
+#endif
 
 ef2: .db "Check Motor Outputs", 0
 #ifdef STANDALONE_GIMBAL_CONTROLLER

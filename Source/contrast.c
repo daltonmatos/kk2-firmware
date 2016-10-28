@@ -1,3 +1,5 @@
+#ifdef ADJUSTABLE_CONTRAST
+
 #include <avr/eeprom.h>
 #include <util/delay.h>
 #include "flashvariables.h"
@@ -45,3 +47,5 @@ void c_contrast(){
   LcdContrast = eeprom_read_byte(eeLcdContrast);
 
 }
+
+#endif
