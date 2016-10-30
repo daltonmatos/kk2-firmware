@@ -12,6 +12,10 @@ smm23:	ldy smm1 * 2
   dec t
 #endif
 
+#ifndef ADJUSTABLE_CONTRAST
+  dec t
+#endif
+
 	call Menu
 
 	sts MainMenuListYposSave, yl

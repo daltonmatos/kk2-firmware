@@ -11,6 +11,9 @@ men23:	ldy men1 * 2
 #ifndef IN_FLIGHT_TUNING
   dec t
 #endif
+#ifndef ADJUSTABLE_CONTRAST
+  dec t
+#endif
 
 	call Menu
 

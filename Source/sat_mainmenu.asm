@@ -11,6 +11,9 @@ sam23:	ldy sam1 * 2
 #ifndef IN_FLIGHT_TUNING
   dec t
 #endif
+#ifndef ADJUSTABLE_CONTRAST
+  dec t
+#endif
 
 	call Menu
 
