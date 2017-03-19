@@ -6,7 +6,7 @@
 
 SensorSettings:
 
-//	call GetMpu6050Setup
+	call GetMpu6050Setup		;get configuration values from the MPU
 
 	clr Item
 	lds MpuAccOld, MpuAccCfg

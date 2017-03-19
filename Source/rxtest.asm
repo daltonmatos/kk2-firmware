@@ -15,7 +15,7 @@ RxTest:
 	sts flagYawValid, t
 	sts flagAuxValid, t
 
-	rvbrflagtrue RxFrameValid, rxt2		;display a "NO SIGNAL" message if CPPM signal is absent
+	rvbrflagtrue flagRxFrameValid, rxt2	;display a "NO SIGNAL" message if CPPM signal is absent
 
 	call ShowNoCppmSignalDlg
 	ret
@@ -126,14 +126,12 @@ RxTest2:
 	cpi t, RxModeSBus
 	brlt rxt204
 
-	lds t, RxBufferState			;update the display only when we have new data
-	cpi t, 3
-	breq rxt204
+	rvbrflagtrue flagNewRxFrame, rxt204	;update the display only when we have new data
 
 	ldi yl, 25				;wait 2.5ms
 	call wms
 
-	rvbrflagfalse RxFrameValid, rxt204	;update the display also when RX data has become invalid
+	rvbrflagfalse flagRxFrameValid, rxt204	;update the display also when RX data has become invalid
 
 	rjmp rxt203				;skip display update
 
@@ -191,7 +189,6 @@ rxt202:	rjmp rxTest2
 
 rxt8:	.db "No signal", 0
 
-null:	.db 0, 0
 left:	.db "Left", 0, 0
 right:	.db "Right", 0
 fwd:	.db "Forward", 0

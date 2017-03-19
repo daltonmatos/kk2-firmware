@@ -9,7 +9,7 @@ GetSBusFlags:
 	;S.Bus data received:	----4567
 
 	lds xl, SBusFlags
-	lds xh, RxFrameValid
+	lds xh, flagRxFrameValid
 	tst xh				;is S.Bus data frame valid?
 	brne sbf5
 

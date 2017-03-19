@@ -6,17 +6,17 @@
 
 .equ	RamMixerTable	=0x0500 ;to 0x053f  SRAM copy of mixer table
 
-.set	RamVariables	=0x0540 ;to 0x07ff  SRAM variables
+.set	RamVariables	=0x0540 ;to 0x0fff  SRAM variables
 
-				;0x0800-0x08ff Stack
-
-
+				;0x0800-0x10ff Stack
 
 
 
-;--- EEPROM ---
 
-			;0x0000  to 0x0003  Signature 
+
+;--- EEPROM, 1st. segment ---
+
+			;0x0000  to 0x0003  Signature
 
 .equ	EeMixerTable	=0x0004 ;to 0x0043  Mixer Table, 8bit, 64 bytes
 
@@ -32,7 +32,22 @@
 
 .equ	EeUserProfile4	=0x0300	;to 0x03ff  User profile #4
 
-        
+
+
+;--- EEPROM, 2nd. segment ---
+
+.equ	E2Signature	=0x0400	;to 0x0403  Signature
+
+.set	E2Registers	=0x0404 ;to 0x04ff
+
+.equ	E2LedPsttern2	=0x0500	;to 0x05ff  LED psttern #2
+
+.equ	E2LedPsttern3	=0x0600	;to 0x06ff  LED psttern #3
+
+.equ	E2LedPsttern4	=0x0700	;to 0x07ff  LED psttern #4
+
+
+
 
 ;---  16.8 bit signed registers ---
 
@@ -69,13 +84,47 @@ FixedPointVariableEnumerate168 AccXZero
 FixedPointVariableEnumerate168 AccYZero
 FixedPointVariableEnumerate168 AccZZero
 
+FixedPointVariableEnumerate168 FilteredAccX
+FixedPointVariableEnumerate168 AccXFilter0
+FixedPointVariableEnumerate168 AccXFilter1
+FixedPointVariableEnumerate168 AccXFilter2
+FixedPointVariableEnumerate168 AccXFilter3
+FixedPointVariableEnumerate168 AccXFilter4
+FixedPointVariableEnumerate168 AccXFilter5
+FixedPointVariableEnumerate168 AccXFilter6
+FixedPointVariableEnumerate168 AccXFilter7
+FixedPointVariableEnumerate168 AccXFilter8
+FixedPointVariableEnumerate168 AccXFilter9
+FixedPointVariableEnumerate168 AccXFilter10
+FixedPointVariableEnumerate168 AccXFilter11
+FixedPointVariableEnumerate168 AccXFilter12
+FixedPointVariableEnumerate168 AccXFilter13
+FixedPointVariableEnumerate168 AccXFilter14
+FixedPointVariableEnumerate168 AccXFilter15
+
+FixedPointVariableEnumerate168 FilteredAccY
+FixedPointVariableEnumerate168 AccYFilter0
+FixedPointVariableEnumerate168 AccYFilter1
+FixedPointVariableEnumerate168 AccYFilter2
+FixedPointVariableEnumerate168 AccYFilter3
+FixedPointVariableEnumerate168 AccYFilter4
+FixedPointVariableEnumerate168 AccYFilter5
+FixedPointVariableEnumerate168 AccYFilter6
+FixedPointVariableEnumerate168 AccYFilter7
+FixedPointVariableEnumerate168 AccYFilter8
+FixedPointVariableEnumerate168 AccYFilter9
+FixedPointVariableEnumerate168 AccYFilter10
+FixedPointVariableEnumerate168 AccYFilter11
+FixedPointVariableEnumerate168 AccYFilter12
+FixedPointVariableEnumerate168 AccYFilter13
+FixedPointVariableEnumerate168 AccYFilter14
+FixedPointVariableEnumerate168 AccYFilter15
+
 FixedPointVariableEnumerate168 BatteryVoltage
 FixedPointVariableEnumerate168 BatteryVoltageOffset
 FixedPointVariableEnumerate168 BatteryVoltageOffsetOrg
 FixedPointVariableEnumerate168 BatteryVoltageLowpass
 FixedPointVariableEnumerate168 BatteryVoltageLogged
-
-FixedPointVariableEnumerate168 MpuTemperature
 
 FixedPointVariableEnumerate168 CommandRoll		;output from IMU
 FixedPointVariableEnumerate168 CommandPitch
@@ -110,6 +159,8 @@ FixedPointVariableEnumerate168 Tuned7
 
 FixedPointVariableEnumerate168 EscLowLimit
 
+FixedPointVariableEnumerate168 MotorSpinLevel
+
 FixedPointVariableEnumerate168 StickScaleRoll
 FixedPointVariableEnumerate168 StickScalePitch
 FixedPointVariableEnumerate168 StickScaleYaw
@@ -122,7 +173,6 @@ FixedPointVariableEnumerate168 StickScaleYawOrg
 FixedPointVariableEnumerate168 StickDeadZone
 
 FixedPointVariableEnumerate168 MixValue
-FixedPointVariableEnumerate168 MixValueFactor
 
 FixedPointVariableEnumerate168 Out1
 FixedPointVariableEnumerate168 Out2
@@ -167,6 +217,11 @@ FixedPointVariableEnumerate168 Value
 FixedPointVariableEnumerate168 LvaDdsAcc
 
 FixedPointVariableEnumerate168 PwmOutput
+
+FixedPointVariableEnumerate168 PwmLimitM7L
+FixedPointVariableEnumerate168 PwmLimitM7H
+FixedPointVariableEnumerate168 PwmLimitM8L
+FixedPointVariableEnumerate168 PwmLimitM8H
 
 FixedPointVariableEnumerate168 ServoFilter
 
@@ -247,21 +302,23 @@ FixedPointVariableEnumerate832 VectorNewB
 RamVariableEnumerate8 TWI_address
 RamVariableEnumerate8 TWI_data
 
-RamVariableEnumerate8 MpuFilter
-RamVariableEnumerate8 MpuAccCfg
-RamVariableEnumerate8 MpuGyroCfg
+RamVariableEnumerate8 MpuFilter			;DLPF_CFG	DO NOT REARRANGE THESE VARIBLES!
+RamVariableEnumerate8 MpuGyroCfg		;FS_SEL
+RamVariableEnumerate8 MpuAccCfg			;AFS_SEL
 
-RamVariableEnumerate8 Xpos		;pixel pos
+RamVariableEnumerate8 Xpos			;pixel pos
 RamVariableEnumerate8 Ypos
 
-RamVariableEnumerate8 X1		;line start and end
+RamVariableEnumerate8 X1			;line start and end
 RamVariableEnumerate8 Y1
 RamVariableEnumerate8 X2
 RamVariableEnumerate8 Y2
 
-RamVariableEnumerate8 PixelType		;0 = EOR   1 = OR   2 = AND
+RamVariableEnumerate8 PixelType			;0 = EOR   1 = OR   2 = AND
 
 RamVariableEnumerate8 FontSelector
+
+RamVariableEnumerate8 LcdContrast
 
 RamVariableEnumerate8 MainMenuCursorYposSave
 RamVariableEnumerate8 MainMenuListYposSave
@@ -271,14 +328,18 @@ RamVariableEnumerate8 LoadMenuListYposSave
 
 RamVariableEnumerate8 BoardOrientation
 
-RamVariableEnumerate8 TrigTimerL	;used in trigonometry.asm for calculationg the magic number
+RamVariableEnumerate8 TrigTimerL		;used in trigonometry.asm for calculationg the magic number
 RamVariableEnumerate8 TrigTimerH
+
+RamVariableEnumerate8 AccFilterCfg		;0 = No filter, 2-4-8-16 = filter level
+RamVariableEnumerate8 AccFilterIndex
 
 RamVariableEnumerate8 Init
 
 RamVariableEnumerate8 RxMode
+RamVariableEnumerate8 RxModePortExp
 
-RamVariableEnumerate8 RollStartL	;used in readrx.asm
+RamVariableEnumerate8 RollStartL		;used in readrx.asm
 RamVariableEnumerate8 RollStartH
 
 RamVariableEnumerate8 PitchStartL
@@ -315,8 +376,19 @@ RamVariableEnumerate8 RxTimeoutLimit
 
 RamVariableEnumerate8 OutputRateBitmask		;for each output channel: 0=slow rate  1=fast rate
 RamVariableEnumerate8 OutputTypeBitmask		;for each output channel: 0=servo 1=ESC
+RamVariableEnumerate8 OutputStateBitmask	;for each output channel: 0=inactive 1=active
 RamVariableEnumerate8 OutputRateDivider
 RamVariableEnumerate8 OutputRateDividerCounter
+
+RamVariableEnumerate8 ServoFilterDelay
+RamVariableEnumerate8 ServoFilterDelayCounter1
+RamVariableEnumerate8 ServoFilterDelayCounter2
+RamVariableEnumerate8 ServoFilterDelayCounter3
+RamVariableEnumerate8 ServoFilterDelayCounter4
+RamVariableEnumerate8 ServoFilterDelayCounter5
+RamVariableEnumerate8 ServoFilterDelayCounter6
+RamVariableEnumerate8 ServoFilterDelayCounter7
+RamVariableEnumerate8 ServoFilterDelayCounter8
 
 RamVariableEnumerate8 flagRollPitchLink
 
@@ -345,6 +417,7 @@ RamVariableEnumerate8 BattLogTimeSec
 RamVariableEnumerate8 BattLogTimeMin
 
 RamVariableEnumerate8 flagGimbalMode
+RamVariableEnumerate8 CamServoMixing
 
 RamVariableEnumerate8 flagSlOn
 RamVariableEnumerate8 flagSlStickMixing
@@ -387,10 +460,12 @@ RamVariableEnumerate8 OutputTypeBitmaskCopy
 
 RamVariableEnumerate8 flagInactive
 
+RamVariableEnumerate8 LvaHysteresis
 RamVariableEnumerate8 LvaDdsOn
 RamVariableEnumerate8 flagLvaBuzzerOn
 
 RamVariableEnumerate8 flagGeneralBuzzerOn
+RamVariableEnumerate8 flagDebugBuzzerOn
 
 RamVariableEnumerate8 StatusBits
 RamVariableEnumerate8 StatusFlag
@@ -399,17 +474,12 @@ RamVariableEnumerate8 flagAutoDisarm
 
 RamVariableEnumerate8 flagMutePwm
 
-RamVariableEnumerate8 flagDebugBuzzerOn
-
-RamVariableEnumerate8 CamServoMixing
-
-RamVariableEnumerate8 LcdContrast
-
 RamVariableEnumerate8 Timer1sec
 RamVariableEnumerate8 Timer1min
 
 RamVariableEnumerate8 TuningMode		;0=Off, 1=Aileron, 2=Elevator, 3=Rudder, 4=SL gain, 5=ACC trim, 6=Gimbal, 255=Quick Tuning
 RamVariableEnumerate8 TuningRate		;0=invalid, 1=Low, 2=Medium, 3=High
+RamVariableEnumerate8 flagPortExpTuning
 
 RamVariableEnumerate8 TimeoutCounter
 
@@ -441,6 +511,12 @@ RamVariableEnumerate8 Channel8L
 RamVariableEnumerate8 Channel8H
 RamVariableEnumerate8 Channel9L
 RamVariableEnumerate8 Channel9H
+RamVariableEnumerate8 Channel10L
+RamVariableEnumerate8 Channel10H
+RamVariableEnumerate8 Channel11L
+RamVariableEnumerate8 Channel11H
+RamVariableEnumerate8 Channel12L
+RamVariableEnumerate8 Channel12H
 
 RamVariableEnumerate8 MappedChannel1
 RamVariableEnumerate8 MappedChannel2
@@ -451,18 +527,6 @@ RamVariableEnumerate8 MappedChannel6
 RamVariableEnumerate8 MappedChannel7
 RamVariableEnumerate8 MappedChannel8
 
-RamVariableEnumerate8 SBusByte0			;the following byte values work as an array and the order must not be modified!
-RamVariableEnumerate8 SBusByte1
-RamVariableEnumerate8 SBusByte2
-RamVariableEnumerate8 SBusByte3
-RamVariableEnumerate8 SBusByte4
-RamVariableEnumerate8 SBusByte5
-RamVariableEnumerate8 SBusByte6
-RamVariableEnumerate8 SBusByte7
-RamVariableEnumerate8 SBusByte8
-RamVariableEnumerate8 SBusByte9
-RamVariableEnumerate8 SBusByte10
-
 RamVariableEnumerate8 SBusFlags
 RamVariableEnumerate8 Channel17
 RamVariableEnumerate8 Channel18
@@ -471,8 +535,8 @@ RamVariableEnumerate8 DG2Functions
 
 RamVariableEnumerate8 SatDataMask
 
-RamVariableEnumerate8 RxFrameValid
-RamVariableEnumerate8 RxFrameLength
+RamVariableEnumerate8 flagRxFrameValid
+RamVariableEnumerate8 flagNewRxFrame
 
 RamVariableEnumerate8 RxBuffer0
 RamVariableEnumerate8 RxBuffer1
@@ -499,13 +563,24 @@ RamVariableEnumerate8 RxBuffer21
 RamVariableEnumerate8 RxBuffer22
 RamVariableEnumerate8 RxBuffer23
 RamVariableEnumerate8 RxBuffer24
+RamVariableEnumerate8 RxBuffer25
+RamVariableEnumerate8 RxBuffer26
+RamVariableEnumerate8 RxBuffer27
+RamVariableEnumerate8 RxBufferEnd		;dummy
+
+RamVariableEnumerate8 RxBufferEndL
+RamVariableEnumerate8 RxBufferEndH
 
 RamVariableEnumerate8 RxBufferAddressL
 RamVariableEnumerate8 RxBufferAddressH
 
-RamVariableEnumerate8 RxBufferIndex
-RamVariableEnumerate8 RxBufferIndexOld
-RamVariableEnumerate8 RxBufferState
+RamVariableEnumerate8 flagRxBufferFull
+
+RamVariableEnumerate8 RxFlags
+RamVariableEnumerate8 RxSwitches
+
+RamVariableEnumerate8 RxSyncCounter
+RamVariableEnumerate8 SerialSyncCounter
 
 RamVariableEnumerate8 FlagByte1			;bit flags for motor layout arrays (one byte for each output, M1 - M8) to set negative values
 RamVariableEnumerate8 FlagByte2			;(throttle aileron elevator rudder X X X Y) where Y sets rudder to -1 and X is unused
@@ -538,6 +613,27 @@ RamVariableEnumerate8 Tssa2
 RamVariableEnumerate8 Tssa3
 RamVariableEnumerate8 Tssa4
 RamVariableEnumerate8 Tssa5
+
+RamVariableEnumerate8 MpuBuffer0
+RamVariableEnumerate8 MpuBuffer1
+RamVariableEnumerate8 MpuBuffer2
+RamVariableEnumerate8 MpuBuffer3
+RamVariableEnumerate8 MpuBuffer4
+RamVariableEnumerate8 MpuBuffer5
+RamVariableEnumerate8 MpuBuffer6
+RamVariableEnumerate8 MpuBuffer7
+RamVariableEnumerate8 MpuBuffer8
+RamVariableEnumerate8 MpuBuffer9
+RamVariableEnumerate8 MpuBuffer10
+RamVariableEnumerate8 MpuBuffer11
+RamVariableEnumerate8 MpuBuffer12
+RamVariableEnumerate8 MpuBuffer13
+
+RamVariableEnumerate8 WS2812Pin			;0=None, 1=M6, 2=M7
+RamVariableEnumerate8 WS2812Brightness
+RamVariableEnumerate8 WS2812BrightnessOld
+RamVariableEnumerate8 WS2812Pattern
+RamVariableEnumerate8 WS2812Data		;RGB LED data. WARNING! THIS IS A BUFFER. DO NOT ADD SRAM VARIABLES BELOW THIS POINT!
 
 
 
@@ -573,7 +669,7 @@ EEVariableEnumerate16 eeSlMixRate
 EEVariableEnumerate16 eeEscLowLimit		;misc. settings
 EEVariableEnumerate16 eeStickDeadZone
 EEVariableEnumerate16 eeBattAlarmVoltage
-EEVariableEnumerate16 eeServoFilter
+EEVariableEnumerate16 eeMotorSpinLevel
 EEVariableEnumerate16 eeUnused
 
 EEVariableEnumerate8 eeChannelRoll		;channel mapping (not for Satellite mode)
@@ -594,13 +690,13 @@ EEVariableEnumerate8 eeSatChannelAux2
 EEVariableEnumerate8 eeSatChannelAux3
 EEVariableEnumerate8 eeSatChannelAux4
 
-EEVariableEnumerate8 eeLinkRollPitch		;true=on  false=off
-EEVariableEnumerate8 eeAutoDisarm		;true=on  false=off
-EEVariableEnumerate8 eeButtonBeep		;true=on  false=off
-EEVariableEnumerate8 eeArmingBeeps		;true=on  false=off
-EEVariableEnumerate8 eeBigHomeScreen		;true=on  false=off
+EEVariableEnumerate8 eeLinkRollPitch		;mode settings (true=on  false=off)
+EEVariableEnumerate8 eeAutoDisarm
+EEVariableEnumerate8 eeButtonBeep
+EEVariableEnumerate8 eeArmingBeeps
+EEVariableEnumerate8 eeBigHomeScreen
 
-EEVariableEnumerate16 eeCamRollGain
+EEVariableEnumerate16 eeCamRollGain		;gimbal settings
 EEVariableEnumerate16 eeCamRollOffset
 EEVariableEnumerate16 eeCamPitchGain
 EEVariableEnumerate16 eeCamPitchOffset
@@ -647,13 +743,36 @@ EEVariableEnumerate8 eeTssa3
 EEVariableEnumerate8 eeTssa4
 EEVariableEnumerate8 eeTssa5
 
+EEVariableEnumerate8 eeServoFilter		;servo settings
+EEVariableEnumerate8 eeServoFilterDelay
+EEVariableEnumerate8 eeServoLimitM7L
+EEVariableEnumerate8 eeServoLimitM7H
+EEVariableEnumerate8 eeServoLimitM8L
+EEVariableEnumerate8 eeServoLimitM8H
+EEVariableEnumerate8 eeLowOutputRate
+
+EEVariableEnumerate8 eeWS2812Pin		;WS2812 RGB LED
+EEVariableEnumerate8 eeWS2812Pattern
+EEVariableEnumerate8 eeWS2812Brightness
+
+
+
+;--- EEPROM registers, Pt. 2 ----
+
+E2VariableEnumerate8 eeWS2812ID
+E2VariableEnumerate8 eeWS2812Data
+
 
 
 ;--- Registers (global) ----
 
 					;r0-r1 used by the HW multiplier
 
-					;r2-r13 part of the local variables pool
+					;r2-r10 part of the local variables pool
+
+.def	ka			=r11
+.def	kl			=r12
+.def	kh			=r13
 
 .def	treg			=r14	;temp reg for ISR
 

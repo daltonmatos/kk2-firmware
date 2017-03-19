@@ -10,25 +10,28 @@ SerialRxTest:
 
 	call GetSBusFlags			;S.Bus mode
 
-srt2:	rvbrflagtrue RxFrameValid, srt1
+srt2:	rvbrflagtrue flagRxFrameValid, srt3
 
 	call NoSerialDataDlg
 	ret
 
+srt3:	ldi t, 5				;initial timeout value for LCD update
+	mov ka, t
+
 srt1:	call GetRxChannels
 
-	lds t, RxBufferState			;update the display only when we have new data
-	cpi t, 3
-	breq srt8
+	rvbrflagtrue flagNewRxFrame, srt8	;update the display when we have new data
 
-	ldi yl, 25				;wait 2.5ms
+	ldi yl, 20				;wait 2ms
 	call wms
 
-	rvbrflagfalse RxFrameValid, srt8	;update the display also when RX data has become invalid
+	dec ka
+	brpl srt1
 
-	rjmp srt30				;skip display update
+srt8:	ldi t, 50
+	mov ka, t
 
-srt8:	call ScaleInputValues			;divide RX values by 10
+	call ScaleInputValues			;divide RX values by 10
 
 	call LcdClear6x8
 
@@ -89,7 +92,7 @@ srt6:	ldz thrtxt*2
 
 	call LcdUpdate
 
-srt30:	call GetButtons
+	call GetButtons
 
 	cpi t, 0x08				;BACK?
 	brne srt35
@@ -110,7 +113,10 @@ srt7:	rjmp srt1
 
 SerialRxTest2:
 
-	call GetRxChannels
+	ldi t, 5				;initial timeout value for LCD update
+	mov ka, t
+
+srt210:	call GetRxChannels
 
 	lds t, RxMode				;read S.Bus flags in S.Bus mode only
 	cpi t, RxModeSBus
@@ -118,18 +124,18 @@ SerialRxTest2:
 
 	call GetSBusFlags
 
-srt201:	lds t, RxBufferState			;update the display only when we have new data
-	cpi t, 3
-	breq srt204
+srt201:	rvbrflagtrue flagNewRxFrame, srt204	;update the display when we have new data
 
-	ldi yl, 25				;wait 2.5ms
+	ldi yl, 20				;wait 2ms
 	call wms
 
-	rvbrflagfalse RxFrameValid, srt204	;update the display also when RX data has become invalid
+	dec ka
+	brpl srt210
 
-	rjmp srt203				;skip display update
+srt204:	ldi t, 50
+	mov ka, t
 
-srt204:	call ScaleAuxInputValues		;divide RX values by 10
+	call ScaleAuxInputValues		;divide RX values by 10
 	b16mul RxAux4, RxAux4, Temp		;TEMP was set to 0.1 in ScaleAuxInputValues
 
 	call LcdClear6x8
@@ -175,7 +181,7 @@ srt205:	;footer
 
 	call LcdUpdate
 
-srt203:	call GetButtons
+	call GetButtons
 
 	cpi t, 0x08				;BACK?
 	brne srt202
@@ -184,7 +190,7 @@ srt203:	call GetButtons
 	call ReleaseButtons
 	ret
 
-srt202:	rjmp SerialRxTest2
+srt202:	rjmp srt210
 
 
 

@@ -36,6 +36,7 @@ SBusMain:
 	sts Timer1min, t
 
 	sts TuningMode, t
+	sts flagPortExpTuning, t
 
 	sts flagPwmGen, t
 
@@ -54,23 +55,39 @@ SBusMain:
 	sts flagAileronCentered, t	;set to false
 	sts flagElevatorCentered, t
 
-	ldi xl, 25
-	sts RxFrameLength, xl
-
-	sts RxFrameValid, t
+	sts flagRxFrameValid, t
+	sts flagNewRxFrame, t
 	sts TimeoutCounter, t
 
 	sts Channel17, t
 	sts Channel18, t
 	sts Failsafe, t
 
-	sts RxBufferIndex, t
-	sts RxBufferIndexOld, t
-	sts RxBufferState, t
+	sts flagRxBufferFull, t
 	sts RxBuffer0, t
 	ldz RxBuffer0
 	sts RxBufferAddressL, zl
 	sts RxBufferAddressH, zh
+	ldz RxBuffer25
+	sts RxBufferEndL, zl
+	sts RxBufferEndH, zh
+
+	sts Channel1L, t
+	sts Channel1H, t
+	sts Channel2L, t
+	sts Channel2H, t
+	sts Channel3L, t
+	sts Channel3H, t
+	sts Channel4L, t
+	sts Channel4H, t
+	sts Channel5L, t
+	sts Channel5H, t
+	sts Channel6L, t
+	sts Channel6H, t
+	sts Channel7L, t
+	sts Channel7H, t
+	sts Channel8L, t
+	sts Channel8H, t
 
 	ldi t, NoSBusInput
 	sts StatusBits, t
@@ -189,7 +206,8 @@ bm8:	lrv ButtonDelay, 0
 
 bm4:	rvinc ButtonDelay		;yes, ButtonDelay++
 	rvcpi ButtonDelay, 50		;ButtonDelay == 50?
-	breq bm6			;yes, re-check button
+	breq bm6
+
 	rjmp bm1			;no, go to start of the loop	
 
 bm6:	rvbrflagtrue Mode, bm8		;abort if the button hasn't been released since start-up

@@ -4,37 +4,37 @@ SetupHardware:
 	;       76543210	;set port directions
 //	ldi t,0b00000000
 	ldi t,0b00110010	// output5, output6
-	out ddra,t
+	out ddra, t
 
 	;       76543210
 	ldi t,0b00001010
 //	ldi t,0b00001011	// DEBUGGING
-	out ddrb,t
+	out ddrb, t
 
 	;       76543210
 //	ldi t,0b11111111
 	ldi t,0b11111100	// scl, sda, output 1-8
-	out ddrc,t
+	out ddrc, t
 
 	;       76543210
 	ldi t,0b11110010
-	out ddrd,t
+	out ddrd, t
 
 	;       76543210
-	ldi t,0b11111111	;turn off digital inputs on port A
-	store didr0,t
+	ldi t,0b11111111	;turn off digital inputs on port a
+	store didr0, t
 
 	;       76543210
 	ldi t,0b11110101	;turn on pull ups on button inputs and aux, rud
-	out portb,t
+	out portb, t
 
 	;       76543210
 	ldi t,0b00000011	;turn on pull ups SPI pin
-	out portc,t
+	out portc, t
 
 	;       76543210
 	ldi t,0b00001101	;turn on pull ups on thr, ele and ail
-	out portd ,t
+	out portd, t
 
 	;       76543210
 	ldi t,0b00000000	;set timer 1 to run at 2.5MHz
@@ -98,10 +98,6 @@ SetupHardware:
 
 	ldx 100
 	call WaitXms
-
-	
-
-	;---
 
 	ret
 

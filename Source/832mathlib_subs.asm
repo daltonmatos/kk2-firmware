@@ -217,18 +217,17 @@ mmm2a:	clr Result4
 
 	tst Sign		;negate result if sign set.
 	brpl mmm3a
+
 	com Result0
 	com Result1
 	com Result2
 	com Result3
 	com Result4
-	ldi t,1
-	add Result0, t
-	clr t
-	adc Result1, t
-	adc Result2, t
-	adc Result3, t
-	adc Result4, t
+	subi Result0, 0xFF
+	sbci Result1, 0xFF
+	sbci Result2, 0xFF
+	sbci Result3, 0xFF
+	sbci Result4, 0xFF
 
 mmm3a:	ret
 

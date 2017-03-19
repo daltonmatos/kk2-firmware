@@ -69,7 +69,7 @@ ef26:	cpi Item, 1
 	call GimbalMode			;stand-alone gimbal controller mode
 	rjmp ef40
 
-ef27:	call SerialDebug		;view/debug serial RX data
+ef27:	call WS2812Setup		;WS2812 RGB LED setup
 
 ef40:	pop Item
 	rjmp ef11
@@ -79,7 +79,7 @@ ef40:	pop Item
 ef1:	.db "EXTRA", 0
 ef2:	.db "Check Motor Outputs", 0
 ef3:	.db "Gimbal Controller", 0
-ef4:	.db "View Serial RX Data", 0
+ef4:	.db "WS2812 RGB LED Setup", 0, 0
 
 ef10:	.dw ef2*2, ef3*2, ef4*2
 

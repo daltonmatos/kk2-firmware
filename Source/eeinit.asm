@@ -70,7 +70,7 @@ CheckEeSignature:
 	brne ces1
 
 	call GetEeVariable8
-	cpi xl, 0x06
+	cpi xl, 0x08
 	brne ces2
 
 	clr xl				;signature is OK
@@ -79,24 +79,43 @@ CheckEeSignature:
 ces1:	ser xl				;bad signature
 	ret
 
-ces2:	cpi xl, 0x04			;upgrade from older firmware version?
+ces2:	cpi xl, 0x07			;upgrade from revision 7?
 	brne ces1
 
-	call LoadAuxSwitchSetup		;yes, swap AUX switch functions and SS offsets
-	ldy AuxPos1SS
-	ldz eeAuxPos1Function
-	call SaveAuxSwitchSetup
-	ldy AuxPos1Function
-	call SaveAuxSwitchSetup
+	lds ka, UserProfile		;yes, temporarily set the user profile value (in case eeUserProfile is non-zero)
+	sts UserProfile, zh
 
-	clr t				;select the normal home screen
-	ldz eeBigHomeScreen
-	call WriteEepromP
+	clr xl				;initialize new EEPROM variables
+	ldz eeWS2812Pattern
+	call StoreEePVariable8		;eeWS2812Pattern
+	call StoreEePVariable8		;eeWS2812Brightness
 
-	ldz eeTpa1P			;write default TPA settings and update the EEPROM signature
-	set
-	rcall iup10
-	clr xl
+	ldi xl, 0x08			;update the 4th. signature byte
+	ldz 3
+	call StoreEePVariable8
+
+	tst zh				;user profile #1?
+	brne ces3
+
+	call LcdClear12x16		;yes, show a dialogue with header "UPDATED" and the usual disclaimer text
+
+	lrv X1, 22
+	ldz eeu1*2
+	call PrintHeader
+
+	ldi t, 4
+	ldz eew10*2
+	call PrintStringArray
+
+	call PrintOkFooter
+	call LcdUpdate
+
+	call GetButtonsBlocking		;any button can be pressed to continue to the "Restart is required" screen
+	rjmp EnforceRestart
+
+ces3:	sts UserProfile, ka		;user profile #2, 3 or 4. Restore the user profile value
+
+	clr xl				;OK
 	ret
 
 
@@ -164,10 +183,8 @@ iup8:	movw z, y
 	ldx 0
 	call StoreEePVariable16		;eeStickDeadZone
 	call StoreEePVariable16		;eeBattAlarmVoltage
-	ldx 50
-	call StoreEePVariable16		;eeServoFilter
-	ldx 0
-	call StoreEePVariable16		;UNUSED ****************************
+	call StoreEePVariable16		;eeMotorSpinLevel
+	call StoreEePVariable16		;eeUnused
 
 
 	ldi xl, 1 
@@ -260,9 +277,7 @@ iup8:	movw z, y
 	call StoreEePVariable8		;eeDG2Functions
 
 
-	clt				;the T flag will be set when upgrading from older firmware version
-
-iup10:	ldi xl, 128
+	ldi xl, 128
 	call StoreEePVariable8		;eeTpa1P (set to 1.0)
 	call StoreEePVariable8		;eeTpa1I (set to 1.0)
 	call StoreEePVariable8		;eeTpa2P (set to 1.0)
@@ -282,6 +297,28 @@ iup10:	ldi xl, 128
 	call StoreEePVariable8		;eeTSSA5 (set to 1.0)
 
 
+	ldi xl, 50
+	call StoreEePVariable8		;eeServoFilter
+	clr xl
+	call StoreEePVariable8		;eeServoFilterDelay
+	ldi xl, -100
+	call StoreEePVariable8		;eeServoLimitM7L
+	ldi xl, 100
+	call StoreEePVariable8		;eeServoLimitM7H
+	ldi xl, -100
+	call StoreEePVariable8		;eeServoLimitM8L
+	ldi xl, 100
+	call StoreEePVariable8		;eeServoLimitM8H
+	ldi xl, 5
+	call StoreEePVariable8		;eeLowOutputRate (set to 80Hz)
+
+
+	clr xl
+	call StoreEePVariable8		;eeWS2812Pin (set to none/disabled for user profile #1)
+	call StoreEePVariable8		;eeWS2812Pattern
+	call StoreEePVariable8		;eeWS2812Brightness
+
+
 	ldz 0				;EEPROM signature
 	ldi xl, 0x21
 	call StoreEePVariable8
@@ -289,15 +326,11 @@ iup10:	ldi xl, 128
 	call StoreEePVariable8
 	ldi xl, 0xAA
 	call StoreEePVariable8
-	ldi xl, 0x06
+	ldi xl, 0x08
 	call StoreEePVariable8
 
-	brtc iup11
 
-	ret				;abort when upgrading from older firmware version
-
-
-iup11:	;--- User profile #1 ---
+	;--- User profile #1 ---
 
 	lds t, UserProfile		;skip this section for user profile 2 - 4
 	tst t
@@ -326,9 +359,9 @@ iup9:	clr t
 	sts Init, t
 
 
-iup7:	;--- Done ---
+	;--- Done ---
 
-	ldi Counter, 5
+iup7:	ldi Counter, 5
 
 iup6:	call Beep
 	ldi yl, 0
@@ -346,11 +379,13 @@ ShowDisclaimer:
 
 	call LcdClear12x16
 
-	lrv X1, 16			;reminder
-	ldz eew1*2
+	;header
+	lrv X1, 16
+	ldz remindr*2
 	call PrintHeader
 
-	ldi t, 4			;print disclaimer text
+	;text
+	ldi t, 4
 	ldz eew10*2
 	call PrintStringArray
 
@@ -396,7 +431,8 @@ eei4:	.dw 50, 100, 25, 20		;default PI gains and limits for aileron, elevator an
 eei7:	.dw 30, 30, 50, 90, 100		;default stick scaling values
 
 
-eew1:	.db "REMINDER", 0, 0
+eeu1:	.db "UPDATED", 0
+
 eew2:	.db "YOU USE THIS FIRMWARE", 0
 eew3:	.db "AT YOUR OWN RISK!", 0
 eew4:	.db "Read all included", 0

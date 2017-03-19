@@ -1,12 +1,13 @@
 
-	;--- Specialized setup and main routine for standard receivers ---
+	;--- Specialized setup and main routine for serial link ---
 
-Main:
+SerialMain:
 
 	ldx 100
 	call WaitXms
 
-	call SetupHardware
+	call SetupHardwareForSerialLink
+	call SerialLinkInit
 
 
 	;--- Initialize LCD ---
@@ -27,6 +28,8 @@ Main:
 	lrv LoadMenuCursorYposSave, 0
 	lrv LoadMenuListYposSave, 0
 
+	lrv RxModePortExp, RxModeStandard
+
 	b16ldi BatteryVoltageOffsetOrg, 2000
 
 	b16ldi FlightTimer, 398		;tuned for better accuracy (1 second)
@@ -36,7 +39,6 @@ Main:
 	sts Timer1min, t
 
 	sts TuningMode, t
-	sts QTuningIndex, t
 	sts flagPortExpTuning, t
 
 	sts flagPwmGen, t
@@ -47,6 +49,9 @@ Main:
 
 	ldi xl, AuxCounterInit
 	sts AuxCounter, xl
+
+	ldi xl, 0x12			;set AUX and AUX4 switches to center position initially
+	sts RxSwitches, xl
 	ldi xl, 2
 	sts AuxSwitchPosition, xl
 	ldi xl, 1
@@ -56,49 +61,24 @@ Main:
 	sts flagAileronCentered, t	;set to false
 	sts flagElevatorCentered, t
 
-	sts Channel1L, t
-	sts Channel1H, t
-	sts Channel2L, t
-	sts Channel2H, t
-	sts Channel3L, t
-	sts Channel3H, t
-	sts Channel4L, t
-	sts Channel4H, t
-	sts Channel5L, t
-	sts Channel5H, t
-	sts Channel6L, t
-	sts Channel6H, t
-	sts Channel7L, t
-	sts Channel7H, t
-	sts Channel8L, t
-	sts Channel8H, t
+	sts flagRxFrameValid, t
+	sts flagNewRxFrame, t
+	sts TimeoutCounter, t
 
-	sts RudderRxPinState, t
-	sts AuxRxPinState, t
+	sts flagRxBufferFull, t
+	sts RxBuffer0, t
+	ldz RxBuffer0
+	sts RxBufferAddressL, zl
+	sts RxBufferAddressH, zh
+	ldz RxBufferEnd
+	sts RxBufferEndL, zl
+	sts RxBufferEndH, zh
 
-	b16set RxRoll
-	b16set RxPitch
-	b16set RxThrottle
-;	b16set RxYaw			;rudder value will be cleared later (see flightinit,asm)
-	b16set RxAux
-	b16set RxAux2
-	b16set RxAux3
-	b16set RxAux4
+	ldi t, SyncCount
+	sts SerialSyncCounter, t
 
-	ldi xl, TimeoutLimit		;start with all RX channels timed out
-	sts RollDcnt, xl
-	sts PitchDcnt, xl
-	sts ThrottleDcnt, xl
-	sts YawDcnt, xl
-	sts AuxDcnt, xl
-	sts Aux2Dcnt, xl
-	sts Aux3Dcnt, xl
-	sts Aux4Dcnt, xl
-
-	rvsetflagtrue flagNewRxFrame 	;flag for "New RX Frame" must be set to make some screens (e.g. AUX Settings) work properly
-
-	ldi xl, NoAileronInput | NoElevatorInput | NoThrottleInput | NoRudderInput
-	sts StatusBits, xl
+	ldi t, NoSerialData
+	sts StatusBits, t
 
 	call setup_mpu6050
 
@@ -108,19 +88,19 @@ Main:
 	;--- Gimbal controller mode ---
 
 	call GetGimbalControllerMode
-	rvbrflagfalse flagGimbalMode, ma10
+	rvbrflagfalse flagGimbalMode, sl10
 
 	jmp GimbalMain
 
 
-ma10:	;--- ESC calibration ----
+sl10:	;--- ESC calibration ----
 
 	sei				;global interrupts must be enabled here for PWM output in EscThrottleCalibration
 
 	ldz eeEscCalibration		;check ESC calibration setting
 	call ReadEeprom
 	tst t
-	breq ma5			;jump if ESC calibration is disabled
+	breq sl5			;jump if ESC calibration is disabled
 
 	call DisableEscCalibration
 
@@ -128,37 +108,29 @@ ma10:	;--- ESC calibration ----
 	com t
 	swap t
 	andi t, 0x0F			;any button pressed?
-	breq ma2
+	breq sl2
 
 	call EscThrottleCalibration	;yes, do calibration
-	rjmp ma2
+	rjmp sl2
 
 
 	;--- Misc. ---
 
-ma5:	rvsetflagtrue Mode		;will prevent buttons held down during start-up from opening the menu or changing user profile
+sl5:	rvsetflagtrue Mode		;will prevent buttons held down during start-up from opening the menu or changing the LVA setting
 
 
 	;--- Reset LCD contrast when button #1 is held down ---
 
 	call GetButtons
 	cpi t, 0x08
-	brne ma15
+	brne sl2
 
 	call SetDefaultLcdContrast
 
 
-	;--- Display the Error Log setup screen when button #4 is held down ---
-
-ma15:	cpi t, 0x01
-	brne ma2
-
-	rvsetflagtrue flagErrorLogSetup
-
-
 	;--- Flight loop init ---
 
-ma2:	call FlightInit
+sl2:	call FlightInit
 
 	;       76543210		;clear pending OCR1A and B interrupt
 	ldi t,0b00000110
@@ -167,11 +139,14 @@ ma2:	call FlightInit
 
 	;--- Flight loop ---
 
-ma1:	call PwmStart			;runtime between PwmStart and B interrupt (in PwmEnd) must not exeed 1.5ms
-	call GetStdRxChannels
+sl1:	call PwmStart			;runtime between PwmStart and B interrupt (in PwmEnd) must not exeed 1.5ms
+	call GetSerialLinkChannels
+	call CheckSerialLink
+	call SerialSBusFlags
 	call Arming
 	call Logic
 	call AddAuxStickScaling
+	call RemoteTuning
 	call Imu
 	call Mixer
 	call GimbalStab
@@ -180,38 +155,38 @@ ma1:	call PwmStart			;runtime between PwmStart and B interrupt (in PwmEnd) must 
 	call PwmEnd
 
 	rvflageor flagA, flagArmed, flagArmedOldState	;flagA == true if flagArmed changes state
-	rvbrflagfalse flagA, ma11
+	rvbrflagfalse flagA, sl11
 
 	call CheckLvaSetting
 
 	lds t, flagArmed
 	sts flagArmedOldState, t
 
-ma11:	rvbrflagfalse flagLcdUpdate, ma3;update LCD once if flagLcdUpdate is true
+sl11:	rvbrflagfalse flagLcdUpdate, sl3;update LCD once if flagLcdUpdate is true
 
 	rvsetflagfalse flagLcdUpdate
 	call UpdateFlightDisplay
 
-ma3:	rvbrflagtrue flagArmed, ma1	;skip buttonreading when armed
+sl3:	rvbrflagtrue flagArmed, sl1	;skip buttonreading when armed
 
 	load t, pinb			;read buttons
 	com t
 	swap t
 	andi t, 0x0F			;any button pushed?
-	brne ma4
+	brne sl4
 
 	rvsetflagfalse Mode		;no, reset Mode and ButtonDelay, and then go to start of the loop
 
-ma8:	lrv ButtonDelay, 0
-	rjmp ma1	
+sl8:	lrv ButtonDelay, 0
+	rjmp sl1	
 
-ma4:	rvinc ButtonDelay		;yes, ButtonDelay++
+sl4:	rvinc ButtonDelay		;yes, ButtonDelay++
 	rvcpi ButtonDelay, 50		;ButtonDelay == 50?
-	breq ma6
+	breq sl6
 
-	rjmp ma1			;no, go to start of the loop	
+	rjmp sl1			;no, go to start of the loop	
 
-ma6:	rvbrflagtrue Mode, ma8		;abort if the button hasn't been released since start-up
+sl6:	rvbrflagtrue Mode, sl8		;abort if the button hasn't been released since start-up
 
 ;	         76543210		;disable OCR1A and B interrupt
 	ldi t, 0b00000000
@@ -219,37 +194,37 @@ ma6:	rvbrflagtrue Mode, ma8		;abort if the button hasn't been released since sta
 
 	call GetButtons			;re-check the button and abort if it was released too soon
 	andi t, 0x0F
-	breq ma8
+	breq sl8
 
 	cpi t, 0x01
-	breq ma9
+	breq sl9
 
 	cpi t, 0x08
-	breq ma13
+	breq sl13
 
 
 	;--- User profile ---
 
 	mov yl, t			;register YL is used for button input in ChangeUserProfile
 	call Beep
-	rvbrflagfalse flagHomeScreen, ma7
+	rvbrflagfalse flagHomeScreen, sl7
 
 	call ChangeUserProfile
-	rjmp ma14
+	rjmp sl14
 
 
-ma9:	;--- Error log ---
+sl9:	;--- Error log ---
 
 	call Beep
 	call ClearLoggedError		;clear logged error when the ERROR LOG screen is displayed
-	brcc ma12
+	brcc sl12
 
-ma14:	rvsetflagtrue Mode		;will wait for the button to be released
-	rjmp ma2
+sl14:	rvsetflagtrue Mode		;will wait for the button to be released
+	rjmp sl2
 
-ma13:	call Beep
+sl13:	call Beep
 	call ToggleErrorLogState	;toggle error logging state when the setup screen is displayed
-	brcs ma7
+	brcs sl7
 
 
 	;--- Battery log ---
@@ -258,19 +233,20 @@ ma13:	call Beep
 	com t
 	sts flagBatteryLog, t
 
-ma7:	rvsetflagtrue Mode		;will wait for the button to be released
-	rjmp ma1
+sl7:	rvsetflagtrue Mode		;will wait for the button to be released
+	rjmp sl1
 
 
-ma12:	;--- Menu ---
+sl12:	;--- Menu ---
 
-	rvbrflagfalse flagHomeScreen, ma7
+	rvbrflagfalse flagHomeScreen, sl7
 
 	BuzzerOff			;will prevent constant beeping in menu when 'Button Beep' is disabled
+	cbi LvaOutputPin		;will avoid constant high level on external LVA output pin
 	call StartLedSeq		;the LED flashing sequence will indicate current user profile selection
 	call StartPwmQuiet
-	call MainMenu
+	call SerialMainMenu
 	call StopPwmQuiet
 	call StopLedSeq
-	rjmp ma14
+	rjmp sl14
 

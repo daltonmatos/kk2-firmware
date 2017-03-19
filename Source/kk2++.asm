@@ -87,7 +87,12 @@ init2:	cpi t, RxModeSBus
 
 	jmp SBusMain		;S.Bus
 
-init3:	jmp SatelliteMain	;Spektrum Satellite (DSM2 and DSMX)
+init3:	cpi t, RxModeSerialLink
+	breq init4
+
+	jmp SatelliteMain	;Spektrum Satellite (DSM2 and DSMX)
+
+init4:	jmp SerialMain		;serial link (port expander)
 
 
 
@@ -97,10 +102,13 @@ init3:	jmp SatelliteMain	;Spektrum Satellite (DSM2 and DSMX)
 .include "tssa.asm"
 .include "tpa.asm"
 
+.include "serial_main.asm"
+.include "serial_hwsetup.asm"
+.include "serial_mainmenu.asm"
 .include "serial_readrx.asm"
 .include "serial_rxtest.asm"
 .include "serial_checkrx.asm"
-.include "serial_debug.asm"
+.include "serial_txdata.asm"
 
 .include "cppm_main.asm"
 .include "cppm_hwsetup.asm"
@@ -155,6 +163,7 @@ init3:	jmp SatelliteMain	;Spektrum Satellite (DSM2 and DSMX)
 .include "settingsc.asm"
 .include "settingsb.asm"
 .include "settingsa.asm"
+.include "servosettings.asm"
 .include "flightdisplay.asm"
 .include "arm.asm"
 .include "flightinit.asm"
@@ -170,10 +179,14 @@ init3:	jmp SatelliteMain	;Spektrum Satellite (DSM2 and DSMX)
 .include "sensortest.asm"
 .include "sensorreading.asm"
 .include "sensorsettings.asm"
+.include "i2c_master.asm"
 .include "ST7565.asm"
+.include "WS2812.asm"
 .include "miscsubs.asm"
 .include "168mathlib_subs.asm"
 .include "832mathlib_subs.asm"
+
+
 font6x8:
 .include "font6x8.asm"
 font8x12:

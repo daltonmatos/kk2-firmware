@@ -80,13 +80,20 @@ num11:	call GetButtons		;wait until button pressed
 	brne num5
 
 	ldx 0
-	cp xl, yl		;check if zero is below minimum value (this fixes a bug in the original firmware)
+	cp xl, yl		;minimum value > 0? (this fixes a bug in the original firmware)
 	cpc xh, yh
 	brge num13
 
-	movw x, y		;set to lowest value instead of zero
+	movw x, y		;yes, set to lowest value instead of zero
+	rjmp num2
 
-num13:	rjmp num2
+num13:	cp xl, zl		;maximum value <= 0? (i.e. for negative value range)
+	cpc xh, zh
+	brlt num14
+
+	movw x, z		;yes, set to highest value
+
+num14:	rjmp num2
 
 num5:	cpi t, 0x04		;DOWN?
 	brne num7

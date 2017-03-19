@@ -6,34 +6,46 @@ FlightInit:
 	rcall UpdateOutputTypeAndRate
 
 
-	b16ldi Temp, 2500			;preload the servo filters
-	lrv Index, 0
+	ldx 2500				;preload the servo filters
+	ldy FilteredOut1
+	ldz ServoFilterDelayCounter1
+	clr ka
+	ldi t, 8
 
-fli8:	b16store_array FilteredOut1, Temp
-	rvinc Index
-	rvcpi Index, 8
+fli8:	st y+, xh
+	st y+, xl
+	st y+, ka
+	st z+, ka
+	dec t
 	brne fli8
+
 
 	;board orientation
 	ldz eeBoardOrientation
 	call ReadEeprom
 	sts BoardOrientation, t
 
+
 	;self-level
 	rcall LoadSelfLevelSettings
+
 
 	;misc. settings
 	rcall LoadEscLowLimit			;eeEscLowLimit
 	rcall LoadStickDeadZone			;eeStickDeadZone
 
-	rcall fli2				;eeBattAlarmVoltage
-	b16fmul Temp, 2
-	b16mov BattAlarmVoltage, Temp
+	call GetEePVariable16			;eeBattAlarmVoltage
+	lsl xl
+	rol xh
+	lsl xl
+	rol xh
+	clr yh
+	b16store BattAlarmVoltage
 
-	rcall fli2				;eeServoFilter
-	b16ldi Temper, 100
-	b16sub ServoFilter, Temper, Temp
-	b16fdiv ServoFilter, 7
+	rcall fli2				;eeMotorSpinLevel
+	rcall fli5
+	b16mov MotorSpinLevel, Temp
+
 
 	;stick scaling
 	ldz eeStickScaleRoll
@@ -53,6 +65,7 @@ fli8:	b16store_array FilteredOut1, Temp
 	rcall TempDiv16
 	b16mov StickScaleThrottle, Temp
 
+
 	;channel mapping
 	ldy MappedChannel1
 	rcall GetEeChannelMapping
@@ -71,9 +84,55 @@ fli8:	b16store_array FilteredOut1, Temp
 	call ChannelMapping
 
 
+	;gimbal settings
 fli3:	rcall LoadGimbalSettings
 
 
+	;servo settings
+	ldz eeServoFilter
+	call GetEePVariable8			;ServoFilter = (100 - eeServoFilter) / 128
+	ldi yh, 100
+	sub yh, xl
+	lsl yh
+	clr xl
+	clr xh
+	b16store ServoFilter
+
+	call GetEePVariable8			;eeServoFilterDelay
+	sts ServoFilterDelay, xl
+
+	lds t, OutputTypeBitmask
+	andi t, 0xC0
+	breq fli6
+
+	ldx 3					;ESC mode on M7 and/or M8
+	b16storex PwmLimitM7L
+	b16storex PwmLimitM8L
+	ldx 2500
+	b16storex PwmLimitM7H
+	b16storex PwmLimitM8H
+	ldz eeLowOutputRate
+	rjmp fli7
+
+fli6:	ldz eeServoLimitM7L			;servo mode on M7 and M8
+	rcall GetServoLimit
+	b16storex PwmLimitM7L
+	rcall GetServoLimit
+	b16storex PwmLimitM7H
+	rcall GetServoLimit
+	b16storex PwmLimitM8L
+	rcall GetServoLimit
+	b16storex PwmLimitM8H
+
+fli7:	call GetEePVariable8			;eeLowOutputRate
+	dec xl
+	andi xl, 0x07
+	inc xl
+	sts OutputRateDivider, xl		;slow rate divider. f = 400 / OutputRateDivider
+	lrv OutputRateDividerCounter, 1
+
+
+	;sensor calibration data
 	ldz EeSensorCalData			;load ACC calibration data
 	call GetEePVariable168
 	b16store AccXZero
@@ -82,12 +141,14 @@ fli3:	rcall LoadGimbalSettings
 	call GetEePVariable168
 	b16store AccZZero
 
+
 	;mode settings
 	rcall ReadLinkRollPitchFlag
 
 	ldz eeAutoDisarm
 	call ReadEepromP
 	sts flagAutoDisarm, t
+
 
 	;remaining settings
 	call CheckTuningMode
@@ -97,14 +158,12 @@ fli3:	rcall LoadGimbalSettings
 	call LoadTPASettings
 	call LoadTSSASettings
 
+
 	;reset variables
 	ser t					;make sure the AUX switch function will be updated
 	sts AuxSwitchPositionOld, t
 
 	sts flagLcdUpdate, t
-
-	lrv OutputRateDividerCounter, 1
-	lrv OutputRateDivider, 5		;slow rate divider. f = 400 / OutputRateDivider
 
 	lrv RxTimeoutLimit, TimeoutLimit
 
@@ -128,6 +187,10 @@ fli3:	rcall LoadGimbalSettings
 
 	b16set BeeperDelay
 
+	b16set LvaDdsAcc
+	sts LvaDdsOn, t
+	sts LvaHysteresis, t
+
 	b16set ArmedBeepDds
 
 	b16set NoActivityTimer
@@ -138,17 +201,21 @@ fli3:	rcall LoadGimbalSettings
 	b16set CamRoll
 	b16set CamPitch
 
+	b16set RxYaw
+
 	b16set EulerAngleRoll
 	b16set EulerAnglePitch
 
 	sts flagBatteryLog, t
 	b16ldi BatteryVoltageLowpass, 1023
 
+	ldi t, 20				;will skip a few iterations to help RX input syncronization
+	sts RxSyncCounter, t
+
 	rcall Initialize3dVector		;set 3d vector to point straigth up
 
 
-	;--- ACC ---
-
+	;ACC
 	lds t, MpuAccCfg
 	cpi t, MpuAcc2g
 	brne fli22
@@ -171,14 +238,21 @@ fli24:	cpi t, MpuAcc8g
 fli26:	b16ldi TiltAngMult, 2.64		;16g
 
 
-fli30:	;--- Gyro ---
+	;gyro
+fli30:	b832ldi MagicNumberMult, 1.830082440462336 ;1.830082440462336*(6250/4096)=2.7924841926 (all settings use this magic number as the GyroRate is scaled instead in imu.asm)
 
-	b832ldi MagicNumberMult, 1.830082440462336 ;1.830082440462336*(6250/4096)=2.7924841926 (all settings use this magic number as the GyroRate is scaled instead in imu.asm)
+
+	;RGB LED
+	rcall LoadWS2812Settings		;LED pattern and brightness
+
+	call WS2812LoadData
+	brcs fli33
+
+	call WS2812SendData			;update the RGB LED strip
 
 
-	;--- Status ---
-
-	lds t, StatusBits			;clear the lower status bits
+	;status
+fli33:	lds t, StatusBits			;clear the lower status bits
 	andi t, 0xF0
 	sts StatusBits, t
 
@@ -245,6 +319,40 @@ fli5:	b16ldi Temper, 128.0			;most limit values (0-100%) are scaled with 128.0 t
 
 
 
+	;--- Get servo limit ---		// OBSERVE: For M7 and M8 only!
+
+GetServoLimit:
+
+	call GetEePVariable8			;get EEPROM value (range should be [-100, 100]) and multiply by 25
+	ldi t, 25
+	muls xl, t
+	movw x, r1:r0
+
+	ldy 2500				;shift range from [-2500, 2500] to [0, 5000]
+	add xl, yl
+	adc xh, yh
+
+	asr xh					;divide by 2
+	ror xl
+
+	cp xl, yl				;value >= 2500?
+	cpc xh, yh
+	brlt gsl1
+
+	movw x, y				;yes, set to 2500
+	ret
+
+gsl1:	ldy 3					;value < 3?
+	cp xl, yl
+	cpc xh, yh
+	brge gsl2
+
+	movw x, y				;yes, set to 3 (cannot use smaller values because then the timer won't trigger)
+
+gsl2:	ret
+
+
+
 mad1:	.db "Data out of limits:", 0
 mad5:	.db "Sensor calibration", 0, 0
 mad7:	.db "Sensor raw data", 0
@@ -284,21 +392,21 @@ SanityCheck:
 	call CheckTSSAValues
 	brts san5
 
-	ret 				;no errors, return
+	ret 					;no errors, return
 
-san1:	ldz stt1*2			;error "Minimum Throttle"
+san1:	ldz stt1*2				;error "Minimum Throttle"
 	rjmp san10
 
-san2:	ldz mad5*2			;error "Sensor calibration"
+san2:	ldz mad5*2				;error "Sensor calibration"
 	rjmp san10
 
-san3:	ldz mad7*2			;error "Sensor raw data"
+san3:	ldz mad7*2				;error "Sensor raw data"
 	rjmp san10
 
-san4:	ldz xps2*2			;error "TPA Settings"
+san4:	ldz xps2*2				;error "TPA Settings"
 	rjmp san10
 
-san5:	ldz xps3*2			;error "TSSA Settings"
+san5:	ldz xps3*2				;error "TSSA Settings"
 
 san10:	pushz
 	setstatusbit SanityCheckFailed
@@ -306,7 +414,7 @@ san10:	pushz
 	;header
 	call PrintWarningHeader
 
-	lrv X1, 0			;print "Data out of limits:"
+	lrv X1, 0				;print "Data out of limits:"
 	ldz mad1*2
 	call PrintString
 
@@ -320,7 +428,7 @@ san10:	pushz
 	call PrintContinueFooter
 	call LcdUpdate
 
-	call WaitForOkButton		;CONTINUE?
+	call WaitForOkButton			;CONTINUE?
 	ret
 
 
@@ -329,18 +437,18 @@ san10:	pushz
 
 Limit:
 
-	cp  xl, yl			;less?
+	cp  xl, yl				;less?
 	cpc xh, yh
 	brlt lim1
 
-	cp  xl, zl			;greater?
+	cp  xl, zl				;greater?
 	cpc xh, zh
 	brge lim1
 
-	clc				;OK
+	clc					;OK
 	ret
 
-lim1:	sec				;not OK
+lim1:	sec					;not OK
 	ret
 
 
@@ -350,15 +458,29 @@ lim1:	sec				;not OK
 LoadMixerTable:
 
 	ldi yl, 64
+	ldi yh, 8
+	clr kh
 	ldx RamMixerTable
 	ldz EeMixerTable
 
-mt1:	call ReadEeprom
+lmt1:	call ReadEeprom
 	st x+, t
 	adiw z, 1
-	dec yl
-	brne mt1
 
+	or kh, t				;generate bitmask for active outputs
+	dec yh
+	brne lmt2
+
+	ldi t, 0xFC				;will ignore the output type and rate flags (and other mixer values of 1, 2 or 3)
+	add t, kh
+	ror kl
+	clr kh
+	ldi yh, 8
+
+lmt2:	dec yl
+	brne lmt1
+
+	sts OutputStateBitmask, kl
 	ret
 
 
@@ -457,14 +579,22 @@ LoadGimbalSettings:
 
 	ldz eeCamRollGain
 	rcall fli2
+	movw k, x
 	b16mov CamRollGainOrg, Temp
 	rcall TempDiv16
 	b16mov CamRollGain, Temp
+
+	clr ka					;will activate output M7 when roll gain is non-zero
+	ldy 0xFFFF
+	add yl, kl
+	adc yh, kh
+	ror ka
 
 	rcall fli2				;eeCamRollOffset
 	b16mov CamRollOffset, Temp
 
 	rcall fli2				;eeCamPitchGain
+	movw k, x
 	b16mov CamPitchGainOrg, Temp
 	rcall TempDiv16
 	b16mov CamPitchGain, Temp
@@ -480,6 +610,15 @@ LoadGimbalSettings:
 
 	rcall fli2				;eeCamPitchHomePos
 	b16mov CamPitchHomePos, Temp
+
+	ldy 0xFFFF				;will activate output M8 when pitch gain is non-zero
+	add yl, kl
+	adc yh, kh
+	ror ka
+
+	lds t, OutputStateBitmask
+	or t, ka
+	sts OutputStateBitmask, t
 	ret
 
 
@@ -555,10 +694,10 @@ GetEeChannelMapping:
 	cpi t, RxModeSatDSM2
 	brlt ecm1
 
-	ldz eeSatChannelRoll		;channel mapping for Satellite mode
+	ldz eeSatChannelRoll			;channel mapping for Satellite mode
 	rjmp ecm2
 
-ecm1:	ldz eeChannelRoll		;normal channel mapping
+ecm1:	ldz eeChannelRoll			;normal channel mapping
 
 ecm2:	ret
 
@@ -571,6 +710,22 @@ LoadMappedChannel:
 	call GetEePVariable8
 	dec xl
 	st y+, xl
+	ret
+
+
+
+	;--- Read WS2812 settings from EEPROM ---
+
+LoadWS2812Settings:
+
+	ldz eeWS2812Pattern			;eeWS2812Pattern
+	call ReadEepromP
+	andi t, 0x03
+	sts WS2812Pattern, t
+
+	adiw z, 1				;eeWS2812Brightness
+	call ReadEepromP
+	sts WS2812Brightness, t
 	ret
 
 

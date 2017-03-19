@@ -190,14 +190,23 @@ type:	.dw med16*2, med17*2			;servo, ESC
 rate:	.dw ratel*2, rateh*2			;low, high
 
 nad1:	.db "NO ACCESS", 0
+
+//	     123456789012345678901
 nad3:	.db "A motor layout must", 0
 nad4:	.db "be loaded first.", 0, 0
 
 nad5:	.db "User profile #1 must", 0, 0
 nad6:	.db "be selected first.", 0, 0
 
-nadtxt1:.dw nad3*2, nad4*2
-nadtxt2:.dw nad5*2, nad6*2
+nad7:	.db "Run channel mapping", 0
+nad8:	.db "from Port Expander.", 0
+
+nad9:	.db "LED output pin must", 0
+
+nadtxt1:.dw nad3*2, nad4*2			;text "A motor layout must be loaded first."
+nadtxt2:.dw nad5*2, nad6*2			;text "User profile #1 must be selected first."
+nadtxt3:.dw nad7*2, nad8*2			;text "Run channel mapping from Port Expander."
+nadtxt4:.dw nad9*2, nad6*2			;text "LED output pin must be selected first."
 
 
 

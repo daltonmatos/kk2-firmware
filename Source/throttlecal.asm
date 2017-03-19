@@ -94,6 +94,7 @@ esc5:	b16ldi Temp, 100.0		;mode is changing, set minimum throttle level
 
 esc4:	LedOff				;done
 	call Beep
+	call ReleaseButtons
 	ret
 
 

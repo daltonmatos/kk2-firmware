@@ -10,6 +10,9 @@ TssaSettings:
 	clr Changes
 	rcall LoadTSSASettings
 
+	ldi t, 5				;initial timeout value for LCD update
+	mov ka, t
+
 tssa11:	push Item				;get RX input to update the current throttle position
 	push Changes
 	push TSSAValue
@@ -18,18 +21,18 @@ tssa11:	push Item				;get RX input to update the current throttle position
 	pop Changes
 	pop Item
 
-	lds t, RxBufferState			;update the display only when we have new data
-	cpi t, 3
-	breq tssa15
+	rvbrflagtrue flagNewRxFrame, tssa15	;update the display when we have new data
 
-	ldi yl, 25				;wait 2.5ms
+	ldi yl, 20				;wait 2ms
 	call wms
 
-	rvbrflagfalse RxFrameValid, tssa15	;update the display also when no valid frames are received
+	dec ka
+	brpl tssa11
 
-	rjmp tssa18				;skip update
+tssa15:	ldi t, 50
+	mov ka, t
 
-tssa15:	call LcdClear6x8
+	call LcdClear6x8
 
 	;throttle indicator
 	rcall GetTPAFactors			;get throttle position index and make it go from 0 to 4 instead of 8 to 0
@@ -78,7 +81,7 @@ tssa17:	call PrintChar
 
 	call LcdUpdate
 
-	lds t, RxMode				;skip delay for S.Bus and Satellite input modes
+	lds t, RxMode				;skip delay for digital input modes
 	cpi t, RxModeSBus
 	brge tssa18
 

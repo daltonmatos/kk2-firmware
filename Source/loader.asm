@@ -19,7 +19,7 @@ loa13:	ldy loa10*2
 	lds xl, LoadMenuListYposSave
 	lds xh, LoadMenuCursorYposSave
 
-	ldi t, 20			;menu items (i.e. motor layouts)
+	ldi t, 21			;menu items (i.e. motor layouts)
 
 	call Menu
 
@@ -125,6 +125,7 @@ loa1:	.db "Load motor layout.", 0, 0
 lm1:	.db "SingleCopter 1M 4S", 0, 0
 lm2:	.db "SingleCopter 2M 2S", 0, 0
 lm3:	.db "DualCopter II", 0
+lm21:	.db "DualCopter Chinook", 0, 0
 lm4:	.db "TriCopter II", 0, 0
 lm5:	.db "Quad x", 0, 0
 lm6:	.db "Quad +", 0, 0
@@ -143,7 +144,7 @@ lm18:	.db "V8", 0, 0
 lm19:	.db "X8 x", 0, 0
 lm20:	.db "X8 +", 0, 0
 
-loa10:	.dw lm1*2, lm2*2, lm3*2, lm4*2, lm5*2, lm6*2, lm7*2, lm8*2, lm9*2, lm10*2
+loa10:	.dw lm1*2, lm2*2, lm3*2, lm21*2, lm4*2, lm5*2, lm6*2, lm7*2, lm8*2, lm9*2, lm10*2
 	.dw lm11*2, lm12*2, lm13*2, lm14*2, lm15*2, lm16*2, lm17*2, lm18*2, lm19*2, lm20*2
 
 
@@ -183,6 +184,8 @@ lmd29:	.db  100, 100, 71 , 100, 0  , 3
 lmd30:	.db  120, 0  , 90 , 100, 0  , 3
 lmd31:	.db  100, 100, 100, 40 , 0  , 3
 lmd32:	.db  95 , 0  , 100, 100, 0  , 3
+lmd33:	.db  100, 0  , 80 , 0  , 0  , 3
+lmd34:	.db  0  , 110, 0  , 85 , 50 , 0
 
 
 
@@ -224,7 +227,7 @@ mod0:
 	;--- DualCopter II ---
 
 	;    thr roll pitch yaw offs flags unused
-;	.db  100, 100, 0  , -1 , 0  , 3  , 0  , 0	;m1
+;	.db  100, 100, 0  ,-1  , 0  , 3  , 0  , 0	;m1
 ;	.db  100,-100, 0  , 0  , 0  , 3  , 0  , 0	;m2
 ;	.db  0  , 0  , 100, 100, 0  , 0  , 0  , 0	;m3
 ;	.db  0  , 0  ,-100, 100, 0  , 0  , 0  , 0	;m4
@@ -238,6 +241,23 @@ mod0:
 	.db 0x01,    0x40,    0x00,   0x20,   0x00,   0x00,   0x00,   0x20
 
 
+	;--- DualCopter Chinook ---	Mixer values provided by CO2X. Thanks!
+
+	;    thr roll pitch yaw offs flags unused
+;	.db  100, 0  , 80 ,-1  , 0  , 3  , 0  , 0	;m1
+;	.db  100, 0  ,-80 , 0  , 0  , 3  , 0  , 0	;m2
+;	.db  0  ,-110, 0  ,-85 , 50 , 0  , 0  , 0	;m3
+;	.db  0  , 110, 0  ,-85 , 50 , 0  , 0  , 0	;m4
+;	.db  0  , 0  , 0  , 0  , 0  , 0  , 0  , 0	;m5
+;	.db  0  , 0  , 0  , 0  , 0  , 0  , 0  , 0	;m6
+;	.db  0  ,-110, 0  ,-85 , 50 , 0  , 0  , 0	;m7
+;	.db  0  , 110, 0  ,-85 , 50 , 0  , 0  , 0	;m8
+
+	;     M1       M2       M3       M4       M5      M6      M7      M8
+	.dw lmd33*2, lmd33*2, lmd34*2, lmd34*2, lmd1*2, lmd1*2, lmd34*2, lmd34*2
+	.db 0x01,    0x20,    0x50,    0x10,    0x00,   0x00,   0x50,    0x10
+
+
 	;--- TriCopter II ---
 
 	;    thr roll pitch yaw offs flags unused
@@ -247,7 +267,7 @@ mod0:
 ;	.db  0  , 0  , 0  , 100, 50 , 0  , 0  , 0	;m4
 ;	.db  0  , 0  , 0  , 0  , 0  , 0  , 0  , 0	;m5
 ;	.db  0  , 0  , 0  , 0  , 0  , 0  , 0  , 0	;m6
-;	.db  0  , 0  , 0  , 100,-50 , 0  , 0  , 0	;m7
+;	.db  0  , 0  , 0  ,-100, 50 , 0  , 0  , 0	;m7
 ;	.db  0  , 0  , 0  , 0  , 0  , 0  , 0  , 0	;m8
 
 	;     M1       M2       M3       M4      M5      M6      M7      M8

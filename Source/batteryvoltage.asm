@@ -5,27 +5,26 @@ AdjustBatteryVoltage:
 
 	clr Item
 
-abv11:	push Item
+abv11:	call LcdClear12x16
+
+	;battery voltage
 	call ReadBatteryVoltage
-	pop Item
-	b16mov Temper, BatteryVoltage
+	b16loadx BatteryVoltage
 
-	call LcdClear12x16
-
-	lrv X1, 34			;centering the voltage value
-	b16ldi Temp, 400
-	b16cmp Temper, Temp
+	ldi t, 34				;centering the voltage value
+	ldz 400
+	cp xl, zl
+	cpc xh, zh
 	brge abv15
 
-	rvadd X1, 6			;less than 10V
+	ldi t, 40				;less than 10V
 
-abv15:	push Item
+abv15:	sts X1, t
 	call PrintVoltage
-	pop Item
 
+	;menu
 	lrv FontSelector, f6x8
-
-	lrv Y1, 17			;print menu
+	lrv Y1, 17
 	ldi t, 4
 	ldz abv8*2
 	call PrintStringArray
@@ -45,16 +44,16 @@ abv15:	push Item
 	tst t
 	brne abv19
 
-	rjmp abv11			;no button pushed
+	rjmp abv11				;no button pushed
 
 abv19:	call Beep
 
-	cpi t, 0x08			;BACK?
+	cpi t, 0x08				;BACK?
 	brne abv20
 
 	ret
 
-abv20:	cpi t, 0x04			;PREV?
+abv20:	cpi t, 0x04				;PREV?
 	brne abv25
 
 abv21:	dec Item
@@ -63,35 +62,35 @@ abv24:	andi Item, 0x03
 	call ReleaseButtons
 	rjmp abv11
 
-abv25:	cpi t, 0x02			;NEXT?
+abv25:	cpi t, 0x02				;NEXT?
 	brne abv30
 
 	inc Item
 	rjmp abv24
 
-abv30:	cpi t, 0x01			;SELECT?
+abv30:	cpi t, 0x01				;SELECT?
 	brne abv24
 
 	cpi Item, 0
 	brne abv31
 
-	ldi xl, 10			;KK2.1 offset value
+	ldi xl, 10				;KK2.1 offset value
 	rcall SaveBatteryVoltageOffset
 	rjmp abv11
 
 abv31:	cpi Item, 1
 	brne abv32
 
-	ldi xl, 2			;KK2.1.5 offset value
+	ldi xl, 2				;KK2.1.5 offset value
 	rcall SaveBatteryVoltageOffset
 	rjmp abv11
 
 abv32:	cpi Item, 2
 	breq abv33
 
-	rcall LoadBatteryVoltageOffset	;adjust offset value
-	ldy -1023			;lower limit
-	ldz 1023			;upper limit
+	rcall LoadBatteryVoltageOffset		;adjust offset value
+	ldy -1023				;lower limit
+	ldz 1023				;upper limit
 	call NumberEdit
 	mov xl, r0
 	mov xh, r1
@@ -99,23 +98,23 @@ abv32:	cpi Item, 2
 	b16store BatteryVoltageOffset
 	rjmp abv34
 
-abv33:	b16mov Temp, BatteryVoltage	;modify voltage
+abv33:	b16mov Temp, BatteryVoltage		;modify voltage
 	b16fdiv Temp, 2
 	b16load Temp
-	ldy 20				;lower limit
-	ldz 260				;upper limit
+	ldy 20					;lower limit
+	ldz 260					;upper limit
 	call NumberEdit
 	mov xl, r0
 	mov xh, r1
 	clr yh
 
-	b16store Temp			;calculate offset value
+	b16store Temp				;calculate offset value
 	b16fmul Temp, 2
 	b16sub Temp, Temp, BatteryVoltage
 	b16add BatteryVoltageOffset, BatteryVoltageOffset, Temp
 	b16load BatteryVoltageOffset
 
-abv34:	ldz eeBatteryVoltageOffset	;store in EEPROM for the current user profile
+abv34:	ldz eeBatteryVoltageOffset		;store in EEPROM for the current user profile
 	call StoreEePVariable16
 	rjmp abv24
 
@@ -154,7 +153,7 @@ LoadBatteryVoltageOffset:
 	clr yh
 	b16store BatteryVoltageOffset
 
-	b16loadz BatteryVoltageOffsetOrg;reset logged battery voltage when the offset has changed
+	b16loadz BatteryVoltageOffsetOrg	;reset logged battery voltage when the offset has changed
 	cp xl, zl
 	cpc xh, zh
 	breq lbv1
@@ -166,15 +165,15 @@ lbv1:	ret
 
 
 
-	;--- Save battery voltage offset value to EEPROM ---
+	;--- Save battery voltage offset value to EEPROM and display confirmation dialogue ---
 
 SaveBatteryVoltageOffset:
 
-	clr xh				;store value in SRAM first (register XL has already been set as input variable)
+	clr xh					;store value in SRAM first (register XL has already been set as input variable)
 	clr yh
 	b16store BatteryVoltageOffset
 
-	ldz eeBatteryVoltageOffset	;store in EEPROM for the current user profile
+	ldz eeBatteryVoltageOffset		;store in EEPROM for the current user profile
 	call StoreEePVariable16
 
 	call LcdClear12x16

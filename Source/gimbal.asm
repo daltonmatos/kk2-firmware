@@ -12,6 +12,7 @@ GimbalSettings:
 	andi t, 0xC0
 	breq gbs11
 
+	ldz sew10*2
 	rcall ShowEscWarning
 
 gbs11:	call LcdClear6x8
@@ -186,8 +187,10 @@ gbs8:	.db 95, 0, 127, 9
 sew1:	.db "Output type is set to", 0
 sew2:	.db "ESC for M7 and/or M8.", 0
 sew3:	.db "Check Mixer Editor.", 0
+sew4:	.db "Endpoints ignored.", 0, 0
 
 sew10:	.dw sew1*2, sew2*2, sew3*2
+sew11:	.dw sew1*2, sew2*2, sew4*2
 
 
 
@@ -224,10 +227,11 @@ PrintGimbalValue:
 
 ShowEscWarning:
 
+	pushz				;register Z (input parameter) points to string array (3 text lines)
 	call PrintWarningHeader
 
 	ldi t, 3			;print warning text
-	ldz sew10*2
+	popz
 	call PrintStringArray
 
 	;footer

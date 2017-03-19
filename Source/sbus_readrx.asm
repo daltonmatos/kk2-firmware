@@ -1,3 +1,4 @@
+
 	//************************************************************
 	//* Futaba S.Bus format (8-E-2/100Kbps)
 	//*	S.Bus decoding algorithm borrowed in part from Arduino
@@ -33,103 +34,80 @@
 
 GetSBusChannels:
 
-	lds xl, RxBufferIndex		;data received since last iteration?
-	lds xh, RxBufferIndexOld
-	cp xl, xh
-	breq gsc1
+	rvsetflagfalse flagNewRxFrame
 
-	sts RxBufferIndexOld, xl	;yes. Will use old input values, but only if valid
-	ldi t, 1
-	sts RxBufferState, t
-	rvbrflagfalse RxFrameValid, gsc2
+	;check buffer
+	clr xl
 
-	rjmp gsc31			;use old input values
-
-gsc2:	rjmp ClearInputChannels		;invalid
-
-gsc1:	lds t, RxBufferState		;no additional data received. Frame sync?
-	cpi t, 2
-	breq gsc3
-
-	inc t				;no, update status
-	cpi t, 100
-	brlo gsc15
-
-	dec t				;prevent wrap-around
-
-gsc15:	sts RxBufferState, t
-	rvbrflagfalse RxFrameValid, gsc2
-
-	rjmp gsc31			;use old input values
-
-gsc3:	lds xl, RxBufferIndex		;is the buffer full?
-	tst xl
-	breq gsc4
-
-	clr t				;no, communication must be out of sync so we'll try to recover...
-	sts RxBufferState, t
-	sts RxBufferIndexOld, t
 	cli
-	sts RxBufferIndex, t
+	lds xh, flagRxBufferFull
+	sts flagRxBufferFull, xl
+	lds kl, RxBufferAddressL
+	lds kh, RxBufferAddressH
+	sei
+
+	tst xh					;buffer full?
+	brne gsc1
+
+	rvbrflagfalse flagRxFrameValid, gsc2	;no. Will use old input values, but only if valid
+
+	rjmp gsc31				;use old input values
+
+gsc1:	ldz RxBuffer0				;buffer is full. Is the communication synchronized?
+	cp kl, zl
+	cpc kh, zh
+	brne gsc3
+
+	ld t, z					;check start byte
+	cpi t, 0x0F
+	brne gsc3
+
+	ldz RxBuffer24				;check end byte
+	ld t, z
+	tst t					;FASST
+	breq gsc7
+
+	ld t, z					;FASSTest (thanks to fnurgel)
+	andi t, 0xCF
+	cpi t, 0x04
+	breq gsc7
+
+gsc3:	clr t					;communication must be out of sync so we'll try to recover...
+
+	cli
 	sts RxBuffer0, t
 	ldz RxBuffer0
 	sts RxBufferAddressL, zl
 	sts RxBufferAddressH, zh
 	sei
-	rjmp ClearInputChannels
 
-gsc4:	ldz RxBuffer0			;yes, check start byte
-	ld t, z
-	cpi t, 0x0F			;OBSERVE! Bit order is reversed when read from the USART buffer
-	breq gsc6
+	rjmp gsc31				;use old input values
 
-gsc5:	rjmp ClearInputChannels		;invalid value found
-
-gsc6:	ldz RxBuffer24			;check end byte
-	ld t, z
-	tst t				;FASST
-	breq gsc7
-
-	ld t, z				;FASSTest (thanks to fnurgel)
-	andi t, 0xCF
-	cpi t, 0x04
-	brne gsc5
+gsc2:	rjmp ClearInputChannels
 
 gsc7:	;S.Bus frame appears to be valid
-	ser t
-	sts RxFrameValid, t
+	rvsetflagtrue flagRxFrameValid
 
 	;S.Bus flags
 	sbiw z, 1
 	ld t, z
 	sts SBusFlags, t
 
-	;Data bytes
-	ldz RxBuffer1
-	ldx SBusByte0
-	ldi yl, 10
+	;signal for "New frame"
+	rvsetflagtrue flagNewRxFrame
 
-gsc8:	ld t, z+
-	st x+, t
-	dec yl
-	brpl gsc8
-
-	;Set signal for "New frame"
-	ldi t, 3
-	sts RxBufferState, t
-
-	clr t				;reset timeout counter
+	clr t					;reset timeout counter
 	sts TimeoutCounter, t
 
 
-gsc31:	;--- Channel 1 ---
+	;--- Channel 1 ---
 
-	;S.Bus channel 1 is 11 bit long and is stored in SBusByte0 and SBusByte1:
+	;S.Bus channel 1 is 11 bit long and is stored in RxBuffer1 and RxBuffer2:
 	;S.Bus data received:	76543210 -----A98
 	;Variable name:		   xl	    xh
 
-	lds xl, SBusByte0
-	lds xh, SBusByte1
+	lds xl, RxBuffer1
+	lds xh, RxBuffer2
 
 	andi xh, 0x07
 
@@ -139,12 +117,12 @@ gsc31:	;--- Channel 1 ---
 	
 	;--- Channel 2 ---
 
-	;S.Bus channel 2 is 11 bit long and is stored in SBusByte1 and SBusByte2:
+	;S.Bus channel 2 is 11 bit long and is stored in RxBuffer2 and RxBuffer3:
 	;S.Bus data received:	43210--- --A98765
 	;Variable name:		   xl	    xh
 
-	lds xl, SBusByte1
-	lds xh, SBusByte2
+	lds xl, RxBuffer2
+	lds xh, RxBuffer3
 
 	ror xh
 	ror xl
@@ -160,13 +138,13 @@ gsc31:	;--- Channel 1 ---
 
 	;--- Channel 3 ---
 
-	;S.Bus channel 3 is 11 bit long and is stored in SBusByte2, SBusByte3 and SBusByte4:
+	;S.Bus channel 3 is 11 bit long and is stored in RxBuffer3, RxBuffer4 and RxBuffer5:
 	;S.Bus data received:	10------ 98765432 -------A
 	;Variable name:		   yh	    xl	     xh
 
-	lds yh, SBusByte2
-	lds xl, SBusByte3
-	lds xh, SBusByte4
+	lds yh, RxBuffer3
+	lds xl, RxBuffer4
+	lds xh, RxBuffer5
 
 	rol yh
 	rol xl
@@ -182,12 +160,12 @@ gsc31:	;--- Channel 1 ---
 
 	;--- Channel 4 ---
 
-	;S.Bus channel 4 is 11 bit long and is stored in SBusByte4 and SBusByte5:
+	;S.Bus channel 4 is 11 bit long and is stored in RxBuffer5 and RxBuffer6:
 	;S.Bus data received:	6543210- ----A987
 	;Variable name:    	   xl       xh
 
-	lds xl, SBusByte4
-	lds xh, SBusByte5
+	lds xl, RxBuffer5
+	lds xh, RxBuffer6
 
 	ror xh
 	ror xl
@@ -199,12 +177,12 @@ gsc31:	;--- Channel 1 ---
 
 	;--- Channel 5 ---
 
-	;S.Bus channel 5 is 11 bit long and is stored in SBusByte5 and SBusByte6:
+	;S.Bus channel 5 is 11 bit long and is stored in RxBuffer6 and RxBuffer7:
 	;S.Bus data received:	3210---- -A987654
 	;Variable name:    	   xl       xh
 
-	lds xl, SBusByte5
-	lds xh, SBusByte6
+	lds xl, RxBuffer6
+	lds xh, RxBuffer7
 
 	ror xh
 	ror xl
@@ -222,13 +200,13 @@ gsc31:	;--- Channel 1 ---
 
 	;--- Channel 6 ---
 
-	;S.Bus channel 6 is 11 bit long and is stored in SBusByte6, SBusByte7 and SBusByte8:
+	;S.Bus channel 6 is 11 bit long and is stored in RxBuffer7, RxBuffer8 and RxBuffer9:
 	;S.Bus data received:	0------- 87654321 ------A9
 	;Variable name:    	   yh       xl       xh
 
-	lds yh, SBusByte6
-	lds xl, SBusByte7
-	lds xh, SBusByte8
+	lds yh, RxBuffer7
+	lds xl, RxBuffer8
+	lds xh, RxBuffer9
 
 	rol yh
 	rol xl
@@ -241,12 +219,12 @@ gsc31:	;--- Channel 1 ---
 
 	;--- Channel 7 ---
 
-	;S.Bus channel 7 is 11 bit long and is stored in SBusByte8 and SBusByte9:
+	;S.Bus channel 7 is 11 bit long and is stored in RxBuffer9 and RxBuffer10:
 	;S.Bus data received:	543210-- ---A9876
 	;Variable name:    	   xl       xh
 
-	lds xl, SBusByte8
-	lds xh, SBusByte9
+	lds xl, RxBuffer9
+	lds xh, RxBuffer10
 
 	ror xh
 	ror xl
@@ -260,12 +238,12 @@ gsc31:	;--- Channel 1 ---
 
 	;--- Channel 8 ---
 
-	;S.Bus channel 8 is 11 bit long and is stored in SBusByte9 and SBusByte10:
+	;S.Bus channel 8 is 11 bit long and is stored in RxBuffer10 and RxBuffer11:
 	;S.Bus data received:	210----- A9876543
 	;Variable name:    	   xl       xh
 
-	lds xl, SBusByte9
-	lds xh, SbusByte10
+	lds xl, RxBuffer10
+	lds xh, RxBuffer11
 
 	lsr xh
 	ror xl
@@ -289,7 +267,7 @@ gsc31:	;--- Channel 1 ---
 
 	;--- Roll ---
 
-	lds r0, MappedChannel1		;get aileron channel value
+gsc31:	lds r0, MappedChannel1
 	rcall GetChannelValue
 	rcall AdjustSBusValue
 	call DeadZone
@@ -300,7 +278,7 @@ gsc31:	;--- Channel 1 ---
 
 	;--- Pitch ---
 
-	lds r0, MappedChannel2		;get elevator channel value
+	lds r0, MappedChannel2
 	rcall GetChannelValue
 	rcall AdjustSBusValue
 	call DeadZone
@@ -311,22 +289,22 @@ gsc31:	;--- Channel 1 ---
 
 	;--- Throttle ---
 
-	lds r0, MappedChannel3		;get throttle channel value
+	lds r0, MappedChannel3
 	rcall GetChannelValue
 
 	rvsetflagfalse flagThrottleZero
 
-	ldz 400				;X = X - 400
+	ldz 400					;X = X - 400
 	sub xl, zl
 	sbc xh, zh
-	rcall Add50Percent		;X = X * 1.5
+	rcall Add50Percent			;X = X * 1.5
 
-	ldz 0				;X < 0 ?
+	ldz 0					;X < 0 ?
 	cp  xl, zl
 	cpc xh, zh
 	brge gsc30
 
-	ldx 0				;yes, set to zero
+	ldx 0					;yes, set to zero
 	rvsetflagtrue flagThrottleZero
 
 gsc30:	b16store RxThrottle
@@ -334,7 +312,7 @@ gsc30:	b16store RxThrottle
 
 	;--- Yaw ---
 
-	lds r0, MappedChannel4		;get rudder channel value
+	lds r0, MappedChannel4
 	rcall GetChannelValue
 	rcall AdjustSBusValue
 	call DeadZone
@@ -343,43 +321,43 @@ gsc30:	b16store RxThrottle
 
 	;--- AUX ---
 
-	lds r0, MappedChannel5		;get aux channel value
+	lds r0, MappedChannel5
 	rcall GetChannelValue
 	rcall AdjustSBusValue
 	b16store RxAux
 
-	clr yl				;AUX switch position #1
+	clr yl					;position #1
 	ldz -600
 	cp  xl, zl
 	cpc xh, zh
 	brlt gsc35
 
-	inc yl				;AUX switch position #2
+	inc yl					;position #2
 	ldz -200
 	cp  xl, zl
 	cpc xh, zh
 	brlt gsc35
 
-	inc yl				;AUX switch position #3
+	inc yl					;position #3
 	ldz 200
 	cp  xl, zl
 	cpc xh, zh
 	brlt gsc35
 
-	inc yl				;AUX switch position #4
+	inc yl					;position #4
 	ldz 600
 	cp  xl, zl
 	cpc xh, zh
 	brlt gsc35
 
-	inc yl				;AUX switch position #5
+	inc yl					;position #5
 
 gsc35:	sts AuxSwitchPosition, yl
 
 
 	;--- AUX2 ---
 
-	lds r0, MappedChannel6		;get aux2 channel value
+	lds r0, MappedChannel6
 	rcall GetChannelValue
 	rcall AdjustSBusValue
 	b16store RxAux2
@@ -387,7 +365,7 @@ gsc35:	sts AuxSwitchPosition, yl
 
 	;--- AUX3 ---
 
-	lds r0, MappedChannel7		;get aux3 channel value
+	lds r0, MappedChannel7
 	rcall GetChannelValue
 	rcall AdjustSBusValue
 	b16store RxAux3
@@ -395,44 +373,44 @@ gsc35:	sts AuxSwitchPosition, yl
 
 	;--- AUX4 ---
 
-	lds r0, MappedChannel8		;get aux4 channel value
+	lds r0, MappedChannel8
 	rcall GetChannelValue
 	rcall AdjustSBusValue
 	b16store RxAux4
 
-	clr yl				;AUX4 switch position #1
+	clr yl					;position #1
 	ldz -400
 	cp  xl, zl
 	cpc xh, zh
 	brlt gsc38
 
-	inc yl				;AUX4 switch position #2
+	inc yl					;position #2
 	ldz 400
 	cp  xl, zl
 	cpc xh, zh
 	brlt gsc38
 
-	inc yl				;AUX4 switch position #3
+	inc yl					;position #3
 
 gsc38:	sts Aux4SwitchPosition, yl
 
 
 	;--- Check RX ---
 
-	rvbrflagfalse RxFrameValid, ClearInputChannels
+	rvbrflagfalse flagRxFrameValid, ClearInputChannels
 	rjmp gsc22
 
 gsc23:	sts TimeoutCounter, t
 	ret
 
-gsc22:	lds t, TimeoutCounter		;timeout?
+gsc22:	lds t, TimeoutCounter			;timeout?
 	inc t
 	cpi t, TimeoutLimit
 	brlo gsc23
 
 	rvbrflagfalse flagArmed, ClearInputChannels	;yes
 
-	setstatusbit RxSignalLost	;set status bit for "Signal Lost" and activate the Lost Model alarm only when armed
+	setstatusbit RxSignalLost		;set status bit for "Signal Lost" and activate the Lost Model alarm only when armed
 	rvsetflagtrue flagAlarmOverride
 
 
@@ -441,7 +419,7 @@ gsc22:	lds t, TimeoutCounter		;timeout?
 
 ClearInputChannels:
 
-	rvsetflagfalse RxFrameValid	;set flag to false and all RX input values to zero
+	rvsetflagfalse flagRxFrameValid		;set flag to false and all RX input values to zero
 	b16clr RxRoll
 	b16set RxPitch
 	b16set RxThrottle
@@ -452,16 +430,16 @@ ClearInputChannels:
 	b16set RxAux4
 	rvsetflagtrue flagThrottleZero
 
-	lds t, AuxSwitchPosition	;select AUX function #3 if not set already
+	lds t, AuxSwitchPosition		;select AUX function #3 if not set already
 	cpi t, 2
 	breq cic1
 
 	ldi t, 2
 	sts AuxSwitchPosition, t
-	ser t				;make sure the AUX switch function will be updated
+	ser t					;make sure the AUX switch function will be updated
 	sts AuxSwitchPositionOld, t
 
-cic1:	rvbrflagfalse flagArmed, cic2	;log error when armed
+cic1:	rvbrflagfalse flagArmed, cic2		;log error when armed
 
 	ldi xl, ErrorSignalLost
 	call LogError
@@ -474,7 +452,7 @@ cic2:	ret
 
 GetChannelValue:
 
-	ldzarray Channel1L, 2, r0	;register R0 (input parameter) holds the mapped channel ID
+	ldzarray Channel1L, 2, r0		;register R0 (input parameter) holds the mapped channel ID
 	ld xl, z+
 	ld xh, z
 	clr yh
@@ -484,20 +462,20 @@ GetChannelValue:
 
 	;---- Adapt S.Bus value to KK value ---
 
-AdjustSBusValue:	;Subtract Futaba S.Bus offset (1024) and multiply by 1.5
+AdjustSBusValue:				;subtract Futaba S.Bus offset (1024) and multiply by 1.5
 
-	ldz 1024	;X = X - 1024
+	ldz 1024				;X = X - 1024
 	sub xl, zl
 	sbc xh, zh
 
 Add50Percent:
 
-	mov zl, xl	;Z = X / 2
+	mov zl, xl				;Z = X / 2
 	mov zh, xh
 	asr zh
 	ror zl
 
-	add xl, zl	;X = X + Z
+	add xl, zl				;X = X + Z
 	adc xh, zh
 	ret
 

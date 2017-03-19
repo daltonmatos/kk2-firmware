@@ -74,14 +74,14 @@ srm12:	cpi t, 0x04			;PREV?
 	dec Item
 	brpl srm20
 
-	ldi Item, 4
+	ldi Item, 5
 	rjmp srm11
 
 srm13:	cpi t, 0x02			;NEXT?
 	brne srm14
 
 	inc Item
-	cpi Item, 5
+	cpi Item, 6
 	brlt srm20
 
 	clr Item
@@ -105,8 +105,9 @@ cppm:	.db "CPPM/PPM", 0, 0
 sbus:	.db "S.Bus", 0
 dsm2:	.db "Satellite DSM2", 0, 0
 dsmx:	.db "Satellite DSMX", 0, 0
+serlnk:	.db "Serial Link", 0
 
-modes:	.dw stdrx*2, cppm*2, sbus*2, dsm2*2, dsmx*2
+modes:	.dw stdrx*2, cppm*2, sbus*2, dsm2*2, dsmx*2, serlnk*2
 
 
 .undef Item

@@ -7,7 +7,7 @@ gmm23:	ldy gmm1*2
 	lds xl, MainMenuListYposSave
 	lds xh, MainMenuCursorYposSave
 
-	ldi t, 11			;number of menu items
+	ldi t, 12			;number of menu items
 	call Menu
 
 	sts MainMenuListYposSave, yl
@@ -42,6 +42,7 @@ gmm22:	lsl xl				;no, calculate index    Z = *gmm18 * 2 + xl * 2
 
 gmm1:	.dw mMode*2			;Mode Settings
 	.dw mMisc*2			;Misc. Settings
+	.dw mServo*2			;Servo Settings
 	.dw mGimbl*2			;Gimbal Settings
 	.dw mAdv*2			;Advanced Settings
 	.dw mInit*2			;Initial Setup
@@ -55,6 +56,7 @@ gmm1:	.dw mMode*2			;Mode Settings
 
 gmm18:	.dw ModeSettings
 	.dw MiscSettings
+	.dw ServoSettings
 	.dw GimbalSettings
 	.dw AdvancedSettings
 	.dw InitialSetup

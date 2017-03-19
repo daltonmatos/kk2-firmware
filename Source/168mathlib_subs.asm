@@ -161,9 +161,9 @@ mul3:	ret
 .undef	Sign
 
 
+
 	;--- 16.8 fixed point MAC ---
-
-
+/*
 .def	A=r18
 
 .def	Op1_2=r19
@@ -247,4 +247,4 @@ mac2:	add yh, Result0
 .undef	Sign
 
 .undef A
-
+*/

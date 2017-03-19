@@ -12,6 +12,8 @@ IsrCppm:
 	push zl
 	push zh
 
+	clr treg			;used for clearing variables
+
 	lds xl, tcnt1l			;calculate pulse length: X = TCNT1 - CppmPulseStart, CppmPulseStart = TCNT1
 	lds xh, tcnt1h
 	lds zl, CppmPulseStartL
@@ -22,10 +24,9 @@ IsrCppm:
 	sbc xh, zh
 	brpl cppm8
 
-	ldz 0				;X = ABS(X)
-	sub zl, xl
-	sbc zh, xh
-	movw x, z
+	com xh				;X = ABS(X)
+	neg xl
+	sbci xh, 0xFF
 
 cppm8:	ldz 6250			;pulse longer than 2.5ms?
 	cp  xl, zl
@@ -35,7 +36,6 @@ cppm8:	ldz 6250			;pulse longer than 2.5ms?
 	ldz Channel1L			;yes, reset cppm sequence
 
 	lds tt, CppmChannelCount	;CPPM pulse train is considered valid when minimum 4 channels have been detected
-	clr treg
 	sts CppmChannelCount, treg
 	sts ChannelCount, tt
 	cpi tt, 4
@@ -43,8 +43,8 @@ cppm8:	ldz 6250			;pulse longer than 2.5ms?
 
 	rjmp cppm10			;invalid CPPM frame
 
-cppm6:	ser tt				;set flag to indicate that a valid CPPM pulse train has been received
-	sts RxFrameValid, tt
+cppm6:	ser tt				;set flag to indicate that a valid CPPM frame has been received
+	sts flagRxBufferFull, tt
 
 	sts TimeoutCounter, treg	;reset timeout counter
 	rjmp cppm10
@@ -84,10 +84,30 @@ cppm10:	sts CppmPulseArrayAddressL, zl	;store array pointer
 
 GetCppmChannels:
 
+	lds t, RxSyncCounter		;wait for RX input to become stable (after FlightInit)
+	dec t
+	brmi gcc10
+
+	sts RxSyncCounter, t
+	ret
+
+	;check buffer
+gcc10:	clr kl
+
+	cli
+	lds kh, flagRxBufferFull
+	sts flagRxBufferFull, kl
+	sei
+
+	tst kh				;buffer full?
+	breq gcc11
+
+	sts flagRxFrameValid, kh	;yes, the CPPM frame appears to be valid, but more tests will be performed below
+
 
 	;--- Roll ---
 
-	lds r0, MappedChannel1		;get roll channel value
+gcc11:	lds r0, MappedChannel1
 	call GetSafeChannelValue
 	call Sanitize
 	call DeadZone
@@ -100,7 +120,7 @@ GetCppmChannels:
 	
 	;--- Pitch ---
 
-	lds r0, MappedChannel2		;get pitch channel value
+	lds r0, MappedChannel2
 	call GetSafeChannelValue
 	call Sanitize
 	call DeadZone
@@ -113,7 +133,7 @@ GetCppmChannels:
 
 	;--- Throttle ---
 
-	lds r0, MappedChannel3		;get throttle channel value
+	lds r0, MappedChannel3
 	call GetSafeChannelValue
 
 	rvsetflagfalse flagThrottleZero
@@ -125,14 +145,14 @@ GetCppmChannels:
 	sbc xh, zh
 
 	ldz 0				;X < 0 ?
-	cp  xl, zl
+	cp xl, zl
 	cpc xh, zh
 	brge gcc8
 
 	rjmp gcc30			;yes, set to zero
 
 gcc8:	ldz 3125			;X > 3125? (1.25ms)
-	cp  xl, zl
+	cp xl, zl
 	cpc xh, zh
 	brlt gcc2
 
@@ -145,7 +165,7 @@ gcc2:	clr yh
 
 	;--- Yaw ---
 
-	lds r0, MappedChannel4		;get yaw channel value
+	lds r0, MappedChannel4
 	call GetSafeChannelValue
 	call Sanitize
 	call DeadZone
@@ -156,35 +176,35 @@ gcc2:	clr yh
 	
 	;--- AUX ---
 
-	lds r0, MappedChannel5		;get aux channel value
+	lds r0, MappedChannel5
 	call GetSafeChannelValue
 	call Sanitize
 
-	clr yl				;AUX switch position #1
+	clr yl				;position #1
 	ldz -600
-	cp  xl, zl
+	cp xl, zl
 	cpc xh, zh
 	brlt gcc35
 
-	inc yl				;AUX switch position #2
+	inc yl				;position #2
 	ldz -200
-	cp  xl, zl
+	cp xl, zl
 	cpc xh, zh
 	brlt gcc35
 
-	inc yl				;AUX switch position #3
+	inc yl				;position #3
 	ldz 200
-	cp  xl, zl
+	cp xl, zl
 	cpc xh, zh
 	brlt gcc35
 
-	inc yl				;AUX switch position #4
+	inc yl				;position #4
 	ldz 600
-	cp  xl, zl
+	cp xl, zl
 	cpc xh, zh
 	brlt gcc35
 
-	inc yl				;AUX switch position #5
+	inc yl				;position #5
 
 gcc35:	sts AuxSwitchPosition, yl
 
@@ -194,7 +214,7 @@ gcc35:	sts AuxSwitchPosition, yl
 
 	;--- AUX2 ---
 
-	lds r0, MappedChannel6		;get aux2 channel value
+	lds r0, MappedChannel6
 	call GetSafeChannelValue
 	call Sanitize
 
@@ -204,7 +224,7 @@ gcc35:	sts AuxSwitchPosition, yl
 
 	;--- AUX3 ---
 
-	lds r0, MappedChannel7		;get aux3 channel value
+	lds r0, MappedChannel7
 	call GetSafeChannelValue
 	call Sanitize
 
@@ -214,23 +234,23 @@ gcc35:	sts AuxSwitchPosition, yl
 
 	;--- AUX4 ---
 
-	lds r0, MappedChannel8		;get aux4 channel value
+	lds r0, MappedChannel8
 	call GetSafeChannelValue
 	call Sanitize
 
-	clr yl				;AUX4 switch position #1
+	clr yl				;position #1
 	ldz -400
-	cp  xl, zl
+	cp xl, zl
 	cpc xh, zh
 	brlt gcc38
 
-	inc yl				;AUX4 switch position #2
+	inc yl				;position #2
 	ldz 400
-	cp  xl, zl
+	cp xl, zl
 	cpc xh, zh
 	brlt gcc38
 
-	inc yl				;AUX4 switch position #3
+	inc yl				;position #3
 
 gcc38:	sts Aux4SwitchPosition, yl
 
@@ -240,7 +260,7 @@ gcc38:	sts Aux4SwitchPosition, yl
 
 	;--- Check RX ---
 
-	rvbrflagfalse RxFrameValid, gcc24
+	rvbrflagfalse flagRxFrameValid, gcc24
 	rjmp gcc22
 
 gcc23:	sts TimeoutCounter, t
@@ -251,7 +271,7 @@ gcc23:	sts TimeoutCounter, t
 	cp t, xl
 	breq gcc21
 
-	ldi xl, 4			;yes
+	ldi xl, ErrorCppmSyncLost	;yes
 	call LogError
 
 gcc21:	ret

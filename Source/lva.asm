@@ -1,36 +1,106 @@
 
+
 	;--- Low voltage alarm ---
 
 Lva:
 
-	b16cmp BatteryVoltage, BatteryVoltageLogged			;log the lowest battery voltage
+	b16loadx BatteryVoltage						;log the lowest battery voltage
+	b16loadz BatteryVoltageLogged
+	cp xl, zl
+	cpc xh, zh
 	brge lva4
 
-	b16mov BatteryVoltageLogged, BatteryVoltage
-	lds xh, Timer1min
-	lds xl, Timer1sec
-	sts BattLogTimeMin, xh
-	sts BattLogTimeSec, xl
+	b16storex BatteryVoltageLogged
+	lds yh, Timer1min
+	lds yl, Timer1sec
+	sts BattLogTimeMin, yh
+	sts BattLogTimeSec, yl
 
-lva4:	b16sub Error, BatteryVoltage, BatteryVoltageLowpass		;lowpass filter
-	b16fdiv Error, 8
-	b16add BatteryVoltageLowpass, BatteryVoltageLowpass, Error
+lva4:	lds kh, BattAlarmVoltage + 0					;skip LVA calculations when alarm is deactivated
+	lds kl, BattAlarmVoltage + 1
+	clr ka
+	cp kl, ka
+	cpc kh, ka
+	breq lva5
 
-	b16sub Error, BattAlarmVoltage, BatteryVoltageLowpass		;calculate error
+//	b16sub Error, BatteryVoltage, BatteryVoltageLowpass		;lowpass filter
+	lds zh, BatteryVoltageLowpass + 0
+	lds zl, BatteryVoltageLowpass + 1
+	lds yl, BatteryVoltageLowpass + 2
+	clr yh
+	sub yh, yl
+	sbc xl, zl
+	sbc xh, zh
+//	b16fdiv Error, 8
+	mov yh, xl
+	mov xl, xh
+	mov t, xh
+	clr xh
+	lsl t
+	sbci xh, 0
+//	b16add BatteryVoltageLowpass, BatteryVoltageLowpass, Error
+	add yh, yl
+	adc xl, zl
+	adc xh, zh
+	b16store BatteryVoltageLowpass
+
+	lds t, LvaHysteresis						;add hysteresis value
+	add kl, t
+	adc kh, ka
+
+//	b16sub Error, BattAlarmVoltage, BatteryVoltageLowpass		;calculate error
+	sub ka, yh
+	sbc kl, xl
+	sbc kh, xh
 	brpl lva3
-	rjmp lva1
 
-lva3:	b16fdiv Error, 2
+	clr t								;reset hysteresis value
+	sts LvaHysteresis, t
 
-	b16ldi Temp, 16							;limit error
-	b16cmp Error, Temp
+lva5:	rjmp lva1
+
+lva3:	sub kl, t							;subtract hysteresis value again to avoid affecting the LVA beeps
+	clr t
+	sbc kh, t
+	brpl lva7
+
+	clr kh
+	clr kl
+
+lva7:	ldi t, 10							;set hysteresis value
+	sts LvaHysteresis, t
+
+//	b16fdiv Error, 2
+	asr kh
+	ror kl
+	ror ka
+	asr kh
+	ror kl
+	ror ka
+
+//	b16ldi Temp, 16							;limit error
+	clr xh
+	ldi xl, 16
+	clr yh
+//	b16cmp Error, Temp
+	cp ka, yh
+	cpc kl, xl
+	cpc kh, xh
 	brlt lva2
 
-	b16mov Error, Temp
+//	b16mov Error, Temp
+	movw k, x
+	mov ka, yh
 
-lva2:	b16add LvaDdsAcc, LvaDdsAcc, Error				;DDS
-	b16load LvaDdsAcc
-	tst xl
+lva2://	b16add LvaDdsAcc, LvaDdsAcc, Error				;DDS
+	lds xl, LvaDdsAcc + 1
+	lds yh, LvaDdsAcc + 2
+	add yh, ka
+	adc xl, kl
+	sts LvaDdsAcc + 1, xl
+	sts LvaDdsAcc + 2, yh
+//	lds xl, LvaDdsAcc + 1
+//	tst xl
 	brmi lva1
 
 	lds t, LvaDdsOn							;limit the buzzer "on" time

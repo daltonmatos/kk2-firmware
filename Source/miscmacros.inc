@@ -92,6 +92,7 @@
 	ldi zh, high(@0)
 .endmacro
 
+
 .macro FixedPointVariableEnumerate168
 
 .if RamVariables > 0x0fff
@@ -102,6 +103,7 @@
 .set RamVariables = RamVariables + 3
 
 .endmacro
+
 
 .macro FixedPointVariableEnumerate824
 
@@ -114,6 +116,7 @@
 
 .endmacro
 
+
 .macro FixedPointVariableEnumerate832
 
 .if RamVariables > 0x0fff
@@ -124,6 +127,7 @@
 .set RamVariables = RamVariables + 5
 
 .endmacro
+
 
 .macro FixedPointVariableEnumerate840
 
@@ -136,10 +140,15 @@
 
 .endmacro
 
+
 .macro EEVariableEnumerate16
 
 .if EeRegisters > 0x0178
 .error "?Out of EEmemory."
+.endif
+
+.if EeRegisters > 0x00FF
+.warning "1st. EE segment is full."
 .endif
 
 .equ @0 = EeRegisters
@@ -147,16 +156,46 @@
 
 .endmacro
 
+
 .macro EEVariableEnumerate8
 
 .if EeRegisters > 0x0178
 .error "?Out of EEmemory."
 .endif
 
+.if EeRegisters > 0x00FF
+.warning "1st. EE segment is full."
+.endif
+
 .equ @0 = EeRegisters
 .set EeRegisters = EeRegisters + 1
 
 .endmacro
+
+
+.macro E2VariableEnumerate16
+
+.if E2Registers > 0x00FF
+.warning "2nd. EE segment is full."
+.endif
+
+.equ @0 = E2Registers
+.set E2Registers = E2Registers + 2
+
+.endmacro
+
+
+.macro E2VariableEnumerate8
+
+.if E2Registers > 0x04FF
+.warning "2nd. EE segment is full."
+.endif
+
+.equ @0 = E2Registers
+.set E2Registers = E2Registers + 1
+
+.endmacro
+
 
 .macro mPrintString
 	push zl
@@ -305,6 +344,20 @@
 	mul t, @2
 	add zl, r0
 	adc zh, r1
+.endmacro
+
+
+.macro lpmarrayz		;calculate array address.    @0=array name  @1=index
+	ldi zl, low(@0)
+	ldi zh, high(@0)
+	mov xl, @1
+	lsl xl
+	add zl, xl
+	clr xl
+	adc zh, xl
+	lpm xl, z+
+	lpm xh, z
+	movw z, x
 .endmacro
 
 

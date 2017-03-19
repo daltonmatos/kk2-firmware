@@ -3,7 +3,7 @@
 
 PwmStart:
 
-//	sbi DebugOutputPin		// DEBUGGING
+//	sbi DebugOutputPin			// DEBUGGING
 
 	;set OCR1A to current time + 0.5ms
 
@@ -53,11 +53,11 @@ IsrPwmStart:
 
 	load SregSaver, sreg
 
-	lds tt, flagPwmGen		;check for PWM generator state
+	lds tt, flagPwmGen			;check for PWM generator state
 	tst tt
 	breq pwm1a
 
-	cbi OutputPin7			;set M7 output low
+	cbi OutputPin7				;set M7 output low
 	rjmp pwm12
 
 pwm1a:	lds tt, flagMutePwm
@@ -75,11 +75,15 @@ pwm1a:	lds tt, flagMutePwm
 
 pwm1:	sts OutputRateDividerCounter, tt
 	
-	ldi tt, 0xff			;bit pattern for fast and slow update rate
+	ldi tt, 0xFF				;bit pattern for fast and slow update rate
 	brcc pwm2
-	lds tt, OutputRateBitmask	;bit pattern for fast update rate
 
-pwm2:	lsr tt				;stagger the pin switching to avoid up to 8 pins switching at the same time
+	lds tt, OutputRateBitmask		;bit pattern for fast update rate
+
+pwm2:	lds treg, OutputStateBitmask		;keep inactive outputs low
+	and tt, treg
+
+	lsr tt					;stagger the pin switching to avoid up to 8 pins switching at the same time
 	brcc pwm3
 	sbi OutputPin1
 pwm3:	lsr tt
@@ -115,11 +119,11 @@ IsrPwmEnd:
 
 	load SregSaver, sreg
 
-	lds tt, flagPwmGen		;check for PWM generator state
+	lds tt, flagPwmGen			;check for PWM generator state
 	tst tt
 	breq ipe1
 
-	cbi OutputPin8			;set M8 output low
+	cbi OutputPin8				;set M8 output low
 	rjmp ipe2
 
 ipe1:	ldi tt, 0xff
@@ -134,7 +138,7 @@ ipe2:	store sreg, SregSaver
 
 PwmEnd:
 
-	b16ldi Temp, 1001		;make sure the EscLowLimit is not too high. (hardcoded limit of 20%)
+	b16ldi Temp, 1001			;make sure the EscLowLimit is not too high. (hardcoded limit of 20%)
 	b16cmp EscLowLimit, Temp
 	brlt pwm58
 
@@ -142,10 +146,14 @@ PwmEnd:
 
 pwm58:	;loop setup
 
-	lrv Index, 0		
+	lrv Index, 0
 
 	lds t, OutputTypeBitmask
 	sts OutputTypeBitmaskCopy, t
+
+	ldz ServoFilterDelayCounter1
+	movw k, z
+	clr ka
 
 	rvflagnot flagInactive, flagArmed	;flagInactive is set to true if outputs should be in inactive state
 	rvflagor flagInactive, flagInactive, flagThrottleZero
@@ -165,19 +173,33 @@ pwm51fix:
 
 	;---
 
-	rvbrflagtrue flagGimbalMode, pwm52fix	;SERVO, run servo filter when gimbal mode is active
+	rvbrflagtrue flagGimbalMode, pwm52fix	;SERVO, always run servo filter when gimbal mode is active
 	rvbrflagfalse flagInactive, pwm52fix	;active or inactive?
 	rjmp pwm52
 
 pwm52fix:
+
 	b16load_array Temp, FilteredOut1 	;servo active, apply low pass filter
 	b16sub Error, PwmOutput, Temp
 
 	b16mul Error, Error, ServoFilter
 
 	b16add PwmOutput, Temp, Error
-	b16store_array FilteredOut1, PwmOutput
 
+	lds t, Index
+	movw z, k
+	add zl, t
+	adc zh, ka
+	ld t, z
+	dec t
+	brpl pwm53
+
+	lds t, ServoFilterDelay
+	st z, t
+	b16store_array FilteredOut1, PwmOutput
+	rjmp pwm55
+
+pwm53:	st z, t
 	rjmp pwm55
 
 pwm52:	b16load_array PwmOutput, Offset1	;servo inactive, set to offset value
@@ -188,9 +210,9 @@ pwm52:	b16load_array PwmOutput, Offset1	;servo inactive, set to offset value
 pwm51:	rvbrflagtrue flagInactive, pwm54	;ESC, active or inactive?
 
 	b16cmp PwmOutput, EscLowLimit		;ESC active, limit to EscLowLimit
-	brge pwm56
+	brge pwm55
+
 	b16mov PwmOutput, EscLowLimit
-pwm56:
 	rjmp pwm55
 
 pwm54:	b16clr PwmOutput			;ESC inactive, set to zero 
@@ -205,7 +227,9 @@ pwm55:	b16store_array Out1, PwmOutput
 	rvinc Index
 	rvcpi Index, 8
 	breq pwm57
+
 	rjmp pwm50
+
 pwm57:
 
 
@@ -261,25 +285,31 @@ pwm57:
 	mov O6H, xh
 
 	b16load Out7
-	rcall PwmCondForTimer
+	rcall PwmCondM7
 	mov O7L, xl
 	mov O7H, xh
 
 	b16load Out8
-	rcall PwmCondForTimer
+	rcall PwmCondM8
 	mov O8L, xl
 	mov O8H, xh
 
 
-//	cbi DebugOutputPin		// DEBUGGING
+//	cbi DebugOutputPin			// DEBUGGING
 
 
 	;generate the end of the PWM signal, this part is blocking.
 
-	rvbrflagfalse flagPwmEnd, pwm29
-;	ldi t, 0				;if IsrPwmEnd is true here, the start of PWM pulse end generation is missed
-;	call LogError				;log error
-	ret					;and return without generating the end of pwm pulse
+	rvbrflagfalse flagPwmEnd, pwm29		;if flagPwmEnd is true here, the start of PWM pulse end generation is missed
+
+	rvbrflagfalse flagArmed, pwm30
+	rvbrflagfalse flagArmedOldState, pwm30
+
+	ldi xl, ErrorLoopTimeExceeded		;log error (when fully armed)
+	call LogError
+
+pwm30:	ret					;return without generating the end of pwm pulse
+
 
 pwm29:	rvbrflagfalse flagPwmEnd, pwm29		;wait until IsrPwmEnd has run (flagPwmEnd == true)
 
@@ -292,7 +322,6 @@ pwm29:	rvbrflagfalse flagPwmEnd, pwm29		;wait until IsrPwmEnd has run (flagPwmEn
 	cli
 	load xl, tcnt1l
 	load xh, tcnt1h
-	sei
 
 	movw y, x
 
@@ -301,7 +330,6 @@ pwm29:	rvbrflagfalse flagPwmEnd, pwm29		;wait until IsrPwmEnd has run (flagPwmEn
 	add yl, O8L
 	adc yh, O8H
 
-	cli
 	store ocr1ah, xh
 	store ocr1al, xl
 	store ocr1bh, yh
@@ -346,7 +374,7 @@ pwm19:	nop
 	sbiw y, 1
 	brcc pwm13
 
-	cbi OutputPin7	;for safety
+	cbi OutputPin7				;for safety. Suggestion by Steveis. Thanks!
 	cbi OutputPin8
 	ret
 
@@ -375,51 +403,76 @@ pwm19:	nop
 
 PwmCond:
 
-	asr xh		;divide by 8
+	asr xh					;divide by 8
 	ror xl
 	asr xh
 	ror xl
 	asr xh
 	ror xl
 
-	ldy 0		;x < 0?
+	ldy 0					;x < 0?
 	cp  xl, yl
 	cpc xh, yh
 	brge pwc1
 
-	ldx 0		;yes, set to zero
+	ldx 0					;yes, set to zero
 
-pwc1:	ldy 626		;x >= 626?
+pwc1:	ldy 626					;x >= 626?
 	cp  xl, yl
 	cpc xh, yh
 	brlt pwc2
 
-	ldx 625		;yes, set to 625
+	ldx 625					;yes, set to 625
 
 pwc2:	ret
 
 
 
-PwmCondForTimer:
+PwmCondM7:
 
-	asr xh		;divide by 2
+	asr xh					;divide by 2
 	ror xl
 
-	ldy 3		;x < 3?
-	cp  xl, yl
-	cpc xh, yh
-	brge pft1
+	b16loadz PwmLimitM7L			;check low limit for M7
+	cp xl, zl
+	cpc xh, zh
+	brge pm71
 
-	ldx 3		;yes, set to 3 (cannot use smaller values because then the timer won't trigger)
+	movw x, z				;set to low limit
+	ret
 
-pft1:	ldy 2501	;x >= 2501?
-	cp  xl, yl
-	cpc xh, yh
-	brlt pft2
+pm71:	b16loadz PwmLimitM7H			;check high limit for M7
+	cp xl, zl
+	cpc xh, zh
+	brlt pm72
 
-	ldx 2500	;yes, set to 2500
+	movw x, z				;set to high limit
 
-pft2:	ret
+pm72:	ret
+
+
+
+PwmCondM8:
+
+	asr xh					;divide by 2
+	ror xl
+
+	b16loadz PwmLimitM8L			;check low limit for M8
+	cp xl, zl
+	cpc xh, zh
+	brge pm81
+
+	movw x, z				;set to low limit
+	ret
+
+pm81:	b16loadz PwmLimitM8H			;check high limit for M8
+	cp xl, zl
+	cpc xh, zh
+	brlt pm82
+
+	movw x, z				;set to high limit
+
+pm82:	ret
 
 
 
@@ -427,25 +480,25 @@ pft2:	ret
 
 StartPwmQuiet:
 
-	clr t				;all PWM outputs are low
+	clr t					;all PWM outputs are low
 	sts flagPwmState, t
 
-	call LoadMixerTable		;load the mixer table in case some settings were changed
+	call LoadMixerTable			;load the mixer table in case some settings were changed
 	call UpdateOutputTypeAndRate
 
-	ldi t, 217			;set timer2 to generate an interrupt 0.5ms from now (256 - 39 = 217)
+	ldi t, 217				;set timer2 to generate an interrupt 0.5ms from now (256 - 39 = 217)
 	store tcnt2, t
 
 	;       76543210
-	ldi t,0b00000000		;set timer2 to normal mode
+	ldi t,0b00000000			;set timer2 to normal mode
 	store tccr2a, t
 
 	;       76543210
-	ldi t,0b00000110		;clk/256 prescaler
+	ldi t,0b00000110			;clk/256 prescaler
 	store tccr2b, t
 
 	;       76543210
-	ldi t,0b00000001		;enable timer2 overflow interrupt
+	ldi t,0b00000001			;enable timer2 overflow interrupt
 	store timsk2, t
 	ret
 
@@ -453,15 +506,15 @@ StartPwmQuiet:
 
 StopPwmQuiet:
 
-	lds t, flagPwmState		;wait for PWM output state to become false
+	lds t, flagPwmState			;wait for PWM output state to become false
 	tst t
 	brne StopPwmQuiet
 
 	;       76543210
-	ldi t,0b00000000		;disable timer2 overflow interrupt
+	ldi t,0b00000000			;disable timer2 overflow interrupt
 	store timsk2, t
 
-	push yl				;wait 1.0ms to compensate for the "varying" part of the PWM pulse
+	push yl					;wait 1.0ms to compensate for the "varying" part of the PWM pulse
 	pushx
 	ldx 1
 	call WaitXms
@@ -475,21 +528,21 @@ IsrPwmQuiet:
 
 	load SregSaver, sreg
 
-	lds tt, flagPwmState		;toggle output state
+	lds tt, flagPwmState			;toggle output state
 	com tt
 	sts flagPwmState, tt
 
-	tst tt				;prepare for next interrupt. Set high or low output level?
+	tst tt					;prepare for next interrupt. Set high or low output level?
 	breq ipq10
 
-	ldi tt, 178			;high. The next interrupt will occur in 1ms from now (256 - 78 = 178)
+	ldi tt, 178				;high. The next interrupt will occur in 1ms from now (256 - 78 = 178)
 	store tcnt2, tt
 	rjmp ipq11
 
-ipq10:	ldi tt, 139			;low. The next interrupt will occur in 1.5ms from now (256 - 117 = 139)
+ipq10:	ldi tt, 139				;low. The next interrupt will occur in 1.5ms from now (256 - 117 = 139)
 	store tcnt2, tt
 
-	cbi OutputPin1			;set all outpots low
+	cbi OutputPin1				;set all outpots low
 	cbi OutputPin2
 	cbi OutputPin3
 	cbi OutputPin4
@@ -499,7 +552,7 @@ ipq10:	ldi tt, 139			;low. The next interrupt will occur in 1.5ms from now (256 
 	cbi OutputPin8
 	rjmp ipq20
 
-ipq11:	lds tt, OutputTypeBitmask	;set outputs high according to mask
+ipq11:	lds tt, OutputTypeBitmask		;set outputs high according to mask
 	lsr tt
 	brcc ipq12
 

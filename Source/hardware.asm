@@ -22,8 +22,10 @@
 #define OutputPin7	portc, 5
 #define OutputPin8	portc, 7
 
-//#define DebugOutputPin	portb, 0
+;#define DebugOutputPin	portb, 0
 
 #define LvaOutputPin	portb, 2
 
-#define DigitalOutPin	portb, 0
+#define DigitalOutPin	portb, 0		;used in S.Bus mode only
+
+#define k		kh:kl

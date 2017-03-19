@@ -1,31 +1,35 @@
-KK2.1++ All-in-One R6 firmware by RC911
+KK2.1++ All-in-One R8 firmware by RC911
 
 
-Features (Revision 6)
+Features (Revision 8)
 =====================
 This custom firmware is based on the original KK2.0 1V6 firmware by Rolf Bakke. It has the following additional features:
-- Supports traditional receivers, CPPM (aka. PPM), Futaba S.Bus and Spektrum Satellite (DSM2/DSMX) units.
-- SL Mix flight mode with adjustable rate setting gives a soft transition from Self-level to Acro mode based on aileron/elevator stick input. Read the instructions below.
-- ESC calibration is done without a transmitter and it is sufficient to hold down a single button. This will help users with slow binding receivers do ESC calibration in a simple and safe way. ESC calibration must be enabled through the menu before it can be accessed. Read the instructions below to learn the new ESC calibration routine.
+- Supports traditional receivers, CPPM (aka. PPM), Futaba S.Bus (normal and HS mode) and Spektrum Satellite (DSM2/DSMX) units.
+- SL Mix flight mode with adjustable rate setting gives a soft transition from Self-level to Acro mode based on aileron/elevator stick input.
+- ESC calibration is done without a transmitter and it is sufficient to hold down a single button. This will help users with slow binding receivers do ESC calibration in a simple and safe way. ESC calibration must be enabled through the menu before it can be accessed.
 - Board orientation can be set to 0 (default), 90, 180 or 270 degrees. This setting is found on the 'Advanced' sub-menu. Some code was borrowed from Steveis.
 - Supports boards with reversed button order.
-- Multiple user profiles selectable from the SAFE screen allow separate settings for aerobatics, aerial photo, battery types and more. Read the instructions below.
+- Multiple user profiles selectable from the SAFE screen allow separate settings for aerobatics, aerial photo, battery types and more.
 - Customizable AUX switch functions with support for 5 switch positions. Available functions: Flight Mode, Lost Model Alarm, Motor Spin and Stick Scaling Offset.
 - In S.Bus mode, a switch assigned to DG2 (aka. channel 18) can control the following functions: Motor Spin and Digital Output.
-- Motor Spin feature that will keep motors spinning at zero throttle and prevent disarming in mid-air. Controlled from the AUX switch.
+- The Motor Spin feature will keep motors spinning at zero throttle and prevent disarming in mid-air. Controlled from the AUX switch.
 - TPA (Throttle PI Adjustment) with separate factors for P and I at 5 throttle levels.
-- TSSA (Throttle Stick Scaling Adjustment) at 5 throttle levels.
+- TSSA (Throttle Stick Scaling Adjustment) at 5 throttle levels. Can, for instance, be used to perform fast flips at zero throttle.
 - Remote tuning of PI gains, ACC trim and gimbal gains using AUX2 and AUX3. PS: This feature is available for CPPM, S.Bus and Satellite only.
-- Quick Tuning lets you edit several settings on an alternative "SAFE" screen. You can arm and test-fly your settings from the TUNING screen. PS: This feature is available for traditional receivers only and it even supports remote tuning if you map the AUX channel to AUX2.
+- Quick Tuning lets you edit several settings on an alternative "SAFE" screen. You can arm and test-fly your settings from the TUNING screen. PS: This feature is available for standard receivers only and it even supports remote tuning if you map the AUX channel to AUX2.
 - Channel mapping configurable for 8 input channels (in all RX modes). This enables receivers with less than 8 channels to access AUX2, AUX3 and AUX4 features.
 - Quiet ESCs while browsing the KK2 menu and editing settings.
-- Servo jitter has been reduced on M7 and M8 and motor layouts for Dualcopter and Tricopter were changed to take advantage of this.
+- Servo jitter has been reduced on M7 and M8 and motor layouts for Dualcopter and Tricopter were modified to take advantage of this.
+- Servo limits/endpoints can be set for M7 and M8.
+- Servo refresh rate can be set to 50, 57, 67, 80, 100, 133 or 200Hz in LOW rate mode. HIGH rate is still 400Hz.
+- Servo oscillations can be eliminated/reduced by using a new filter parameter named "Osc. Damping".
 - PWM output resolution has increased from 555 to 625 steps on M1 - M6 and from 555 to 2500 steps on M7 and M8. You may have to increase all Stick Scaling values by 10 - 15% because of this.
-- Motors and ESCs can be easily checked for correct wiring. Read more about the 'Check Motor Outputs' feature below.
-- Remote gimbal offset control using AUX2 and AUX3. Based on Steveis' firmware, but with some changes of my own. PS: In standard RX mode you can map the AUX input to AUX2 or AUX3 to control a single axis.
-- Support for gimbals with differential mixing (in addition to normal gimbals). Differential mixing code was borrowed from Brontide's firmware.
-- Stand-alone (servo) gimbal controller mode. Read the instructions below.
-- Adjustable stick 'dead zone' for the aileron, elevator and yaw input channels. Read the instructions below.
+- Motors and ESCs can be easily checked for correct wiring by using the 'Check Motor Outputs' feature.
+- WS2812 RGB LED support with output on M6 or M7 for up to 25 RGB LEDs.
+- Stand-alone (servo) gimbal controller mode.
+- Remote gimbal offset control using AUX2 and AUX3. Based on Steveis' firmware, but with some changes of my own. PS: In standard RX mode you can map the AUX input to AUX2 or AUX3 to control a single gimbal axis.
+- Support for gimbals with differential mixing. Differential mixing code was borrowed from Brontide's firmware.
+- Adjustable stick 'dead zone' for the aileron, elevator and yaw input channels.
 - Flight timer (displayed on the SAFE screen) runs while armed and throttle is above idle.
 - An alternative home/SAFE screen with large font can be selected for better readability on small screens.
 - A Version Info screen is accessible from the main menu and is not displayed during start-up. The selected RX mode is displayed here as well.
@@ -34,9 +38,9 @@ This custom firmware is based on the original KK2.0 1V6 firmware by Rolf Bakke. 
 - Battery voltage is logged and displayed on the SAFE screen.
 - Adjustable battery voltage offset with presets available for KK2.1 and KK2.1.5 (default). The voltage offset can be adjusted in 0.025V steps.
 - The KK2 LED will flash rapidly for a few seconds after arming if the Low Voltage Alarm value is set too low.
-- Serious RX signal problems will be logged to EEPROM and displayed when disarmed or after a reboot. Read more about this feature below.
+- Serious errors, like RX signal problems, will be logged to EEPROM and displayed when disarmed or after a reboot.
 - Adjustable sensor settings (i.e. LP filter, gyro rate and ACC range).
-- The sensor reading and self leveling code was borrowed from Steveis. This includes his improved 8.32 maths library and self-adjusting magic number code. Thanks Steveis :)
+- Using Steveis' improved 8.32 maths library and self-adjusting "magic number" code. Thanks Steveis :)
 
 See the whatsnew.txt document to learn what has changed since the previous version.
 See the tips.txt document for a few tips and tricks regarding setup, tuning and crash investigation. 
@@ -48,6 +52,8 @@ For standard receivers you'll need to connect aileron, elevator, throttle, rudde
 For CPPM (aka. PPM) you'll only use the throttle input connector.
 For S.Bus you must use the throttle input connector. This requires a special inverter cable to be used (HobbyKing PRODUCT ID: 297000004).
 For Satellite units you must use the throttle input connector. This requires a special converter cable to be used (HobbyKing PRODUCT ID: 297000005).
+
+An experimental 'Serial Link' mode is also available where the throttle pin is used for serial input and the aileron pin is used for serial output. An external KK2 controller, running my 'Port Expander' firmware, is required.
 
 The correct RX mode must be selected to match your receiver's output mode. Select "Initial Setup" from the KK2 menu and then choose "Select RX Mode" from the SETUP screen to access this setting. A restart will be required after an RX mode change.
 
@@ -97,7 +103,6 @@ Here is the improved ESC calibration procedure:
 Observe:
 - If you fail to trigger the ESC calibration you'll have to repeat the procedure from step #2 above to activate it again.
 - Upper throttle level will be set to 2.0 ms and the lower throttle level to 1.02 ms, which are the exact same values used by the original KK2.0 1V6 firmware (Don't be fooled by the "Throttle pass-through" message).
-- The 'Version Information' screen and its one second delay has been removed from the start-up sequence. This will make the ESC calibration routine safer because your ESCs will now see the 'full throttle' signal one second sooner (compared to the original KK2.0 1V6 firmware) and this reduces the risk for having motors going full throttle while doing the ESC calibration.
 
 
 Board orientation:
@@ -161,6 +166,11 @@ Motor Spin
 This feature will keep motors spinning at zero throttle input and also prevent accidental disarming in mid-air. It is controlled from the AUX switch (or the DG2 switch in S.Bus mode). On the AUX Switch Setup screen you specify which switch position(s) should activate the Motor Spin feature. This will be indicated by a special excamation mark behind the selected flight mode. The following flight modes will activate the Motor Spin feature: Acro!, SL Mix! and Normal SL!
 See the 'AUX switch setup' section above for more information.
 
+When the Motor Spin feature is used in conjunction with aggressive TSSA settings it is possible to perform fast flips at low (or zero) throttle, but for this to work best the Motor Spin Level parameter (see 'Misc. Settings') must be set so that your motors spin relatively fast at zero throttle. It is best to keep Motor Spin Level below the hover point though, as it otherwise can cause a fly-away situation if radio communication is lost! Also remember to increase your gyro rate and ACC range before doing extreme aerobatics.
+
+ATTENTION:
+Although the Motor Spin Level parameter can be used to make your copter descend slowly in a fail-safe situation, this is not something I'd recommend doing. Finding a good "descend" value for Motor Spin Level parameter will be difficult as it depends on battery voltage and other factors like weight and wind. You also risk making your copter fly away instead of descending!
+
 Observe:
 - The Motor Spin feature will prevent arming and disarming. This requires at least one position on your AUX switch where Motor Spin is disabled and this position must be selected to arm/disarm.
 - A status message will be displayed on the home/SAFE screen when the Motor Spin feature is active.
@@ -172,12 +182,12 @@ SL Mix
 ======
 The SL Mix flight mode can be activated from a switch assigned to the AUX input channel and the mixing rate is set from the Self-level Settings screen. The mixing rate parameter is linked to your SL P-gain setting so you should tune the SL P-gain first. A value of 5 corresponds to the LOW setting used in the old KK2.0 version, 10 corresponds to MEDIUM and 20 to HIGH, but you can even go as high as 50 if your SL P-gain is very high.
 
-I use this mode all the time now and found that it is great for practicing aerobatics. If you get in trouble (e.g. lose orientation) you can just center the aileron/elevator stick and the model will level itself. Another advantage is that you don't have to ramp up your 'Stick Scaling' values or mess with PI limits for flying around (compared to Normal Self-level mode).
+SL Mix mode is great for practicing aerobatics. If you get in trouble (e.g. lose orientation) you can just center the aileron/elevator stick and the model will level itself. Another advantage is that you don't have to ramp up your 'Stick Scaling' values or mess with PI limits for flying around (compared to Normal Self-level mode).
 
 Observe:
 - A 3-way switch should be assigned to the AUX channel to select flight mode - Acro, SL Mix or Normal SL. The selected flight mode will be displayed on the SAFE screen.
 - You should tune your model as best as you can in both acro and normal SL mode before trying the SL Stick Mixing mode.
-- Don't count on this mode saving your model if you perform acrobatic stunts and exceed the gyro limitation. It may actually make it worse! 
+- Don't count on this mode saving your model if you perform extreme aerobatics and exceed the gyro limitation. It may actually make it worse! 
 - If your model has built up any momentum, it will not stop moving immediately after centering the aileron/elevator stick! Take it slow if you're at beginner level.
 - This mode will work best for transmitters configured to use mode 2 or 3 (i.e. with aileron and elevator on the same stick).
 - Avoid using this mode if your model requires excessive stick trimming (e.g. when center of gravity is too far off). This will affect the SL mixing. In other words: You should only use this mode on a well-balanced model.
@@ -199,7 +209,8 @@ Observe:
 
 TSSA (Throttle Stick Scaling Adjustment)
 ========================================
-TSSA can be used to increase or lower stick sensitivity (i.e. stick scaling) at certain throttle stick positions.
+TSSA can be used to increase or lower stick sensitivity (i.e. stick scaling) at certain throttle stick positions. To perform fast flips at low (or zero) throttle you should also set the Motor Spin Level parameter to a suitable value (see the Motor Spin section above for more information).
+
 The TSSA settings are accessed from the Expert Settings sub-menu and has one stick scaling factor for each of the five throttle stick positions. Factors can be set from 0.1 to 1.5 in steps of 0.1. The default setting is 1.0 for all TSSA factors.
 TSSA and TPA share the same throttle position ladder and have a similar user interface, so read the TPA section above for more information regarding this.
 
@@ -210,12 +221,13 @@ For safety reasons, TSSA is linked to the Motor Spin feature. This means that TS
 
 Observe:
 - The current throttle stick position is indicated by a black dot in the leftmost column on the settings screen and will help you determine which setting to modify.
-- You may have to increase the MPU sensor settings (gyro and ACC range) when using TCSS factors above 1.0.
+- You may have to increase the MPU sensor settings (gyro and ACC range) when using TSSA factors above 1.0.
+- Avoid doing extreme aerobatics in SL-Mix mode!
 
 
 Lost model alarm
 ================
-The Lost Model alarm can be trigged from a switch assigned to the AUX input channel, but only if you have assigned the Alarm function to an available slot on the AUX Switch Setup screen. You should test the alarm in SAFE mode to verify that it is working.
+The Lost Model alarm can be trigged from a switch assigned to the AUX input channel, but only if you have assigned the Alarm function to an available slot on the AUX Switch Setup screen. You should test the alarm at the SAFE screen to verify that it is working.
 
 An alternative way to activate the Lost Model Alarm is to wait 20 seconds for the Auto Disarm feature (must be active) to disarm your KK2 board. The alarm will not sound if you disarm your KK2 manually and the alarm will stop when you arm your board again.
 
@@ -244,6 +256,17 @@ Observe:
 - See the Tips.txt document for more examples and more ways to use the channel mapping feature. You can even fix a defective input pin...
 
 
+Servo settings
+==============
+The 'Servo Filter' setting will reduce fast oscillations/jitter on all servo outputs, but you may have to set this value quite high for it to have any effect. Avoid setting the Servo Filter value to 100 as this will stop all servo motion.
+
+The 'Osc. Damping' parameter works in conjunction with the Servo Filter value to eliminate/reduce servo oscillations. Try increasing the Osc. Damping value step by step until the oscillations disappear. Increasing the Servo Filter value will also have a positive effect.
+
+Endpoints can be set for servos on M7 and M8 to avoid hitting mechanical obstructions. The default setting (-100, 100) will allow full servo travel in both directions. Finding the endpoints is quite easy if you assign potentiometers on your transmitter to Aux2 and Aux3. See the Tips.txt document for further instructions.
+
+The 'Low PWM Rate' parameter allows you to select a refresh rate (50, 57, 67, 80, 100, 133 or 200Hz) for servo outputs that are set to LOW rate in Mixer Editor. All outputs that are set to HIGH rate will run at 400Hz as usual. 400Hz is recommended for digital servos.
+
+
 Remote gimbal offset control
 ============================
 Gimbal offsets can be controlled from your transmitter channels assigned to AUX2 (pitch) and AUX3 (roll). Potentiometers are recommended, but you can also use switches if you only want to change between a few fixed offset positions. This feature is based on Steveis' firmware, but I did some changes to make it utilize the full input control range.
@@ -252,7 +275,7 @@ Observe:
 - Roll and pitch gains are set from the Gimbal Settings screen. Values in the range of 500 to 600 are common. A negative value will reverse the servo direction.
 - Select gimbal mixing mode according to your gimbal type. 'Diff' is used for SSG (Super Simple Gimbal) and 'None' is for normal gimbal with one servo for roll and one for pitch.
 - Offsets cannot be adjusted while navigating the KK2 menus. This can only be done during flight and at the SAFE screen.
-- Most Mixer Editor values (e.g. Offset) for M7 and M8 have no effect on the gimbal, but output type and rate will.
+- Most Mixer Editor values (e.g. Offset) for M7 and M8 have no effect on the gimbal, but the Type and Rate parameters will.
 - To access this feature using a standard RX you will have to map the AUX input to either AUX2 (pitch) or AUX3 (roll).
 
 
@@ -262,7 +285,7 @@ The gimbal Lock and Home features are controlled from a 3-way switch assigned to
 
 When activated, the Lock feature will make the gimbal stop responding to self-level corrections, but gimbal offsets can still be adjusted remotely.
 
-When the Home feature is activated the gimbal will go to a user-defined position and stay there until this feature is switched off again. It will not respond to self-level corrections nor remote offset adjustments in this mode. The Home Roll and Pitch positions are set from the second Gimbal Settings screen. Valid range is -1000 to 1000.
+When the Home feature is activated the gimbal will go to a user-defined position and stay there until this feature is switched off again. In this mode it will not respond to self-level corrections nor remote offset adjustments. The Home Roll and Pitch positions are set from the second Gimbal Settings screen. Valid range is -1000 to 1000.
 
 Observe:
 - To access these features using a standard RX or Satellite unit you will have to map an existing channel (e.g. AUX) to AUX4.
@@ -388,6 +411,31 @@ Observe:
 - Endpoints should be adjusted on your transmitter after changing this parameter value.
 
 
+RGB LED (WS2812)
+================
+A WS2812 RGB LED strip with up to 25 LEDs can be connected to M6 or M7 on your KK2 controller. The red, green and blue components of each LED can be set to any level between 0 and 255 in the editor, giving a total of 16777216 combinations per LED. The RGB LED strip will not be animated nor updated during flight, but you can define up to 4 different light patterns and assign one of them to each user profile.
+
+A common brightness value can be used to adjust the brightness level of all active LEDs. This makes it possible to re-use the same pattern, but with different brightness levels in multiple user profiles. The brightness value range is -100 to 100 where a positive value will increase all non-zero RGB values and a negative value will reduce the all non-zero RGB values. The WS2812 RGB LED strip will be updated as you adjust the brightness parameter.
+
+This is the recommended procedure for RGB LED setup:
+1. First select Output Pin (M6 or M7). This setting is common for all user profiles.
+2. Select an LED pattern (1 - 4) to be used for the active user profile. The same pattern can be used in multiple user profiles.
+3. If you want to edit the selected LED pattern, open the editor by selecting "Edit RGB LED Data". Observe: This will affect all user profiles using this LED pattern.
+4. Adjusting the Brightness value is optional, but is a lot faster than editing all RGB values manually. This parameter is linked to the active user profile.
+
+ATTENTION:
+Only 5V WS2812(b) LED strips should be used. DO NOT connect other types of LED strips to your KK2 board as this will most likely destroy/damage your controller and other components connected to the M2-M8 ports!
+The WS2812 LED strip can be cut into smaller sections and extended with wires, but pay close attention to the markings on the LED strip and avoid crossing the +5V and GND connections. Serial data must be linked from output (DO) to input (DIN).
+
+Observe:
+- The WS2812 RGB LED settings can be found on the 'Extra Features' sub-menu.
+- The RGB LED editor cannot be accessed until an output pin has been selected.
+- The set brightness value (if any) will be ignored while editing the LED pattern.
+- Setting the Output Pin parameter to "None" will disable the RGB LED feature, but the LED strip may stay lit until it is disconnected or the power is switched off.
+- The RGB LED data will not be affected by a user profile reset, but resetting user profile #1 will set the WS2812 'Output Pin' parameter to "None" (Disabled).
+- The RGB LED feature will automatically be disabled if the chosen pin is configured for ESC or Servo usage at a later point.
+
+
 LCD contrast
 ============
 The LCD contrast can be adjusted within a limited range. Go to the LCD Contrast screen and use the UP and DOWN buttons to adjust, then press the SAVE button to save your new setting and exit.
@@ -422,6 +470,8 @@ The following errors are logged:
 2. "FAILSAFE!" (for S.Bus only).
 3. "Sat protocol error!" (for DSM2/DSMX only).
 4. "CPPM sync was lost!" (for CPPM only).
+5. "Loop time error!" (for all receiver modes).
+6. "Unknown error!" (for all receiver modes, but you will most likely never see this error message).
 
 Observe:
 - This feature is enabled by default.
@@ -433,31 +483,37 @@ Default settings
 ================
 These are the default parameter values that will be set initially and during a user profile reset:
 
-PI gains/limits:  50, 100, 25, 20 (for aileron and elevator) and 50, 20, 50, 10 (for rudder)
-Self-level:       60, 20, 0, 0, 10
-Stick scaling:    30, 30, 50, 90
-Mode settings:    Yes, Yes, Yes, Yes, No
-Misc. settings:   10, 0, 0, 0, 50
-Channel mapping:  1, 2, 3, 4, 5, 6, 7, 8 (for std. RX, CPPM and S.Bus) and 2, 3, 1, 4, 5, 6, 7, 8 (for DSM2 and DSMX)
-MPU settings:     256 Hz, 500 deg/s, 4 g
-TPA settings:     P=1.0 and I=1.0 for all 5 throttle positions
-TSSA settings:    SS=1.0 for all 5 throttle positions.
-Gimbal settings:  0, 0, 0, 0, None, 0, 0
-AUX switch setup: Acro SS +0, Alarm SS +0, SL Mix SS +0, Alarm SS +0, Normal SL SS +0
-DG2 switch setup: No, No (for S.Bus only)
-Battery offset:   2 (default value for KK2.1.5, HC and Mini)
-Tuning rate:      Medium
+PI gains/limits:    50, 100, 25, 20 (for aileron and elevator) and 50, 20, 50, 10 (for rudder)
+Self-level:         60, 20, 0, 0, 10
+Stick scaling:      30, 30, 50, 90
+Mode settings:      Yes, Yes, Yes, Yes, No
+Misc. settings:     10, 0, 0, 0
+Channel mapping:    1, 2, 3, 4, 5, 6, 7, 8 (for std. RX, CPPM and S.Bus) and 2, 3, 1, 4, 5, 6, 7, 8 (for DSM2 and DSMX)
+MPU settings:       256 Hz, 500 deg/s, 4 g
+TPA settings:       P=1.0 and I=1.0 for all 5 throttle positions
+TSSA settings:      SS=1.0 for all 5 throttle positions.
+Servo settings:     50, 0, -100, 100, -100, 100, 80Hz
+Gimbal settings:    0, 0, 0, 0, None, 0, 0
+AUX switch setup:   Acro SS +0, Alarm SS +0, SL Mix SS +0, Alarm SS +0, Normal SL SS +0
+DG2 switch setup:   No, No (for S.Bus only)
+Battery offset:     2 (default value for KK2.1.5, HC and Mini)
+Tuning rate:        Medium
+WS2812 LED Pattern: 1
+WS2812 Brightness:  0
 
 For user profile #1 a few other settings are reset as well:
 
-LCD contrast:     36
-RX mode:          Standard RX
-Controller mode:  Normal (Stand-alone gimbal mode is disabled)
-Board offset:     0 degrees
-Error logging:    Enabled
+LCD contrast:       36
+RX mode:            Standard RX
+Controller mode:    Normal (Stand-alone gimbal mode is disabled)
+Board offset:       0 degrees
+WS2812 output pin:  None (feature disabled)
+
+Observe:
+- RGB LED data will not be cleared.
 
 
 Have fun! 
 =========
 Please read the information above carefully before using this firmware.
-Upgrading from revision 4 (R4) won't erase your settings, but I still recommend writing them down first.
+Upgrading from revision 7 (R7) won't erase your settings, but I still recommend writing them down first. Data from older versions will be lost!

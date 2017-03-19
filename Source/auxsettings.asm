@@ -8,35 +8,38 @@ AuxSwitchSetup:
 
 	clr AuxItem
 	clr Changes
-	rcall LoadAuxSwitchSetup	;load the AUX switch setup in case the user profile was modified (imported or cleared)
+	rcall LoadAuxSwitchSetup		;load the AUX switch setup in case the user profile was modified (imported or cleared)
 
-aux11:	push AuxItem			;get RX input to update the current AUX switch position
+	ldi t, 5				;initial timeout value for LCD update
+	mov ka, t
+
+aux11:	push AuxItem				;get RX input to update the current AUX switch position
 	push Changes
 	call GetRxChannels
 	pop Changes
 	pop AuxItem
 
-	lds t, RxBufferState		;update the display only when we have new data
-	cpi t, 3
-	breq aux10
+	rvbrflagtrue flagNewRxFrame, aux10	;update the display when we have new data
 
-	ldi yl, 25			;wait 2.5ms
+	ldi yl, 20				;wait 2ms
 	call wms
 
-	rvbrflagfalse RxFrameValid, aux10	;update the display also when no valid frames are received
+	dec ka
+	brpl aux11
 
-	rjmp aux18			;skip update
+aux10:	ldi t, 50
+	mov ka, t
 
-aux10:	call LcdClear6x8
+	call LcdClear6x8
 
-	clr t				;print all text labels first
+	clr t					;print all text labels first
 
 aux15:	push t
 	lds xl, AuxSwitchPosition
 	cp t, xl
 	brne aux22
 
-	ldi t, '@'			;show indicator for current AUX switch position
+	ldi t, '@'				;show indicator for current AUX switch position
 	rjmp aux23
 
 aux22:	ldi t, ' '
@@ -81,7 +84,7 @@ aux23:	call PrintChar
 
 	call LcdUpdate
 
-	lds t, RxMode			;skip delay for digital input modes
+	lds t, RxMode				;skip delay for digital input modes
 	cpi t, RxModeSBus
 	brge aux18
 
@@ -89,27 +92,27 @@ aux23:	call PrintChar
 
 aux18:	call GetButtons
 
-	cpi t, 0x08			;BACK?
+	cpi t, 0x08				;BACK?
 	brne aux12
 
 	mov t, Changes
 	andi t, 0x01
 	breq aux17
 
-	ldy AuxPos1Function		;save AUX functions to EEPROM
+	ldy AuxPos1Function			;save AUX functions to EEPROM
 	ldz eeAuxPos1Function
 	rcall SaveAuxSwitchSetup
 
 aux17:	andi Changes, 0x02
 	breq aux24
 
-	ldy AuxPos1SS			;save AUX stick scaling offsets to EEPROM
+	ldy AuxPos1SS				;save AUX stick scaling offsets to EEPROM
 	ldz eeAuxPos1SS
 	rcall SaveAuxSwitchSetup
 
 aux24:	ret
 
-aux12:	cpi t, 0x04			;PREV?
+aux12:	cpi t, 0x04				;PREV?
 	brne aux13
 
 	dec AuxItem
@@ -121,7 +124,7 @@ aux16:	call Beep
 	call ReleaseButtons
 	rjmp aux11	
 
-aux13:	cpi t, 0x02			;NEXT?
+aux13:	cpi t, 0x02				;NEXT?
 	brne aux14
 
 	inc AuxItem
@@ -131,7 +134,7 @@ aux13:	cpi t, 0x02			;NEXT?
 	clr AuxItem
 	rjmp aux16	
 
-aux14:	cpi t, 0x01			;CHANGE?
+aux14:	cpi t, 0x01				;CHANGE?
 	brne aux19
 
 	mov yl, AuxItem
@@ -147,12 +150,12 @@ aux14:	cpi t, 0x01			;CHANGE?
 aux25:	ldx AuxPos1Function
 	ori Changes, 0x01
 
-aux26:	add xl, yl			;calculate variable's address
+aux26:	add xl, yl				;calculate variable's address
 	brcc aux20
 
 	inc xh
 
-aux20:	ld t, x				;fetch and increase the variable
+aux20:	ld t, x					;fetch and increase the variable
 	inc t
 	cpi t, 4
 	brlt aux21
@@ -179,13 +182,13 @@ PrintAuxFnValue:
 
 	lrv X1, 12
 	call PrintColonAndSpace
-	ld t, y+			;register Y (input parameter) points to the item index (RAM variable)
+	ld t, y+				;register Y (input parameter) points to the item index (RAM variable)
 	push t
 	andi t, 0x03
 	ldz auxfn*2
 	call PrintFromStringArray
 
-	pop t				;print custom symbol when the Motor Spin feature is active
+	pop t					;print custom symbol when the Motor Spin feature is active
 	andi t, 0x04
 	breq paf1
 
@@ -205,7 +208,7 @@ PrintAuxSSValue:
 	ldz ss*2
 	call PrintString
 
-	ld t, y+			;register Y (input parameter) points to the item index (RAM variable)
+	ld t, y+				;register Y (input parameter) points to the item index (RAM variable)
 	andi t, 0x03
 	ldz auxss*2
 	call PrintFromStringArray
@@ -220,7 +223,7 @@ LoadAuxSwitchSetup:
 
 	ldy AuxPos1Function
 	ldz eeAuxPos1Function
-	ldi xh, 10			;number of bytes to be read
+	ldi xh, 10				;number of bytes to be read
 
 lass1:	call GetEePVariable8
 	st y+, xl
@@ -235,10 +238,10 @@ lass1:	call GetEePVariable8
 
 SaveAuxSwitchSetup:
 
-	ldi xh, 5			;number of bytes to be written
+	ldi xh, 5				;number of bytes to be written
 
-sass1:	ld xl, y+			;register Y (input parameter) points to the RAM variable
-	call StoreEePVariable8		;register Z (input parameter) points to the EEPROM variable
+sass1:	ld xl, y+				;register Y (input parameter) points to the RAM variable
+	call StoreEePVariable8			;register Z (input parameter) points to the EEPROM variable
 	dec xh
 	brne sass1
 
@@ -267,22 +270,22 @@ aux7:	.db 23, 0, 85, 9
 
 AddAuxStickScaling:
 
-	clr xl
 	clr xh
+	clr xl
 	clr yh
 
 	lds yl, AuxStickScaling
 	lsr yl
 	brcc ass1
 
-	adiw x, 20			;increase aileron and elevator stick scaling
+	adiw x, 20				;increase stick scaling by 20
 
 ass1:	lsr yl
 	brcc ass2
 
-	adiw x, 30			;increase aileron and elevator stick scaling
+	adiw x, 30				;increase stick scaling by 30
 
-ass2:	b16store Temp			;increase aileron, elevator and rudder stick scaling by 0 (off), 20, 30 or 50
+ass2:	b16store Temp				;increase aileron, elevator and rudder stick scaling by 0 (off), 20, 30 or 50
 	call TempDiv16
 	b16add StickScaleRoll, StickScaleRollOrg, Temp
 	b16add StickScalePitch, StickScalePitchOrg, Temp

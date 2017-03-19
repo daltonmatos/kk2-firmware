@@ -17,7 +17,7 @@ blog11:	;header
 	lrv X1, 0				;lowest battery voltage
 	ldz blog2*2
 	call PrintString
-	b16mov Temper, BatteryVoltageLogged
+	b16loadx BatteryVoltageLogged
 	call PrintVoltage
 	call LineFeed
 
@@ -33,7 +33,7 @@ blog11:	;header
 	lrv Y1, 35
 	ldz lvalbl*2
 	call PrintString
-	b16mov Temper, BattAlarmVoltage
+	b16loadx BattAlarmVoltage
 	call PrintVoltage
 
 	;footer

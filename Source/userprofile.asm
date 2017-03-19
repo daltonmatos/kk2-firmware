@@ -33,8 +33,8 @@ ups10:	ldz eeUserProfile		;get default user profile value (from user profile #1)
 
 ups12:	call PrintSelectFooter
 
-ups13:	;print selector
-	ldzarray ups7*2, 4, Item
+	;print selector
+ups13:	ldzarray ups7*2, 4, Item
 	call PrintSelector
 
 	call LcdUpdate
@@ -103,6 +103,11 @@ ups21:	ldz ups5*2			;reset the active user profile
 
 ups18:	call InitUserProfile		;YES was pressed. Resetting parameters
 	call setup_mpu6050		;update the MPU
+
+	call LoadWS2812Settings		;update the RGB LED strip
+	call WS2812LoadData
+	call WS2812SendData_Safe
+
 	call InitialSetup		;display initial setup menu
 	ret
 
@@ -236,6 +241,10 @@ cup11:	mov zh, yl
 
 	BuzzerOff			;yes
 	call setup_mpu6050		;update the MPU
+
+	call LoadWS2812Settings		;update the RGB LED strip
+	call WS2812LoadData
+	call WS2812SendData_Safe
 
 	clr xl				;show status dialogue (XL=0 means Success)
 	rjmp cup8

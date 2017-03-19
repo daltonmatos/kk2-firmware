@@ -7,7 +7,7 @@ smm23:	ldy smm1*2
 	lds xl, MainMenuListYposSave
 	lds xh, MainMenuCursorYposSave
 
-	ldi t, 20			;number of menu items
+	ldi t, 21			;number of menu items
 	call Menu
 
 	sts MainMenuListYposSave, yl
@@ -46,6 +46,7 @@ smm1:	.dw mRTun*2			;Remote Tuning
 	.dw mSS*2			;Stick Scaling
 	.dw mMode*2			;Mode Settings
 	.dw mMisc*2			;Misc. Settings
+	.dw mServo*2			;Servo Settings
 	.dw mGimbl*2			;Gimbal Settings
 	.dw mAdv*2			;Advanced Settings
 	.dw mExp*2			;Expert Settings
@@ -68,6 +69,7 @@ smm18:	.dw RemoteTuningDlg
 	.dw StickScaling
 	.dw ModeSettings
 	.dw MiscSettings
+	.dw ServoSettings
 	.dw GimbalSettings
 	.dw AdvancedSettings
 	.dw ExpertSettings

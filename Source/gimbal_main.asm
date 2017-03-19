@@ -65,7 +65,8 @@ gm8:	lrv ButtonDelay, 0
 
 gm4:	rvinc ButtonDelay		;yes, ButtonDelay++
 	rvcpi ButtonDelay, 50		;ButtonDelay == 50?
-	breq gm6			;yes, re-check button
+	breq gm6
+
 	rjmp gm1			;no, go to start of the loop	
 
 gm6:	rvbrflagtrue Mode, gm8		;abort if the button hasn't been released since start-up

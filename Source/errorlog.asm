@@ -19,20 +19,24 @@ el10:	clc					;no error logged
 
 el11:	LedToggle
 	mov ErrCode, t
-	andi ErrCode, 0x03
+	cpi ErrCode, MaxError
+	brlo el12
+
+	ldi ErrCode, MaxError			;unknown error code!
 
 	;header
-	lrv X1, 10
+el12:	lrv X1, 10
 	ldz errlog*2
 	call PrintHeader
 
 	;logged data
-	lrv X1, 0
+	lrv X1, 0				;error message
 	mov t, ErrCode
+	dec t
 	ldz ecode*2
 	call PrintFromStringArray
 
-	call LineFeed
+	call LineFeed				;time stamp
 	lrv X1, 0
 	ldz time*2
 	call PrintString
@@ -97,11 +101,14 @@ eloff:	.db "DISABLED", 0, 0
 
 estate:	.dw eloff*2, elon*2
 
-csl1:	.db "CPPM sync was lost!", 0
 ;sta9:	.db "RX signal was lost!", 0
 ;sta32:	.db "FAILSAFE!", 0
 ;sta45:	.db "Sat protocol error!", 0
-ecode:	.dw csl1*2, sta9*2, sta32*2, sta45*2
+csl:	.db "CPPM sync was lost!", 0
+lte:	.db "Loop time error!", 0, 0
+uke:	.db "Unknown error!", 0, 0
+
+ecode:	.dw sta9*2, sta32*2, sta45*2, csl*2, lte*2, uke*2
 
 
 

@@ -31,11 +31,34 @@ To control gimbal pitch offset (AUX2) from your existing AUX input channel you w
 To control the gimbal HOME and LOCK features (AUX4) from AUX3 in Satellite mode you would change the channel mapping from 2, 3, 1, 4, 5, 6, 7, 8 (default) to 2, 3, 1, 4, 5, 6, 8, 7, but then you can no longer control the gimbal roll offset remotely. If you need to control both gimbal offsets remotely you can instead map AUX to AUX4 (2, 3, 1, 4, 5, 6, 7, 8 to 2, 3, 1, 4, 8, 6, 7, 5).
 
 
+Finding and testing the servo endpoints
+=======================================
+Endpoints can be set for servos connected to M7 and M8, but how do you find these values without a lot of guesswork and how do you test the limits to make sure they are working as inteded? Both problems can be solved quite easily, but this requires potentiometers assigned to input Aux2 and Aux3, so if you have less than 7 input channels you will have to use the Channel Mapping feature to make it work. The following procedure describes how to find all four endpoints, but before you begin, make sure both servos and their tilt platforms are fully operational and mechanically centered:
+
+1. Go to the Servo Settings screen and make sure the endpoints for M7 and M8 will allow full servo travel (-100, 100).
+2. On the Gimbal Settings screen, set both gain values to 1. Also make sure both gimbal offset values are zero. Write down the old values if necessary.
+3. Go to the SAFE screen and carefully turn both TX potentiometers CCW to operate the servos. Make sure to stop before hitting any obstruction. 
+4. Go to the second Receiver Test screen to find the endpoints. The Aux2 value is for M8 and Aux3 is for M7. Both values should be negative.
+5. Return to the Servo Settings screen and input the negative endpoint values for M7 and M8.
+6. Return to the SAFE screen and carefully turn both TX potentiometers CW to operate the servos. Make sure to stop before hitting any obstruction.
+7. Return to the second Receiver Test screen to find the endpoints. The Aux2 value is for M8 and Aux3 is for M7. Both values should now be positive.
+8. Return to the Servo Settings screen and input the positive endpoint values for M7 and M8.
+9. From the SAFE screen you can now test the limits as described below.
+
+PS: Minor adjustments can be done by editing the endpoint values manually (on the Servo Settings screen).
+
+Observe:
+- If you at a later point adjust the servo arm/rod mechanically or the mechanism gets damaged in a crash, you should also adjust the endpoints for this servo.
+- If servo offsets need to be adjusted, it is better to edit the Offset value in the KK2 Mixer Editor since this won't affect the servo endpoints.
+
+To test the servo endpoints you simply set both gimbal gains to 1, return to the SAFE screen and carefully turn the potentiometers on your transmitter in both directions (assuming they still are assigned to Aux2 and Aux3). If the endpoints are set correctly, the servo should stop before any obstruction is hit. Even if you continue turning the potentiometer in the same direction, the servo shouldn't move any further. Remember to set both gimbal gains to zero (or whatever they used to be) when you're done testing.
+
+
 Tuning the static gimbal offset parameters
 ==========================================
 The gimbal offset parameters found on the first Gimbal Settings screen are used to add a static offset to gimbal pitch and roll. The following procedure can be used to find good offset values without too much trial and error:
 
-1. On the Gimbal Settings screen set both (static) offset values to zero.
+1. On the Gimbal Settings screen, set both (static) offset values to zero.
 2. Return to the SAFE screen and use the potentiometers assigned to Aux2 and Aux3 to find the correct gimbal offset position when your model is level.
 3. Go to the second Receiver Test screen to find the RX input values for Aux2 (gimbal pitch) and Aux3 (gimbal roll).
 4. Multiply both values by 10 to find the static gimbal offset values.

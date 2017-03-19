@@ -11,15 +11,15 @@
 
 MotorLayout:
 
-	ldz eeMotorLayoutOK	;refuse access if no motor layout is loaded
-	call ReadEeprom		;read from user profile #1
+	ldz eeMotorLayoutOK			;refuse access if no motor layout is loaded
+	call ReadEeprom				;read from user profile #1
 	brflagtrue t, ml2
 
 	ldz nadtxt1*2
 	call ShowNoAccessDlg
 	ret
 
-ml2:	call LoadMixerTable	;load the mixer table to reflect changes made in the mixer editor (this fixes a bug in the original firmware)
+ml2:	call LoadMixerTable			;load the mixer table to reflect changes made in the mixer editor (this fixes a bug in the original firmware)
 	clr Item
 
 mot1:	call LcdClear6x8
@@ -27,15 +27,15 @@ mot1:	call LcdClear6x8
 	ldz mot11*2
 	call PrintString
 
-	tst Item		;item == ALL?
+	tst Item				;item == ALL?
 	brne mot13
 
-	ldz mot12*2		;yes, print "ALL"
+	ldz mot12*2				;yes, print "ALL"
 	call PrintString
 
 	setflagtrue flagShowAll
 
-	ldi t, 8		;show all 8 outputs
+	ldi t, 8				;show all 8 outputs
 	mov Counter, t
 	clr Output
 
@@ -47,7 +47,7 @@ mot14:	call ShowMotor
 
 	rjmp mot15
 
-mot13:	mov OutPut, Item	;no, show single motor.
+mot13:	mov OutPut, Item			;no, show single motor.
 	dec OutPut
 
 	mov xl, Item
@@ -58,7 +58,8 @@ mot13:	mov OutPut, Item	;no, show single motor.
 
 	call ShowMotor
 
-mot15:	lrv FontSelector, f6x8 	;footer
+	;footer
+mot15:	lrv FontSelector, f6x8
 	lrv PixelType, 1
 	lrv X1, 0
 	lrv Y1, 57
@@ -69,12 +70,12 @@ mot15:	lrv FontSelector, f6x8 	;footer
 
 	call GetButtonsBlocking
 
-	cpi t, 0x08		;BACK?
+	cpi t, 0x08				;BACK?
 	brne mot22
 
-	ret			;yes, return
+	ret
 
-mot22:	cpi t, 0x04		;NEXT?
+mot22:	cpi t, 0x04				;NEXT?
 	brne mot25
 
 	inc Item
@@ -101,7 +102,7 @@ ShowMotor:
 	clr yh
 	ldd xl, Z + MixvalueRoll
 	clr xh
-	tst xl		;extend sign
+	tst xl					;extend sign
 	brpl mot2
 
 	ser yh
@@ -124,7 +125,7 @@ mot3:	b16ldi Temp, 0.25
 	clr yh
 	ldd xl, Z + MixvaluePitch
 	clr xh
-	tst xl		;extend sign
+	tst xl					;extend sign
 	brpl mot4
 
 	ser yh
@@ -147,7 +148,7 @@ mot5:	b16ldi Temp, -0.25
 	clr yh
 	ldd xl, Z + MixvalueThrottle
 	clr xh
-	tst xl		;extend sign
+	tst xl					;extend sign
 	brpl mot16
 
 	ser yh
@@ -166,35 +167,35 @@ mot20:	ldd xl, Z + MixvalueYaw
 
 	setflagfalse flagUnused
 
-mot6:	brflagfalse flagUnused, mot7	;Output unused?
+mot6:	brflagfalse flagUnused, mot7		;output unused?
 
-	brflagfalse flagShowAll, mot8   ;Yes, ShowAll true?
-	ret				; Yes, skip drawing and return
+	brflagfalse flagShowAll, mot8   	;yes, ShowAll true?
+	ret					;yes, skip drawing and return
 
-mot8:	lrv X1, 66			; No, Print 'Not used' and return
+mot8:	lrv X1, 66				;no, print 'Not used' and return
 	lrv Y1, 27
 	ldz mot9*2
 	call PrintString
 	ret
 
-mot7:	ldd xl, Z + MixvalueFlags	;No, Motor or servo Output?
+mot7:	ldd xl, Z + MixvalueFlags		;motor or servo Output?
 	sbrc xl, bMixerFlagType
 	rjmp mot17
 
-	brflagtrue flagShowAll, mot18	;servo, ShowAll false?
-	lrv X1, 66			;Yes, print "servo" and return
+	brflagtrue flagShowAll, mot18		;servo, ShowAll false?
+	lrv X1, 66				;yes, print "servo" and return
 	lrv Y1, 27
 	ldz mot19*2
 	call PrintString
 
 mot18:	ret
 
-mot17:	lrv X2, xoff			;Motor
+mot17:	lrv X2, xoff				;motor
 	lrv Y2, yoff
 
-	call Bresenham			;draw line
+	call Bresenham				;draw line
 
-	rvsub X1, 4			;print symbol
+	rvsub X1, 4				;print symbol
 	rvsub Y1, 7
 	lrv FontSelector, s16x16
 	ldi t, 2
@@ -206,20 +207,20 @@ mot17:	lrv X2, xoff			;Motor
 
 mot10:	call PrintChar
 
-	rvsub X1, 14			;print motor number in symbol
+	rvsub X1, 14				;print motor number in symbol
 	rvadd Y1, 5
 	lrv FontSelector, f4x6
 	lrv PixelType, 0
 	mov t, Output
 	call PrintChar
 
-	brflagfalse flagShowAll, mot35	;print CW or CCW if flagShowAll is false
+	brflagfalse flagShowAll, mot35		;print CW or CCW if flagShowAll is false
 	rjmp mot27
 
 mot35:	lrv FontSelector, f6x8
 	lrv PixelType, 1
 
-	lrv Y1, 15			;print "Direction seen from above:" over three lines (starting at (0, 15))
+	lrv Y1, 15				;print "Direction seen from above:" over three lines (starting at (0, 15))
 	ldi t, 3
 	pushz
 	ldz mot34*2
@@ -231,10 +232,10 @@ mot35:	lrv FontSelector, f6x8
 	tst xl
 	brmi mot30
 
-	call PrintCW			;CW
+	call PrintCW				;CW
 	rjmp mot27
 
-mot30:	call PrintCCW			;CCW
+mot30:	call PrintCCW				;CCW
 
 mot27:	ret
 

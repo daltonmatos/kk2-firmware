@@ -86,13 +86,21 @@ udp4:	;flight timer
 	rcall LoadStatusString
 	call PrintString
 
-	brts udp25				;skip ahead if status bits are set (T flag is set in LoadStatusString)
+	brts udp25				;skip ahead when status bits are set (T flag is set in LoadStatusString)
 
-	lds t, TuningMode			;display the selected tuning mode
+	rvbrflagfalse flagPortExpTuning, udp26
+
+	ldz udp6*2				;tuning altitude hold (Port Expander)
+	call PrintString
+	ldz alth*2
+	call PrintString
+	rjmp udp51
+
+udp26:	lds t, TuningMode			;display the selected tuning mode
 	tst t
 	breq udp51
 
-	ldz udp6*2				;Tuning
+	ldz udp6*2				;tuning
 	call PrintString
 	lds t, TuningMode
 	cpi t, 1				;print "Ail+Ele" if tuning aileron when linked with elevator
@@ -142,19 +150,19 @@ udp54:	;battery voltages
 	call LineFeed
 	ldz batt*2
 	call PrintString
-	b16mov Temper, BatteryVoltage
+	b16loadx BatteryVoltage
 	rcall PrintVoltage
 
 	lrv X1, 84				;lowest battery voltage logged
-	b16mov Temper, BatteryVoltageLogged
+	b16loadx BatteryVoltageLogged
 	rcall PrintVoltage
 	call LineFeed
 
 udp20:	lrv X1, 0				;LVA setting
 	ldz lvalbl*2
 	call PrintString
-	b16mov Temper, BattAlarmVoltage
-	rcall PrintVoltage
+	b16loadx BattAlarmVoltage
+	rcall PrintVoltage2
 
 	;footer
 udp23:	lrv Y1, 57
@@ -165,6 +173,7 @@ udp23:	lrv Y1, 57
 udp21:	call LcdUpdate
 
 	rvsetflagfalse flagMutePwm
+	sts flagRxBufferFull, t
 	ret
 
 
@@ -173,18 +182,23 @@ udp21:	call LcdUpdate
 
 PrintVoltage:
 
-	b16cmp Temper, BatteryVoltageOffset	;zero input voltage?
-	brne pvv1
+	b16loadz BatteryVoltageOffset		;zero input voltage?
+	cp xl, zl
+	cpc xh, zh
+	brne PrintVoltage2
 
-	b16clr Temper				;yes
+	clr xh					;yes
+	clr xl
 
-pvv1:	b16ldi Temp, 2.5			;calculate value
-	b16mul Temp, Temper, Temp
-	call TempDiv100
+PrintVoltage2:
 
-	b16load Temp				;print the integer part
+	clr yh					;calculate and print voltage value
+	b16muli 2.5
+
+	b16muli 0.3203125			;divide by 100
+	b16muli 0.03125
+
  	call Print16Signed
-
 	rcall PrintDecimal
 	ldi t, 'V'
 	call PrintChar
@@ -204,10 +218,7 @@ PrintDecimalNoDP:
 	mov xl, yh				;print the fractional part (one digit)
 	clr xh
 	clr yh
-	b16store Temp2
-	b16ldi Temper, 0.0390625
-	b16mul Temp2, Temp2, Temper
-	b16load Temp2
+	b16muli 0.0390625
 	call Print16Signed
 	ret
 
@@ -286,6 +297,7 @@ upd3:	.db "Controller mode.", 0, 0
 gblmode:.dw upd2*2, upd3*2
 
 udp6:	.db ". Tuning ", 0
+alth:	.db "Alt. Hold", 0
 
 udp7:	.db 0, 19, 127, 40
 udp8:	.db 0, 16, 127, 25
@@ -315,6 +327,11 @@ sta32:	.db "FAILSAFE!", 0
 
 sta41:	.db "No Satellite input!", 0
 sta45:	.db "Sat protocol error!", 0
+
+sta51:	.db "No serial data!", 0
+sta52:	.db "Protocol error!", 0
+sta53:	.db "No RX input!", 0, 0
+sta54:	.db "RX problem!", 0
 
 
 
@@ -390,21 +407,27 @@ lss4:	lds t, RxMode
 lss5:	cpi t, RxModeCppm
 	brne lss6
 
-	call GetCppmStatus			;CPPM RX mode
+	rcall GetCppmStatus			;CPPM RX mode
 	ret
 
 lss6:	cpi t, RxModeSBus
 	brne lss7
 
-	call GetSBusStatus			;S.Bus RX mode
+	rcall GetSBusStatus			;S.Bus RX mode
 	ret
 
-lss7:	call GetSatStatus			;Satellite mode
+lss7:	cpi t, RxModeSerialLink
+	breq lss17
+
+	rcall GetSatStatus			;Satellite mode
+	ret
+
+lss17:	rcall GetSerialLinkStatus		;Serial Link mode
 	ret
 
 
 
-	;--- Get status for standard mode ---
+	;--- Get status for standard RX mode ---
 
 GetStdStatus:
 
@@ -471,6 +494,47 @@ GetSatStatus:
 	ret
 
 gss1:	ldz sta41*2				;no Satellite input
+	ret
+
+
+
+	;--- Get status for Serial Link mode ---
+
+GetSerialLinkStatus:
+
+	lds t, StatusBits
+	andi t, NoSerialData
+	breq gsls1
+
+	ldz sta51*2				;no serial data
+	ret
+
+gsls1:	lds t, StatusBits
+	andi t, RxInputProblem
+	brne gsls2
+
+	ldz sta52*2				;protocol error
+	ret
+
+gsls2:	lds t, RxFlags
+	andi t, NoRxInput
+	cpi t, NoRxInput
+	brne gsls3
+
+	ldz sta53*2				;no RX input
+	ret
+
+gsls3:	lds t, RxFlags
+	andi t, NoRxInput
+	breq gsls4
+
+	lds xl, StatusBits			;no aileron/elevator/throttle/rudder input
+	sts StatusBits, t
+	rcall GetStdStatus
+	sts StatusBits, xl
+	ret
+
+gsls4:	ldz sta53*2				;RX problem (S.Bus failsafe or Satellite protocol error)
 	ret
 
 
@@ -548,17 +612,19 @@ bhs11:	;flight timer
 bhs13:	;live battery voltage
 	lrv X1, 0
 	lrv Y1, 34
-	b16mov Temper, BatteryVoltage
+	b16loadx BatteryVoltage
 	rcall PrintVoltage
 
 	;logged battery voltage
 	lrv X1, 67
-	b16mov Temper, BatteryVoltageLogged
-	b16ldi Temp, 400
-	b16cmp Temper, Temp
+	b16loadx BatteryVoltageLogged
+
+	ldz 400					;adjust cursor position?
+	cp xl, zl
+	cpc xh, zh
 	brge bhs15
 
-	lrv X1, 79				;less than 10V
+	lrv X1, 79				;yes (less than 10V)
 
 bhs15:	rcall PrintVoltage
 

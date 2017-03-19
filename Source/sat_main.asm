@@ -34,6 +34,7 @@ SatelliteMain:
 	sts Timer1min, t
 
 	sts TuningMode, t
+	sts flagPortExpTuning, t
 
 	sts flagPwmGen, t
 
@@ -52,18 +53,17 @@ SatelliteMain:
 	sts flagAileronCentered, t	;set to false
 	sts flagElevatorCentered, t
 
-	ldi xl, 16
-	sts RxFrameLength, xl
-
-	sts RxFrameValid, t
+	sts flagRxFrameValid, t
+	sts flagNewRxFrame, t
 	sts TimeoutCounter, t
 
-	sts RxBufferIndex, t
-	sts RxBufferIndexOld, t
-	sts RxBufferState, t
+	sts flagRxBufferFull, t
 	ldz RxBuffer0
 	sts RxBufferAddressL, zl
 	sts RxBufferAddressH, zh
+	ldz RxBuffer16
+	sts RxBufferEndL, zl
+	sts RxBufferEndH, zh
 
 	sts Channel1L, t
 	sts Channel1H, t
@@ -200,7 +200,8 @@ am8:	lrv ButtonDelay, 0
 
 am4:	rvinc ButtonDelay		;yes, ButtonDelay++
 	rvcpi ButtonDelay, 50		;ButtonDelay == 50?
-	breq am6			;yes, re-check button
+	breq am6
+
 	rjmp am1			;no, go to start of the loop	
 
 am6:	rvbrflagtrue Mode, am8		;abort if the button hasn't been released since start-up

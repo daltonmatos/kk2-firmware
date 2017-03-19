@@ -116,3 +116,37 @@ Revision 6:
 * Bug fixed: Switching user profile was allowed when the ERROR LOG screen was active.
 * Bug fixed: Negative battery voltages (caused by a negative offset) trigged the low voltage alarm.
 * Bug fixed: No beep was produced when the user profile buttons were pressed (on the home screen).
+
+
+Revision 7:
+-----------
+
+* All servo related settings can now be found on a new 'Servo Settings' screen.
+* Servo limits/endpoints can be set for M7 and M8.
+* Servo refresh rate can be set to 50, 57, 67, 80, 100, 133 or 200Hz in LOW rate mode. HIGH rate is still 400Hz.
+* Servo oscillations can be eliminated/reduced by using a new filter parameter named 'Osc. Damping'.
+* WS2812 RGB LED support with output on M6 or M7. The LED strip can have up to 25 RGB LEDs.
+* The Motor Spin feature now has a 'Motor Spin Level' parameter that gives better control at low/zero throttle.
+* 'Serial Link' RX mode was added to support my KK2.0 Port Expander firmware.
+* Sensor reading (I2C) code rewritten with focus on speed. This part of the source code is also easier to follow/read.
+* RX input synchronization code improved. This includes detection of wrong input signals.
+* Serial RX input reading (i.e. S.Bus and Satellite data) improved.
+* S.Bus HS (High Speed, 7ms) mode tested and confirmed to be working without problems.
+* New motor layout: DualCopter Chinook. Mixer values supplied by CO2X. Thanks!
+* When upgrading from revision 6 (R6) the disclaimer text will be displayed as a reminder. Restart will also be enforced.
+* Removed debug screen for serial RX data.
+* Miscellaneous GUI changes and code optimizations.
+* Bug fixed: SL gain was not limited correctly. This bug appeared in revision 6.
+* Bug fixed: The Battery Log screen will no longer be displayed after ESC calibration.
+* Bug fixed: Repeated arming (i.e. when already armed) affected the PWM output. This bug stems from the original KK2.0 code.
+
+
+Revision 8:
+-----------
+
+* 4 RGB LED patterns can be defined and accessed from any user profile.
+* Brightness can be adjusted (+/- 100) for all active WS2812 RGB LEDs.
+* The RGB LED strip is updated immediately after importing and resetting user profiles.
+* Bug fixed: S.Bus sync problems caused annoying beeping on the SAFE screen (depending on the AUX switch position).
+* Bug fixed: Satellite RX (re-)syncronization code didn't work as intended.
+* Bug fixed: Low Voltage Alarm could produce beeps even when deactivated and with the battery monitor wire disconnected.

@@ -882,19 +882,20 @@ se6:	dec t
 
 ShowConfirmationDlg:
 
-	pushz			;input parameter (text pointer)
+	pushz				;input parameter (text pointer)
 	rcall LcdClear12x16
 
-	lrv X1, 22		;header
+	;header
+	lrv X1, 22
 	ldz confirm*2
 	rcall PrintHeader
 
-	lrv X1, 0		;print input text
+	lrv X1, 0			;print input text
 	lrv Y1, 26
 	popz
 	rcall PrintString
 
-	lrv X1, 0		;print "Are you sure?"
+	lrv X1, 0			;print "Are you sure?"
 	lrv Y1, 35
 	ldz rusure*2
 	rcall PrintString
@@ -909,10 +910,10 @@ ShowConfirmationDlg:
 
 scd2:	rcall GetButtonsBlocking
 
-	cpi t, 0x08		;CANCEL?
+	cpi t, 0x08			;CANCEL?
 	breq scd3
 
-	cpi t, 0x01		;YES?
+	cpi t, 0x01			;YES?
 	brne scd2
 
 scd3:	ret
@@ -921,8 +922,10 @@ scd3:	ret
 	;headers
 confirm:.db "CONFIRM", 0
 warning:.db "WARNING!", 0, 0
+remindr:.db "REMINDER", 0, 0
 cerror:	.db "ERROR", 0
 saved:	.db "SAVED", 0
+info:	.db "INFO", 0, 0
 
 	;footers
 tunefn:	.db "BACK RATE SAVE CHANGE", 0
@@ -948,12 +951,14 @@ mSLvl:	.db "Self-level Settings", 0
 mSS:	.db "Stick Scaling", 0
 mMode:	.db "Mode Settings", 0
 mMisc:	.db "Misc. Settings", 0, 0
+mServo:	.db "Servo Settings", 0, 0
 mGimbl:	.db "Gimbal Settings", 0
 mExGM:	.db "Exit Gimbal Mode", 0, 0
 mAdv:	.db "Advanced Settings", 0
 mExp:	.db "Expert Settings", 0
 mAux:	.db "AUX Switch Setup", 0, 0
 mDg2:	.db "DG2 Switch Setup", 0, 0
+mPExp:	.db "Port Expander Setup", 0
 mInit:	.db "Initial Setup", 0
 mRxTst:	.db "Receiver Test", 0
 mSensT:	.db "Sensor Test", 0
@@ -1010,6 +1015,9 @@ ss0:	.db "+0", 0, 0
 ss20:	.db "+20", 0
 ss30:	.db "+30", 0
 ss50:	.db "+50", 0
+m6:	.db "M6", 0, 0
+m7:	.db "M7", 0, 0
+null:	.db 0, 0
 
 	;arrays
 yesno:	.dw no*2, yes*2
@@ -1020,3 +1028,5 @@ auxfn:	.dw acro*2, slmix*2, normsl*2, alarm*2
 auxss:	.dw ss0*2, ss20*2, ss30*2, ss50*2
 aux4txt:.dw locked*2, off*2, home*2
 rxch:	.dw ail*2, ele*2, thr*2, rudd*2, aux*2
+ledpin:	.dw none*2, m6*2, m7*2
+

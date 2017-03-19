@@ -31,6 +31,7 @@ arm10:	b16inc AutoDisarmDelay					;if throttle is zero and auto disarm is on, in
 	sts AuxBeepDelay, t
 	ret
 
+	;check throttle and rudder input
 arm12:	rvbrflagfalse flagThrottleZero, arm1
 
 	b16ldi Temp, -500			;rudder in Arming position?
@@ -55,7 +56,10 @@ arm9:	b16load RxYaw
 	tst xh					;yes, set or clear flagArmed depending on the rudder direction
 	brpl arm6
 
-	lds t, StatusBits			;skip arming if status is not OK.
+	;arm
+	lds t, StatusBits			;skip arming if status is not OK
+	lds xh, flagArmed			;abort when already armed
+	or t, xh
 	cbr t, LvaWarning			;ignore Low Voltage Alarm warning
 	breq arm5
 
@@ -66,7 +70,9 @@ arm5:	rvbrflagfalse flagAileronCentered, arm7	;skip arming if the aileron/elevat
 
 	rvbrflagfalse flagHomeScreen, arm7	;skip arming unless the SAFE screen is displayed
 
-	rvsetflagtrue flagArmed			;arm
+	rvsetflagtrue flagArmed
+	rvsetflagfalse flagAlarmOverride	;stop the Lost Model Alarm if overridden
+
 	b16ldi BeeperDelay, 300
 	call GyroCal				;calibrate gyros
 	call Initialize3dVector			;set 3d vector to point straigth up
@@ -78,10 +84,12 @@ arm5:	rvbrflagfalse flagAileronCentered, arm7	;skip arming if the aileron/elevat
 	sts ChannelCountArmed, t
 	rjmp Arm11
 
-arm6:	rvsetflagfalse flagArmed		;disarm
+	;disarm
+arm6:	rvsetflagfalse flagArmed
 	b16ldi BeeperDelay, 150
 
-arm11:	rvsetflagfalse flagAlarmOverride	;arming/disarming will stop the Lost Model Alarm if overridden
+	;arming/disarming
+arm11:	rvsetflagtrue flagLcdUpdate
 
 	ldz eeArmingBeeps			;check beep setting
 	call GetEePVariable8
@@ -89,8 +97,7 @@ arm11:	rvsetflagfalse flagAlarmOverride	;arming/disarming will stop the Lost Mod
 
 	rvsetflagtrue flagGeneralBuzzerOn
 
-arm4:	rvsetflagtrue flagLcdUpdate
-	b16ldi ArmedBeepDds, 400*2
+arm4:	b16ldi ArmedBeepDds, 400*2
 	b16clr AutoDisarmDelay
 
 arm3:	ret

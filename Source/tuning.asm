@@ -10,20 +10,23 @@ RemoteTuningDlg:
 
 	rcall CheckTuningMode			;set TuningMode to 1 (Aileron) if it currently is set to 2 (Elevator) with roll/pitch linked
 
+	ldi t, 5				;initial timeout value for LCD update
+	mov ka, t
+
 tun10:	call GetRxChannels
 
-	lds t, RxBufferState			;update the display only when we have new data
-	cpi t, 3
-	breq tun11
+	rvbrflagtrue flagNewRxFrame, tun11	;update the display when we have new data
 
-	ldi yl, 25				;wait 2.5ms
+	ldi yl, 20				;wait 2ms
 	call wms
 
-	rvbrflagfalse RxFrameValid, tun11	;update the display also when no valid frames are received
+	dec ka
+	brpl tun10
 
-	rjmp tun12				;skip update
+tun11:	ldi t, 50
+	mov ka, t
 
-tun11:	lds t, TuningMode			;is tuning mode active?
+	lds t, TuningMode			;is tuning mode active?
 	tst t
 	brne tun13
 
@@ -209,11 +212,13 @@ SetInputRate:
 
 sir10:	call LcdClear6x8
 
-	lrv X1, 22				;print header
+	;header
+	lrv X1, 22
 	ldz sir1*2
 	call PrintString
 
-	lrv Y1, 13				;print instructions
+	;text
+	lrv Y1, 13
 	ldi t, 3
 	ldz sir8*2
 	call PrintStringArray

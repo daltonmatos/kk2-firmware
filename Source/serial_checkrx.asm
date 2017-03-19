@@ -1,7 +1,7 @@
 
 
 
-	;--- No serial data ---
+	;--- No serial data ---		;Not used when in Serial Link mode
 
 NoSerialDataDlg:
 

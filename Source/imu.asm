@@ -1,7 +1,8 @@
 
-Imu:	;--- SL mixing ---
 
-	rvbrflagtrue flagSlStickMixing, im50		;skip this section if SL Stick Mixing is off
+Imu:	;--- SL Mix, Pt. 1 ---
+
+	rvbrflagtrue flagSlStickMixing, im50		;skip this section if SL Mix is off
 
 	rjmp im55
 
@@ -113,6 +114,7 @@ im25:
 	;--- Calculate Stick and Gyro  ---
 
 	rvbrflagfalse flagThrottleZero, im7	;reset integrals if throttle closed
+	rvbrflagtrue flagMotorSpin, im7		;won't reset integrals while the Motor Spin feature is active
 
 	b16clr IntegralRoll
 	b16set IntegralPitch
@@ -139,9 +141,9 @@ im7:	b16fdiv RxRoll, 4			;right align to the 16.4 multiply usable bit limit
 	rjmp im30				;jump if both SL modes are inactive
 
 
-im31:	;--- SL Stick Mixing, Pt. 2 ---
+im31:	;--- SL Mix, Pt. 2 ---
 
-	b16mov CommandRoll, RxRoll		;save pitch and roll input for use in SL Stick Mixing Pt. 3
+	b16mov CommandRoll, RxRoll		;save pitch and roll input for use in SL Mix, Pt. 3
 	b16mov CommandPitch, RxPitch
 
 
@@ -157,7 +159,7 @@ im60:	;--- Roll Axis Self-level P ---
 
 	b16mov LimitV, SelflevelPlimit		;Proportional limit
 	rcall Limiter
-	b16mov RxRoll, Value
+	b16store RxRoll
 
 	b16fdiv RxRoll, 1
 
@@ -174,7 +176,7 @@ im60:	;--- Roll Axis Self-level P ---
 
 	b16mov LimitV, SelflevelPlimit		;Proportional limit
 	rcall Limiter
-	b16mov RxPitch, Value
+	b16store RxPitch
 
 	b16fdiv RxPitch, 1
 

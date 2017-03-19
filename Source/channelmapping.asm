@@ -7,6 +7,14 @@ ChannelMapping:
 
 	clr Item
 
+	lds t, RxMode			;refuse access when Serial Link RX mode is selected
+	cpi t, RxModeSerialLink
+	brne map11
+
+	ldz nadtxt3*2
+	call ShowNoAccessDlg
+	ret
+
 map11:	call LcdClear6x8
 
 	ldi t, 5			;print all text labels first

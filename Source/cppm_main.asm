@@ -36,6 +36,7 @@ CppmMain:
 	sts Timer1min, t
 
 	sts TuningMode, t
+	sts flagPortExpTuning, t
 
 	sts flagPwmGen, t
 
@@ -71,17 +72,26 @@ CppmMain:
 	sts Channel8L, t
 	sts Channel8H, t
 
-	sts RxFrameValid, t
+	sts flagRxFrameValid, t
+	sts flagRxBufferFull, t
 	sts TimeoutCounter, t
 	sts CppmChannelCount, t
 	sts ChannelCount, t
+
+	b16set RxRoll
+	b16set RxPitch
+	b16set RxThrottle
+;	b16set RxYaw			;rudder value will be cleared later (see flightinit,asm)
+	b16set RxAux
+	b16set RxAux2
+	b16set RxAux3
+	b16set RxAux4
 
 	ldz Channel1L
 	sts CppmPulseArrayAddressL, zl
 	sts CppmPulseArrayAddressH, zh
 
-	ldi xl, 3			;RxBufferState must be set to 3 (i.e. "New data") to make the Tuning and AUX Settings screens work properly
-	sts RxBufferState, xl
+	rvsetflagtrue flagNewRxFrame 	;flag for "New RX Frame" must be set to make some screens (e.g. AUX Settings) work properly
 
 	ldi t, NoCppmInput
 	sts StatusBits, t
@@ -195,7 +205,8 @@ cm8:	lrv ButtonDelay, 0
 
 cm4:	rvinc ButtonDelay		;yes, ButtonDelay++
 	rvcpi ButtonDelay, 50		;ButtonDelay == 50?
-	breq cm6			;yes, re-check button
+	breq cm6
+
 	rjmp cm1			;no, go to start of the loop	
 
 cm6:	rvbrflagtrue Mode, cm8		;abort if the button hasn't been released since start-up

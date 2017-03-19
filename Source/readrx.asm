@@ -209,7 +209,7 @@ iaux2:	mov tt, xl			;falling, calculate the pulse length
 
 	;--- Jump to the correct RX routine based on selected RX mode ---
 
-GetRxChannels:				;OBSERVE: This routine should only be called from GUI code!
+GetRxChannels:				;this routine is usually called from GUI code
 
 	lds t, RxMode
 	cpi t, RxModeStandard
@@ -227,7 +227,12 @@ grx2:	cpi t, RxModeSBus
 
 	jmp GetSBusChannels
 
-grx3:	jmp GetSatChannels
+grx3:	cpi t, RxModeSerialLink
+	breq grx4
+
+	jmp GetSatChannels
+
+grx4:	jmp GetSerialLinkChannels
 
 
 
@@ -235,9 +240,17 @@ grx3:	jmp GetSatChannels
 
 GetStdRxChannels:
 
+	lds t, RxSyncCounter		;wait for RX input to become stable (after FlightInit)
+	dec t
+	brmi rx10
+
+	sts RxSyncCounter, t
+	ret
+
+
 	;--- Roll ---
 
-	lds r0, MappedChannel1		;get aileron channel value
+rx10:	lds r0, MappedChannel1
 	rcall GetSafeChannelValue
 	rcall Sanitize
 	rcall DeadZone
@@ -250,7 +263,7 @@ GetStdRxChannels:
 
 	;--- Pitch ---
 
-	lds r0, MappedChannel2		;get elevator channel value
+	lds r0, MappedChannel2
 	rcall GetSafeChannelValue
 	rcall Sanitize
 	rcall DeadZone
@@ -263,7 +276,7 @@ GetStdRxChannels:
 
 	;--- Throttle ---
 
-	lds r0, MappedChannel3		;get throttle channel value
+	lds r0, MappedChannel3
 	rcall GetSafeChannelValue
 
 	rvsetflagfalse flagThrottleZero
@@ -295,7 +308,7 @@ rx33:	clr yh
 
 	;--- Yaw ---
 
-	lds r0, MappedChannel4		;get rudder channel value
+	lds r0, MappedChannel4
 	rcall GetSafeChannelValue
 	rcall Sanitize
 	rcall DeadZone
@@ -306,7 +319,7 @@ rx33:	clr yh
 
 	;--- AUX ---
 
-	lds r0, MappedChannel5		;get aux channel value
+	lds r0, MappedChannel5
 	rcall GetSafeChannelValue
 	rcall Sanitize
 
@@ -345,7 +358,7 @@ rx35:	rvbrflagfalse flagAuxValid, rx24;won't update aux switch position while th
 
 rx24:	;--- AUX2 ---
 
-	lds r0, MappedChannel6		;get aux2 channel value
+	lds r0, MappedChannel6
 	rcall GetSafeChannelValue
 	rcall Sanitize
 
@@ -355,7 +368,7 @@ rx24:	;--- AUX2 ---
 
 	;--- AUX3 ---
 
-	lds r0, MappedChannel7		;get aux3 channel value
+	lds r0, MappedChannel7
 	rcall GetSafeChannelValue
 	rcall Sanitize
 
@@ -365,7 +378,7 @@ rx24:	;--- AUX2 ---
 
 	;--- AUX4 ---
 
-	lds r0, MappedChannel8		;get aux4 channel value
+	lds r0, MappedChannel8
 	rcall GetSafeChannelValue
 	rcall Sanitize
 
@@ -512,25 +525,26 @@ GetSafeChannelValue:
 
 Sanitize:
 
-	rcall Xabs	;X = ABS(X)
+	rcall Xabs				;X = ABS(X)
 
-	ldz 3750	;X = X - 3750 (1.5ms)
+	ldz 3750				;X = X - 3750 (1.5ms)
 	sub xl, zl
 	sbc xh, zh
 
-	ldz -1750	;X < -1750?  (0.7ms)
+	ldz -1750				;X < -1750?  (0.7ms)
 	cp xl, zl
 	cpc xh, zh
 	brlt sa2
 
-	ldz 1750	;X > 1750?
+	ldz 1750				;X > 1750?
 	cp xl, zl
 	cpc xh, zh
 	brge sa2
 
-	ret		;no, exit
+	ret					;no, exit
 
-sa2:	ldx 0		;yes, set to zero
+sa2:	ldx 0					;yes, set to zero and tag input as invalid
+	sts flagRxFrameValid, xl		;this will prevent S.Bus and Satellite signals from being detected as "OK" in CPPM mode
 	ret
 
 
@@ -539,16 +553,12 @@ sa2:	ldx 0		;yes, set to zero
 
 Xabs:
 
-	tst xh		;X = ABS(X)
+	tst xh					;X = ABS(X)
 	brpl xa1
 
-	com xl
-	com xh
-	
-	ldi t, 1
-	add xl, t
-	clr t
-	adc xh, t
+	com xh					;negate
+	neg xl
+	sbci xh, 0xFF
 
 xa1:	ret
 
@@ -563,19 +573,19 @@ DeadZone:
 	tst xh
 	brpl dz1
 
-	add xl, zl		;stick input is negative
+	add xl, zl				;stick input is negative
 	adc xh, zh
 	brpl dz2
 
 	ret
 
-dz1:	sub xl, zl		;stick input is positive
+dz1:	sub xl, zl				;stick input is positive
 	sbc xh, zh
 	brmi dz2
 
 	ret
 
-dz2:	clr xl			;set stick input to zero
+dz2:	clr xl					;set stick input to zero
 	clr xh
 	clr yh
 	ret
@@ -596,9 +606,9 @@ IsChannelCentered:
 	cpc xh, zh
 	brlt icc1
 
-	ser yl		;centered
+	ser yl					;centered
 	ret
 
-icc1:	clr yl		;not centered
+icc1:	clr yl					;not centered
 	ret
 

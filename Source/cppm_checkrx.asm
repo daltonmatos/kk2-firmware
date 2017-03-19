@@ -2,7 +2,7 @@
 
 CheckCppmRx:
 
-	lds t, RxFrameValid			;set/clear RX error
+	lds t, flagRxFrameValid			;set/clear RX error
 	com t
 	andi t, NoCppmInput
 	lds xl, StatusBits

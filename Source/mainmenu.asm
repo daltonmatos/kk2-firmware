@@ -7,7 +7,7 @@ men23:	ldy men1*2
 	lds xl, MainMenuListYposSave
 	lds xh, MainMenuCursorYposSave
 
-	ldi t, 19			;number of menu items
+	ldi t, 20			;number of menu items
 	call Menu
 
 	sts MainMenuListYposSave, yl
@@ -46,6 +46,7 @@ men1:	.dw mQTun*2			;Quick Tuning
 	.dw mSS*2			;Stick Scaling
 	.dw mMode*2			;Mode Settings
 	.dw mMisc*2			;Misc. Settings
+	.dw mServo*2			;Servo Settings
 	.dw mGimbl*2			;Gimbal Settings
 	.dw mAdv*2			;Advanced Settings
 	.dw mExp*2			;Expert Settings
@@ -67,6 +68,7 @@ men18:	.dw QuickTuning
 	.dw StickScaling
 	.dw ModeSettings
 	.dw MiscSettings
+	.dw ServoSettings
 	.dw GimbalSettings
 	.dw AdvancedSettings
 	.dw ExpertSettings
